@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyReDeal — Real Estate Transaction Coordination</title>
+  <meta name="description" content="MyReDeal helps real estate agents close deals faster with streamlined transaction coordination. The all-in-one platform built for real estate professionals." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #012F65;
+      --navy-dark: #001f45;
+      --navy-light: #0a3d7a;
+      --gold: #FBBE2C;
+      --gold-dark: #e5a818;
+      --white: #ffffff;
+      --off-white: #f8f8f6;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --text: #111827;
+      --radius: 6px;
+      --radius-lg: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; font-family: inherit; }
+
+    /* ===================== SKIP LINK ===================== */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 16px;
+      background: var(--gold);
+      color: var(--navy);
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-weight: 700;
+      z-index: 9999;
+      transition: top 0.2s;
+    }
+    .skip-link:focus { top: 16px; }
+
+    /* ===================== NAV ===================== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      transition: box-shadow 0.2s;
+    }
+    nav.scrolled { box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .nav-logo img {
+      height: 44px;
+      width: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--gray-800);
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover, .nav-links a:focus {
+      color: var(--navy);
+      background: var(--gray-100);
+      outline: none;
+    }
+    .nav-links a:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 11px 24px;
+      border-radius: var(--radius);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+    }
+    .btn-primary {
+      background: var(--gold);
+      color: var(--navy);
+    }
+    .btn-primary:hover { background: var(--gold-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(251,190,44,0.4); }
+    .btn-secondary {
+      background: var(--navy);
+      color: var(--white);
+    }
+    .btn-secondary:hover { background: var(--navy-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(1,47,101,0.3); }
+    .btn-outline {
+      background: transparent;
+      color: var(--navy);
+      border: 2px solid var(--navy);
+    }
+    .btn-outline:hover { background: var(--navy); color: var(--white); }
+    .btn-lg {
+      font-size: 17px;
+      padding: 15px 32px;
+    }
+
+    /* Hamburger */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: none;
+      padding: 8px;
+      border-radius: var(--radius);
+      aria-label: "Open menu";
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--navy);
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 72px; left: 0; right: 0;
+      background: var(--white);
+      border-bottom: 2px solid var(--gray-200);
+      padding: 16px 24px 24px;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--gray-800);
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      transition: background 0.2s;
+    }
+    .mobile-menu a:hover { background: var(--gray-100); }
+    .mobile-menu .btn { margin-top: 8px; width: 100%; justify-content: center; }
+
+    /* ===================== HERO ===================== */
+    .hero {
+      padding-top: 72px;
+      background: var(--navy);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-bg-shape {
+      position: absolute;
+      top: 0; right: -10%;
+      width: 55%;
+      height: 100%;
+      background: var(--navy-light);
+      clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%);
+      opacity: 0.4;
+    }
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 24px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(251,190,44,0.15);
+      color: var(--gold);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid rgba(251,190,44,0.3);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 62px);
+      color: var(--white);
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 span { color: var(--gold); }
+    .hero p {
+      font-size: 18px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 36px;
+      line-height: 1.7;
+      max-width: 480px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .hero-trust {
+      margin-top: 48px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .hero-trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .hero-trust-item svg { color: var(--gold); flex-shrink: 0; }
+
+    .hero-visual {
+      position: relative;
+    }
+    .hero-card-stack {
+      position: relative;
+      height: 420px;
+    }
+    .hero-card {
+      position: absolute;
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .hero-card-main {
+      top: 0; left: 0; right: 0;
+      z-index: 3;
+    }
+    .hero-card-accent {
+      bottom: 0; right: -20px;
+      width: 220px;
+      background: var(--gold);
+      z-index: 2;
+      transform: rotate(2deg);
+    }
+
+    .deal-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .deal-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .deal-card-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--navy);
+    }
+    .deal-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .deal-badge.pending { background: #fef3c7; color: #d97706; }
+    .deal-badge.review { background: #dbeafe; color: #2563eb; }
+    .deal-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .deal-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--gray-600);
+    }
+    .deal-step-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .deal-step-dot.done { background: #16a34a; }
+    .deal-step-dot.active { background: var(--gold); }
+    .deal-step-dot.todo { background: var(--gray-200); }
+    .deal-step-dot svg { color: white; }
+    .deal-progress {
+      margin-top: 14px;
+      height: 6px;
+      background: var(--gray-100);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .deal-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--navy), var(--gold));
+      border-radius: 100px;
+      width: 65%;
+    }
+
+    .stat-card {
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-card-num {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 28px;
+      color: var(--navy);
+    }
+    .stat-card-label {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    /* ===================== LOGOS ===================== */
+    .logos-bar {
+      background: var(--off-white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 28px 24px;
+    }
+    .logos-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+    .logos-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-right: 40px;
+      flex-shrink: 0;
+    }
+    .logo-pill {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--gray-400);
+      padding: 8px 24px;
+      letter-spacing: -0.01em;
+    }
+
+    /* ===================== SECTIONS ===================== */
+    .section {
+      padding: 96px 24px;
+    }
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-alt { background: var(--off-white); }
+    .section-navy { background: var(--navy); color: var(--white); }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      margin-bottom: 16px;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 3px;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    .section-heading {
+      font-size: clamp(30px, 4vw, 48px);
+      letter-spacing: -0.02em;
+      color: var(--navy);
+      margin-bottom: 20px;
+      max-width: 680px;
+    }
+    .section-heading span { color: var(--gold-dark); }
+    .section-navy .section-heading { color: var(--white); }
+    .section-navy .section-heading span { color: var(--gold); }
+    .section-navy .section-label { color: var(--gold); }
+
+    .section-sub {
+      font-size: 18px;
+      color: var(--gray-600);
+      max-width: 580px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+    .section-navy .section-sub { color: rgba(255,255,255,0.7); }
+
+    /* ===================== FEATURES ===================== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--navy), var(--gold));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(1,47,101,0.1); }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      background: rgba(1,47,101,0.08);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--navy);
+    }
+    .feature-card h3 {
+      font-size: 19px;
+      color: var(--navy);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .feature-card p {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.65;
+    }
+
+    /* ===================== HOW IT WORKS ===================== */
+    .how-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .how-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .how-step {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .how-step-num {
+      width: 44px;
+      height: 44px;
+      background: var(--gold);
+      color: var(--navy);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .how-step-content h3 {
+      font-size: 18px;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .how-step-content p {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.65;
+    }
+
+    .how-visual {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 20px;
+      padding: 32px;
+      overflow: hidden;
+    }
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      padding-bottom: 24px;
+      position: relative;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 40px;
+      width: 2px;
+      height: calc(100% - 16px);
+      background: var(--gray-200);
+    }
+    .timeline-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    .timeline-icon.done { background: #dcfce7; color: #16a34a; }
+    .timeline-icon.active { background: rgba(251,190,44,0.2); color: var(--gold-dark); }
+    .timeline-icon.todo { background: var(--gray-100); color: var(--gray-400); }
+    .timeline-content {
+      padding-top: 8px;
+    }
+    .timeline-content strong {
+      display: block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+    .timeline-content span {
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+
+    /* ===================== STATS ===================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .stat-block {
+      padding: 48px 32px;
+      text-align: center;
+      background: rgba(255,255,255,0.04);
+    }
+    .stat-num {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(36px, 4vw, 52px);
+      color: var(--gold);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: 15px;
+      color: rgba(255,255,255,0.65);
+      font-weight: 500;
+    }
+
+    /* ===================== TESTIMONIALS ===================== */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .testimonial-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+    .testimonial-stars {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 16px;
+      color: var(--gold);
+    }
+    .testimonial-text {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .testimonial-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .testimonial-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--navy);
+    }
+    .testimonial-role {
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+
+    /* ===================== PRICING ===================== */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .pricing-card {
+      background: var(--white);
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .pricing-card.featured {
+      border-color: var(--navy);
+      background: var(--navy);
+      color: var(--white);
+      transform: scale(1.03);
+      box-shadow: 0 20px 60px rgba(1,47,101,0.25);
+    }
+    .pricing-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: var(--navy);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 16px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .pricing-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: var(--navy);
+    }
+    .pricing-card.featured .pricing-name { color: var(--white); }
+    .pricing-desc {
+      font-size: 14px;
+      color: var(--gray-600);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .pricing-card.featured .pricing-desc { color: rgba(255,255,255,0.65); }
+    .pricing-price {
+      margin-bottom: 28px;
+    }
+    .pricing-price .amount {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 44px;
+      letter-spacing: -0.02em;
+      color: var(--navy);
+    }
+    .pricing-card.featured .pricing-price .amount { color: var(--gold); }
+    .pricing-price .period {
+      font-size: 15px;
+      color: var(--gray-400);
+      font-weight: 500;
+    }
+    .pricing-card.featured .pricing-price .period { color: rgba(255,255,255,0.5); }
+    .pricing-divider {
+      height: 1px;
+      background: var(--gray-200);
+      margin-bottom: 24px;
+    }
+    .pricing-card.featured .pricing-divider { background: rgba(255,255,255,0.15); }
+    .pricing-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .pricing-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.4;
+    }
+    .pricing-card.featured .pricing-features li { color: rgba(255,255,255,0.8); }
+    .pricing-features li svg { color: #16a34a; flex-shrink: 0; margin-top: 1px; }
+    .pricing-card.featured .pricing-features li svg { color: var(--gold); }
+
+    /* ===================== CONTACT ===================== */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 64px;
+      align-items: start;
+    }
+    .contact-info h2 {
+      font-size: clamp(28px, 3.5vw, 40px);
+      color: var(--navy);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .contact-info p {
+      font-size: 16px;
+      color: var(--gray-600);
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+    .contact-detail {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .contact-detail-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(1,47,101,0.08);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--navy);
+      flex-shrink: 0;
+    }
+    .contact-detail-text strong {
+      display: block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+    .contact-detail-text span {
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .form-card h3 {
+      font-size: 22px;
+      color: var(--navy);
+      margin-bottom: 24px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .form-group label .required {
+      color: #dc2626;
+      margin-left: 2px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(1,47,101,0.1);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+
+    /* SMS consent */
+    .sms-consent {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .sms-consent-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .sms-consent-check input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      margin-top: 2px;
+      accent-color: var(--navy);
+      cursor: pointer;
+    }
+    .sms-consent-check label {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.5;
+      cursor: pointer;
+      font-weight: 400;
+    }
+    .sms-consent-check label strong { color: var(--navy); }
+    .sms-consent-note {
+      font-size: 11.5px;
+      color: var(--gray-400);
+      line-height: 1.5;
+    }
+    .sms-consent-note a { color: var(--navy); text-decoration: underline; }
+
+    /* ===================== PRIVACY POLICY ===================== */
+    #privacy {
+      background: var(--off-white);
+    }
+    .privacy-content {
+      max-width: 820px;
+    }
+    .privacy-content h2 {
+      font-size: 36px;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .privacy-updated {
+      font-size: 14px;
+      color: var(--gray-400);
+      margin-bottom: 40px;
+    }
+    .privacy-section {
+      margin-bottom: 36px;
+    }
+    .privacy-section h3 {
+      font-size: 19px;
+      color: var(--navy);
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .privacy-section p, .privacy-section li {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+    .privacy-section ul, .privacy-section ol {
+      padding-left: 20px;
+    }
+    .privacy-section li { margin-bottom: 6px; }
+    .privacy-highlight {
+      background: rgba(1,47,101,0.06);
+      border-left: 4px solid var(--navy);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+    .privacy-highlight p { color: var(--navy); font-weight: 500; margin-bottom: 0; }
+
+    /* ===================== CTA BANNER ===================== */
+    .cta-banner {
+      background: var(--gold);
+      padding: 64px 24px;
+      text-align: center;
+    }
+    .cta-banner-inner { max-width: 640px; margin: 0 auto; }
+    .cta-banner h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      color: var(--navy);
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .cta-banner p {
+      font-size: 17px;
+      color: rgba(1,47,101,0.7);
+      margin-bottom: 32px;
+    }
+    .cta-banner-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ===================== FOOTER ===================== */
+    footer {
+      background: var(--navy-dark);
+      color: rgba(255,255,255,0.7);
+      padding: 64px 24px 32px;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand p {
+      font-size: 14px;
+      line-height: 1.7;
+      margin-top: 16px;
+      max-width: 280px;
+    }
+    .footer-brand img { height: 38px; width: auto; filter: brightness(0) invert(1); }
+    .footer-col h4 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul a {
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+      transition: color 0.2s;
+    }
+    .footer-col ul a:hover, .footer-col ul a:focus {
+      color: var(--gold);
+      outline: none;
+    }
+    .footer-col ul a:focus-visible { outline: 2px solid var(--gold); border-radius: 2px; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-bottom p { font-size: 13px; }
+    .footer-legal {
+      display: flex;
+      gap: 20px;
+    }
+    .footer-legal a {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      transition: color 0.2s;
+    }
+    .footer-legal a:hover { color: var(--gold); }
+
+    /* ===================== RESPONSIVE ===================== */
+    @media (max-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+      .pricing-card.featured { transform: none; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+      .hero-visual { display: none; }
+      .hero h1 { font-size: clamp(32px, 8vw, 44px); }
+      .hero p { font-size: 16px; }
+
+      .how-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+
+      .features-grid { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .section { padding: 64px 16px; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+
+      .form-card { padding: 24px 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: 100%; justify-content: center; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .cta-banner-btns { flex-direction: column; align-items: center; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* Focus visible styles */
+    :focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ======= NAV ======= -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo" aria-label="MyReDeal - Home">
+      <img src="logo.png" alt="MyReDeal logo" />
+    </a>
+
+    <ul class="nav-links" role="list">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#testimonials">Reviews</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="privacy-policy.html">Privacy</a></li>
+    </ul>
+
+    <div class="nav-cta">
+      <a href="#contact" class="btn btn-outline" style="padding: 9px 20px; font-size: 14px;">Log In</a>
+      <a href="#contact" class="btn btn-primary" style="padding: 9px 20px; font-size: 14px;">Get Started</a>
+    </div>
+
+    <button class="nav-hamburger" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu" onclick="toggleMenu(this)">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Mobile navigation">
+    <a href="#features" onclick="closeMobileMenu()">Features</a>
+    <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
+    <a href="#pricing" onclick="closeMobileMenu()">Pricing</a>
+    <a href="#testimonials" onclick="closeMobileMenu()">Reviews</a>
+    <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+    <a href="privacy-policy.html" onclick="closeMobileMenu()">Privacy</a>
+    <a href="#contact" class="btn btn-primary btn-lg" onclick="closeMobileMenu()">Get Started Free</a>
+  </div>
+</nav>
+
+<!-- ======= HERO ======= -->
+<main id="main-content">
+<section class="hero" id="home" aria-labelledby="hero-heading">
+  <div class="hero-bg-shape" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-tag" aria-label="Platform category">
+        <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="4"/></svg>
+        Real Estate Transaction Platform
+      </div>
+      <h1 id="hero-heading">Close Deals Faster.<br/><span>Stay in Control.</span></h1>
+      <p>MyReDeal is the all-in-one transaction coordination platform built for real estate agents and TCs — streamline every step from contract to close.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary btn-lg">Get Started Free</a>
+        <a href="#contact" class="btn btn-lg" style="background:rgba(255,255,255,0.1); color:white; border: 1.5px solid rgba(255,255,255,0.25);">Book a Demo →</a>
+      </div>
+      <div class="hero-trust" role="list" aria-label="Trust indicators">
+        <div class="hero-trust-item" role="listitem">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+          No credit card required
+        </div>
+        <div class="hero-trust-item" role="listitem">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+          14-day free trial
+        </div>
+        <div class="hero-trust-item" role="listitem">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+          Cancel anytime
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-card-stack">
+        <div class="hero-card hero-card-main">
+          <div class="deal-card">
+            <div class="deal-card-header">
+              <div>
+                <div class="deal-card-title">123 Maple St — Under Contract</div>
+                <div style="font-size:12px;color:#9ca3af;margin-top:2px;">Closing: Apr 15, 2025</div>
+              </div>
+              <span class="deal-badge">On Track</span>
+            </div>
+            <div class="deal-steps">
+              <div class="deal-step">
+                <div class="deal-step-dot done">
+                  <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <span>Contract Executed</span>
+              </div>
+              <div class="deal-step">
+                <div class="deal-step-dot done">
+                  <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <span>Earnest Money Deposited</span>
+              </div>
+              <div class="deal-step">
+                <div class="deal-step-dot active">
+                  <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><circle cx="12" cy="12" r="3" fill="white"/></svg>
+                </div>
+                <span style="color:#012F65;font-weight:600;">Inspection Period — 3 days left</span>
+              </div>
+              <div class="deal-step">
+                <div class="deal-step-dot todo"></div>
+                <span>Appraisal Ordered</span>
+              </div>
+              <div class="deal-step">
+                <div class="deal-step-dot todo"></div>
+                <span>Clear to Close</span>
+              </div>
+            </div>
+            <div class="deal-progress">
+              <div class="deal-progress-bar"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;">
+              <span style="font-size:11px;color:#9ca3af;">65% complete</span>
+              <span style="font-size:11px;color:#9ca3af;">12 tasks remaining</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-card hero-card-accent">
+          <div class="stat-card">
+            <div class="stat-card-num" style="color:#012F65;">98%</div>
+            <div class="stat-card-label">On-time closings</div>
+          </div>
+          <div style="height:1px;background:rgba(1,47,101,0.15);margin:8px 0;"></div>
+          <div class="stat-card">
+            <div class="stat-card-num" style="color:#012F65;">3.2hrs</div>
+            <div class="stat-card-label">Saved per transaction</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= LOGOS BAR ======= -->
+<div class="logos-bar" aria-label="Trusted by real estate professionals nationwide">
+  <div class="logos-inner">
+    <span class="logos-label">Trusted by</span>
+    <span class="logo-pill">Keller Williams</span>
+    <span class="logo-pill">RE/MAX</span>
+    <span class="logo-pill">Coldwell Banker</span>
+    <span class="logo-pill">Compass</span>
+    <span class="logo-pill">eXp Realty</span>
+    <span class="logo-pill">Century 21</span>
+  </div>
+</div>
+
+<!-- ======= FEATURES ======= -->
+<section class="section" id="features" aria-labelledby="features-heading">
+  <div class="section-inner">
+    <div class="section-label">Features</div>
+    <h2 class="section-heading" id="features-heading">Everything you need to <span>coordinate like a pro</span></h2>
+    <p class="section-sub">From contract to close, MyReDeal keeps every task, deadline, and stakeholder organized in one powerful platform.</p>
+
+    <div class="features-grid" role="list">
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        </div>
+        <h3>Smart Task Management</h3>
+        <p>Auto-generated checklists for every transaction type. Never miss a deadline with intelligent due date tracking and reminders.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <h3>Stakeholder Coordination</h3>
+        <p>Keep agents, buyers, sellers, lenders, and title companies all on the same page with shared portals and real-time updates.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </div>
+        <h3>Automated Communications</h3>
+        <p>Send branded email and SMS updates automatically at each milestone. Stay compliant with built-in 10DLC messaging standards.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <h3>Document Management</h3>
+        <p>Centralize all contracts, addenda, and disclosures. E-signature ready integrations with DocuSign and DotLoop built in.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <h3>Analytics & Reporting</h3>
+        <p>Track pipeline performance, average close times, and team productivity. Make data-driven decisions to grow your business.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </div>
+        <h3>Compliance & Security</h3>
+        <p>WCAG 2.1 accessible, SOC 2 compliant, and fully RESPA-aware. Your client data is protected at every step.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= HOW IT WORKS ======= -->
+<section class="section section-alt" id="how-it-works" aria-labelledby="hiw-heading">
+  <div class="section-inner">
+    <div class="how-grid">
+      <div>
+        <div class="section-label">How It Works</div>
+        <h2 class="section-heading" id="hiw-heading">From contract to close in <span>4 simple steps</span></h2>
+        <p style="font-size:16px;color:var(--gray-600);line-height:1.7;margin-bottom:40px;">MyReDeal guides you through every transaction with automated workflows that keep everything on track.</p>
+        <div class="how-steps">
+          <div class="how-step">
+            <div class="how-step-num" aria-hidden="true">1</div>
+            <div class="how-step-content">
+              <h3>Create Your Transaction</h3>
+              <p>Input property address, parties, and key dates. MyReDeal auto-populates your state-specific checklist instantly.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="how-step-num" aria-hidden="true">2</div>
+            <div class="how-step-content">
+              <h3>Invite All Parties</h3>
+              <p>Agents, buyers, lenders, and title companies each get a tailored view of the transaction — only what they need to see.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="how-step-num" aria-hidden="true">3</div>
+            <div class="how-step-content">
+              <h3>Automate & Coordinate</h3>
+              <p>Automated reminders, SMS updates, and document requests go out at the right time to the right people.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="how-step-num" aria-hidden="true">4</div>
+            <div class="how-step-content">
+              <h3>Close With Confidence</h3>
+              <p>Hit the closing table with everything complete, documented, and filed. Your full audit trail is always accessible.</p>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:40px;">
+          <a href="#contact" class="btn btn-secondary btn-lg">See It In Action →</a>
+        </div>
+      </div>
+
+      <div class="how-visual" aria-hidden="true">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:var(--navy);margin-bottom:20px;">Transaction Timeline</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-icon done" aria-label="Complete">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div class="timeline-content">
+              <strong>Contract Executed</strong>
+              <span>Mar 1 — All parties signed</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon done">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div class="timeline-content">
+              <strong>Earnest Money Received</strong>
+              <span>Mar 3 — $5,000 deposited</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon active">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
+            </div>
+            <div class="timeline-content">
+              <strong>Inspection Period</strong>
+              <span>Due Mar 10 — In progress</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon todo">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg>
+            </div>
+            <div class="timeline-content">
+              <strong>Appraisal Ordered</strong>
+              <span>Due Mar 15</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon todo">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg>
+            </div>
+            <div class="timeline-content">
+              <strong>Loan Commitment</strong>
+              <span>Due Mar 28</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon todo">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg>
+            </div>
+            <div class="timeline-content">
+              <strong>Clear to Close</strong>
+              <span>Due Apr 12</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon todo">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div class="timeline-content">
+              <strong>Closing Day 🎉</strong>
+              <span>Apr 15 — 2:00 PM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= STATS ======= -->
+<section class="section section-navy" aria-labelledby="stats-heading">
+  <div class="section-inner">
+    <h2 class="section-heading" id="stats-heading" style="text-align:center;max-width:none;margin-bottom:48px;">Built for agents who mean <span>business</span></h2>
+    <div class="stats-grid" role="list">
+      <div class="stat-block" role="listitem">
+        <div class="stat-num">5,000+</div>
+        <div class="stat-label">Transactions coordinated</div>
+      </div>
+      <div class="stat-block" role="listitem">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">On-time closing rate</div>
+      </div>
+      <div class="stat-block" role="listitem">
+        <div class="stat-num">3.2hrs</div>
+        <div class="stat-label">Saved per transaction</div>
+      </div>
+      <div class="stat-block" role="listitem">
+        <div class="stat-num">4.9★</div>
+        <div class="stat-label">Average user rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= TESTIMONIALS ======= -->
+<section class="section" id="testimonials" aria-labelledby="testimonials-heading">
+  <div class="section-inner">
+    <div class="section-label">Testimonials</div>
+    <h2 class="section-heading" id="testimonials-heading">What real estate pros <span>are saying</span></h2>
+
+    <div class="testimonials-grid" role="list">
+      <article class="testimonial-card" role="listitem">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        </div>
+        <p class="testimonial-text">"MyReDeal completely changed how I manage transactions. I used to spend hours chasing documents and sending update emails — now it's all automated. My clients love the transparency."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" aria-hidden="true">SR</div>
+          <div>
+            <div class="testimonial-name">Sarah Rivera</div>
+            <div class="testimonial-role">REALTOR®, Keller Williams</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="testimonial-card" role="listitem">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        </div>
+        <p class="testimonial-text">"As a transaction coordinator, I manage 20+ deals at once. MyReDeal gives me a command center that keeps every file organized and every deadline visible. Couldn't do my job without it."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" aria-hidden="true">MT</div>
+          <div>
+            <div class="testimonial-name">Marcus Thompson</div>
+            <div class="testimonial-role">Transaction Coordinator, RE/MAX</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="testimonial-card" role="listitem">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        </div>
+        <p class="testimonial-text">"The automated SMS updates are a game-changer. My buyers feel informed every step of the way, and I'm not manually sending texts at 9pm. MyReDeal pays for itself in time savings alone."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" aria-hidden="true">JL</div>
+          <div>
+            <div class="testimonial-name">Jennifer Liu</div>
+            <div class="testimonial-role">Broker/Owner, Compass</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ======= PRICING ======= -->
+<section class="section section-alt" id="pricing" aria-labelledby="pricing-heading">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:56px;">
+      <div class="section-label" style="justify-content:center;">Pricing</div>
+      <h2 class="section-heading" id="pricing-heading" style="max-width:none;text-align:center;">Simple, <span>transparent pricing</span></h2>
+      <p style="font-size:17px;color:var(--gray-600);margin-top:12px;">No hidden fees. No surprises. Start free, upgrade when you're ready.</p>
+    </div>
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="pricing-card">
+        <div class="pricing-name">Starter</div>
+        <div class="pricing-desc">Perfect for individual agents getting started with transaction coordination.</div>
+        <div class="pricing-price">
+          <span class="amount">$49</span>
+          <span class="period"> / month</span>
+        </div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features" aria-label="Starter plan features">
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Up to 10 active transactions
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Automated task checklists
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Email notifications
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Document storage (5GB)
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Mobile app access
+          </li>
+        </ul>
+        <a href="#contact" class="btn btn-outline" style="width:100%;justify-content:center;">Get Started</a>
+      </div>
+
+      <!-- Pro (Featured) -->
+      <div class="pricing-card featured" aria-label="Most popular plan">
+        <div class="pricing-badge" aria-label="Most popular">Most Popular</div>
+        <div class="pricing-name">Pro</div>
+        <div class="pricing-desc">For active agents and TCs managing a full pipeline of transactions.</div>
+        <div class="pricing-price">
+          <span class="amount">$99</span>
+          <span class="period"> / month</span>
+        </div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features" aria-label="Pro plan features">
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Unlimited transactions
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            SMS + Email automation
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Client portal access
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            DocuSign integration
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Analytics dashboard
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Priority support
+          </li>
+        </ul>
+        <a href="#contact" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">Start Free Trial</a>
+      </div>
+
+      <!-- Team -->
+      <div class="pricing-card">
+        <div class="pricing-name">Team</div>
+        <div class="pricing-desc">For brokerages and TC companies managing multiple agents and high volume.</div>
+        <div class="pricing-price">
+          <span class="amount">$249</span>
+          <span class="period"> / month</span>
+        </div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features" aria-label="Team plan features">
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Everything in Pro
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Up to 10 team members
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            White-label client portals
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Advanced reporting
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Custom integrations
+          </li>
+          <li>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            Dedicated account manager
+          </li>
+        </ul>
+        <a href="#contact" class="btn btn-outline" style="width:100%;justify-content:center;">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= CONTACT ======= -->
+<section class="section" id="contact" aria-labelledby="contact-heading">
+  <div class="section-inner">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="section-label">Get In Touch</div>
+        <h2 id="contact-heading">Ready to transform your transactions?</h2>
+        <p>Book a personalized demo and see how MyReDeal can save you hours every week. Our team will walk you through the platform and answer all your questions.</p>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon" aria-hidden="true">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <div class="contact-detail-text">
+            <strong>Email</strong>
+            <span><a href="mailto:tc@myredeal.com" style="color:var(--navy);">tc@myredeal.com</a></span>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon" aria-hidden="true">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          </div>
+          <div class="contact-detail-text">
+            <strong>Phone / SMS</strong>
+            <span>Available after sign-up</span>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon" aria-hidden="true">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div class="contact-detail-text">
+            <strong>Serving</strong>
+            <span>Real estate professionals nationwide</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card" role="form" aria-labelledby="form-heading">
+        <h3 id="form-heading">Book a Free Demo</h3>
+        <form action="#" method="POST" novalidate onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="first-name">First Name<span class="required" aria-label="required">*</span></label>
+              <input type="text" id="first-name" name="first_name" required autocomplete="given-name" placeholder="Jane" />
+            </div>
+            <div class="form-group">
+              <label for="last-name">Last Name<span class="required" aria-label="required">*</span></label>
+              <input type="text" id="last-name" name="last_name" required autocomplete="family-name" placeholder="Smith" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address<span class="required" aria-label="required">*</span></label>
+            <input type="email" id="email" name="email" required autocomplete="email" placeholder="jane@mybroker.com" />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="(555) 000-0000" />
+          </div>
+          <div class="form-group">
+            <label for="role">Your Role</label>
+            <select id="role" name="role" aria-label="Select your role">
+              <option value="">Select your role...</option>
+              <option value="agent">Real Estate Agent</option>
+              <option value="tc">Transaction Coordinator</option>
+              <option value="broker">Broker / Owner</option>
+              <option value="team">Team Leader</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">What are you hoping to solve?</label>
+            <textarea id="message" name="message" placeholder="Tell us about your current challenges with transaction coordination..."></textarea>
+          </div>
+
+          <!-- 10DLC & RCS SMS Consent -->
+          <div class="sms-consent" role="group" aria-labelledby="sms-consent-title">
+            <div id="sms-consent-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:var(--navy);margin-bottom:10px;">
+              📱 SMS Communication Consent
+            </div>
+            <div class="sms-consent-check">
+              <input type="checkbox" id="sms-opt-in" name="sms_opt_in" aria-describedby="sms-consent-desc" />
+              <label for="sms-opt-in">
+                I agree to receive <strong>transactional and informational SMS messages</strong> from MyReDeal (TC.myReDeal.com) regarding my account, transaction updates, and platform notifications. Message frequency varies. Standard message and data rates may apply.
+              </label>
+            </div>
+            <p class="sms-consent-note" id="sms-consent-desc">
+              By checking this box, you consent to receive text messages from MyReDeal at the phone number provided. This consent is not a condition of purchase. Reply <strong>STOP</strong> to unsubscribe at any time. Reply <strong>HELP</strong> for help. For more information, see our <a href="privacy-policy.html">Privacy Policy</a>. We do not sell or share your mobile number with third parties for marketing purposes.
+            </p>
+          </div>
+
+          <button type="submit" class="btn btn-secondary btn-lg" style="width:100%;justify-content:center;" aria-label="Submit demo request form">
+            Book My Free Demo
+          </button>
+          <p style="font-size:12px;color:var(--gray-400);text-align:center;margin-top:12px;">
+            By submitting this form you agree to our <a href="privacy-policy.html" style="color:var(--navy);text-decoration:underline;">Privacy Policy</a>. No spam, ever.
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= PRIVACY POLICY ======= -->
+<section class="section" id="privacy" aria-labelledby="privacy-heading" style="background:var(--navy);color:white;padding:64px 24px;text-align:center;">
+  <div class="section-inner" style="max-width:720px;">
+    <div class="section-label" style="color:var(--gold);">Legal</div>
+    <h2 id="privacy-heading" style="color:white;font-size:clamp(1.8rem,3vw,2.5rem);margin-bottom:16px;">Privacy Policy</h2>
+    <p style="color:rgba(255,255,255,0.75);font-size:17px;margin-bottom:32px;">We take your privacy seriously. Our full privacy policy covers data use, SMS/10DLC compliance, Google RCS brand verification, and your rights as a user.</p>
+    <a href="privacy-policy.html" class="btn btn-secondary" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;" aria-label="Read the full MyReDeal privacy policy">
+      Read Full Privacy Policy →
+    </a>
+    <p style="margin-top:20px;font-size:13px;color:rgba(255,255,255,0.5);">SMS: Reply STOP to opt out · Reply HELP for help · Msg &amp; data rates may apply · We never sell your phone number</p>
+  </div>
+</section>
+
+<!-- ======= CTA BANNER ======= -->
+<div class="cta-banner" aria-labelledby="cta-heading">
+  <div class="cta-banner-inner">
+    <h2 id="cta-heading">Your next closing is waiting.</h2>
+    <p>Join thousands of real estate professionals who close faster and stress less with MyReDeal.</p>
+    <div class="cta-banner-btns">
+      <a href="#contact" class="btn btn-secondary btn-lg">Start Your Free Trial</a>
+      <a href="#contact" class="btn btn-lg" style="background:rgba(1,47,101,0.12);color:var(--navy);">Book a Demo</a>
+    </div>
+  </div>
+</div>
+</main>
+
+<!-- ======= FOOTER ======= -->
+<footer role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="logo.png" alt="MyReDeal logo" />
+        <p>The all-in-one transaction coordination platform built for real estate agents and TCs. Close more deals with less stress.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#contact">Book Demo</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#contact">About</a></li>
+          <li><a href="#testimonials">Reviews</a></li>
+          <li><a href="mailto:tc@myredeal.com">Contact</a></li>
+          <li><a href="#contact">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#privacy">Privacy Policy</a></li>
+          <li><a href="#privacy">Terms of Service</a></li>
+          <li><a href="#privacy">SMS Policy</a></li>
+          <li><a href="#privacy">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 MyReDeal, LLC · TC.myReDeal.com · All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#privacy">Privacy Policy</a>
+        <a href="#privacy">Terms</a>
+        <a href="#privacy">SMS Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Sticky nav shadow
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 10);
+  });
+
+  // Mobile menu
+  function toggleMenu(btn) {
+    const menu = document.getElementById('mobile-menu');
+    const isOpen = menu.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    btn.setAttribute('aria-expanded', isOpen);
+  }
+  function closeMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.querySelector('.nav-hamburger');
+    menu.classList.remove('open');
+    btn.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+
+  // Close mobile menu on outside click
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.querySelector('.nav-hamburger');
+    if (menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+      closeMobileMenu();
+    }
+  });
+
+  // Form submission
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.textContent = '✓ Request Sent! We\'ll be in touch soon.';
+    btn.style.background = '#16a34a';
+    btn.disabled = true;
+    btn.setAttribute('aria-label', 'Form submitted successfully');
+  }
+
+  // Smooth scroll offset for fixed nav
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (target) {
+        e.preventDefault();
+        const offset = 80;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
