@@ -536,7 +536,10 @@
         <button onclick="lookupLicense('KS')" class="btn btn-gold" id="ks-lookup-btn">✨ Auto-Lookup My KS License</button>
         <button onclick="searchKansas()" class="btn btn-navy" style="font-size:.83rem;">🔍 Search KREC Manually</button>
       </div>
-      <div id="ks-copy-msg" style="font-size:.82rem;color:#16a34a;display:none;margin:.4rem 0 .6rem;">✓ Name copied to clipboard! Paste it into the First Name field on the KREC portal.</div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0 .25rem;">
+        <button onclick="copyAgentName(this)" style="font-size:.8rem;padding:.35rem .7rem;border:1.5px solid #dde1e9;border-radius:7px;background:#f8fafc;cursor:pointer;color:#475569;">📋 Copy Name</button>
+        <button onclick="copyKsLic(this)" style="font-size:.8rem;padding:.35rem .7rem;border:1.5px solid #dde1e9;border-radius:7px;background:#f8fafc;cursor:pointer;color:#475569;">📋 Copy KS License #</button>
+      </div>
 
       <!-- KS Suggestion Card -->
       <div id="ks-suggestion-area" style="margin-top:.75rem;display:none;"></div>
@@ -588,7 +591,10 @@
         <button onclick="lookupLicense('MO')" class="btn btn-gold" id="mo-lookup-btn">✨ Auto-Lookup My MO License</button>
         <button onclick="searchMissouri()" class="btn btn-navy" style="font-size:.83rem;">🔍 Search MoPro Manually</button>
       </div>
-      <div id="mo-copy-msg" style="font-size:.82rem;color:#16a34a;display:none;margin:.4rem 0 .6rem;">✓ Name copied to clipboard! Paste it into the search field on MoPro.</div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0 .25rem;">
+        <button onclick="copyAgentName(this)" style="font-size:.8rem;padding:.35rem .7rem;border:1.5px solid #dde1e9;border-radius:7px;background:#f8fafc;cursor:pointer;color:#475569;">📋 Copy Name</button>
+        <button onclick="copyMoLic(this)" style="font-size:.8rem;padding:.35rem .7rem;border:1.5px solid #dde1e9;border-radius:7px;background:#f8fafc;cursor:pointer;color:#475569;">📋 Copy MO License #</button>
+      </div>
 
       <!-- MO Suggestion Card -->
       <div id="mo-suggestion-area" style="margin-top:.75rem;display:none;"></div>
@@ -1192,35 +1198,25 @@
   }
 
   function searchKansas() {
-    // Only auto-copy name if no suggestion card is already showing
-    const area = document.getElementById('ks-suggestion-area');
-    const hasSuggestion = area && area.style.display !== 'none' && area.querySelector('.s-detail');
-    if (!hasSuggestion) {
-      const name = copyName();
-      if (name) {
-        navigator.clipboard.writeText(name).then(() => {
-          const msg = document.getElementById('ks-copy-msg');
-          if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 6000); }
-        }).catch(() => {});
-      }
-    }
     window.open('https://aca-prod.accela.com/KANSAS/Cap/CapHome.aspx?module=Licenses&TabName=Licenses&TabList=Home%7C0%7CLicenses%7C1%7CCompliance%7C2%7CCurrentTabIndex%7C1', '_blank');
   }
 
   function searchMissouri() {
-    // Only auto-copy name if no suggestion card is already showing
-    const area = document.getElementById('mo-suggestion-area');
-    const hasSuggestion = area && area.style.display !== 'none' && area.querySelector('.s-detail');
-    if (!hasSuggestion) {
-      const name = copyName();
-      if (name) {
-        navigator.clipboard.writeText(name).then(() => {
-          const msg = document.getElementById('mo-copy-msg');
-          if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 6000); }
-        }).catch(() => {});
-      }
-    }
     window.open('https://mopro.mo.gov/license/s/license-search', '_blank');
+  }
+
+  function copyAgentName(btn) {
+    const name = copyName();
+    if (!name) { alert('Please enter your First and Last Name in the Quick Start panel above first.'); return; }
+    copyToClipboard(name, btn, 'Name');
+  }
+
+  function copyKsLic(btn) {
+    copyFieldValue('qi-ks-lic', btn);
+  }
+
+  function copyMoLic(btn) {
+    copyFieldValue('qi-mo-lic', btn);
   }
 
   function openPreFilledForm() {
