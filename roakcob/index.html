@@ -999,13 +999,27 @@
     saveQuickInfo();
   }
 
+  function copyToClipboard(text, btn, label) {
+    const origText = label || '📋 Copy';
+    const done = () => { btn.textContent = '✅ Copied'; setTimeout(() => btn.textContent = origText, 1500); };
+    const fallback = () => {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta); done();
+      } catch(e) { btn.textContent = '⚠️ Failed'; setTimeout(() => btn.textContent = origText, 1500); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else { fallback(); }
+  }
+
   function copyFieldValue(fieldId, btn) {
     const val = document.getElementById(fieldId)?.value?.trim();
     if (!val) { btn.textContent = '⚠️ Empty'; setTimeout(() => btn.textContent = '📋 Copy', 1500); return; }
-    navigator.clipboard.writeText(val).then(() => {
-      btn.textContent = '✅ Copied';
-      setTimeout(() => btn.textContent = '📋 Copy', 1500);
-    });
+    copyToClipboard(val, btn, '📋 Copy');
   }
 
   function copySessionId() {
@@ -1123,7 +1137,7 @@
           <div class="suggestion-card">
             <div class="s-name">${r.agentName || fullName}</div>
             ${r.brokerageName ? `<div class="s-detail">🏢 ${r.brokerageName}</div>` : ''}
-            <div class="s-detail" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">🪪 License #: <strong>${r.licenseNumber || 'Not found'}</strong>${r.licenseNumber ? `<button onclick="navigator.clipboard.writeText('${r.licenseNumber}').then(()=>{this.textContent='✅ Copied';setTimeout(()=>this.textContent='📋 Copy',1500)})" style="padding:.15rem .5rem;border:1.5px solid #dde1e9;border-radius:6px;background:#fff;cursor:pointer;font-size:.78rem;color:#475569;">📋 Copy</button>` : ''}</div>
+            <div class="s-detail" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">🪪 License #: <strong>${r.licenseNumber || 'Not found'}</strong>${r.licenseNumber ? `<button onclick="copyToClipboard('${r.licenseNumber}', this, '📋 Copy')" style="padding:.15rem .5rem;border:1.5px solid #dde1e9;border-radius:6px;background:#fff;cursor:pointer;font-size:.78rem;color:#475569;">📋 Copy</button>` : ''}</div>
             <div class="s-detail">📅 Expires: ${expDisplay}</div>
             <div class="s-source">Source: ${r.source || 'web'}</div>
             <div class="suggestion-btn-row">
