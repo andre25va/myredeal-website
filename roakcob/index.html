@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Onboarding | Realty of America – KC Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #012059;
+      --navy-light: #0a3070;
+      --gold: #c8a84b;
+      --white: #ffffff;
+      --gray: #f4f5f7;
+      --text: #1a1a2e;
+      --border: #dde1e9;
+      --step-size: 2.5rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--navy);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.35);
+    }
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .header-inner .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .header-inner .logo-icon {
+      width: 40px; height: 40px;
+      background: var(--white);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: var(--navy);
+      letter-spacing: -1px;
+    }
+    .header-inner h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    .header-inner h1 span {
+      display: block;
+      font-weight: 500;
+      font-size: .8rem;
+      opacity: .7;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: .03em;
+    }
+    .header-progress {
+      margin-left: auto;
+      font-size: .75rem;
+      color: rgba(255,255,255,.6);
+      font-weight: 500;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 55%, #0e3a80 100%);
+      color: var(--white);
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+      padding: .35rem 1rem;
+      border-radius: 100px;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    .hero h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      line-height: 1;
+      margin-bottom: .75rem;
+      letter-spacing: -.02em;
+    }
+    .hero p {
+      font-size: 1rem;
+      opacity: .8;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── STEPS WRAPPER ── */
+    .steps-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ── STEP CARD ── */
+    .step-card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+    .step-card:hover { box-shadow: 0 6px 28px rgba(0,0,0,.12); }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+    .step-number {
+      min-width: var(--step-size);
+      height: var(--step-size);
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .step-number.done {
+      background: #16a34a;
+    }
+    .step-title {
+      flex: 1;
+    }
+    .step-title h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--navy);
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+    .step-title p {
+      font-size: .8rem;
+      color: #666;
+      margin-top: .15rem;
+    }
+    .step-chevron {
+      font-size: .9rem;
+      color: #999;
+      transition: transform .25s;
+    }
+    .step-card.open .step-chevron { transform: rotate(180deg); }
+
+    .step-body {
+      display: none;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      animation: fadeIn .2s ease;
+    }
+    .step-card.open .step-body { display: block; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── BUTTON STYLES ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .7rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: .9rem;
+      text-decoration: none;
+      transition: background .2s, transform .1s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-navy {
+      background: var(--navy);
+      color: var(--white);
+    }
+    .btn-navy:hover { background: var(--navy-light); }
+    .btn-gold {
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: 700;
+    }
+    .btn-gold:hover { background: #e8a91e; }
+    .suggestion-card {
+      background: #f0f6ff;
+      border: 1.5px solid #bfd4f5;
+      border-radius: 10px;
+      padding: .85rem 1rem;
+      margin-bottom: .5rem;
+      font-size: .88rem;
+    }
+    .suggestion-card .s-name { font-weight: 700; font-size: .95rem; color: var(--navy); }
+    .suggestion-card .s-detail { color: #444; margin: .2rem 0; }
+    .suggestion-card .s-source { font-size: .78rem; color: #888; margin-top: .3rem; }
+    .suggestion-btn-row { display:flex; gap:.5rem; margin-top: .6rem; flex-wrap:wrap; }
+    .btn-confirm { background:#16a34a;color:#fff;border:none;border-radius:7px;padding:.4rem .9rem;font-size:.84rem;font-weight:600;cursor:pointer; }
+    .btn-confirm:hover { background:#15803d; }
+    .btn-dismiss { background:#f3f4f6;color:#555;border:1px solid #ddd;border-radius:7px;padding:.4rem .9rem;font-size:.84rem;cursor:pointer; }
+    .btn-dismiss:hover { background:#e5e7eb; }
+    .lookup-spinner { display:inline-block;margin-left:.5rem;animation:spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-outline {
+      background: transparent;
+      color: var(--navy);
+      border: 2px solid var(--navy);
+    }
+    .btn-outline:hover { background: var(--navy); color: var(--white); }
+    .btn-green {
+      background: #16a34a;
+      color: var(--white);
+    }
+    .btn-green:hover { background: #15803d; }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+
+    /* ── QR GRID ── */
+    .qr-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .qr-card {
+      background: var(--gray);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .qr-card .qr-placeholder {
+      width: 100px; height: 100px;
+      background: #dde1e9;
+      border-radius: 8px;
+      margin: 0 auto .75rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem;
+      color: #999;
+      font-style: italic;
+    }
+    .qr-card strong {
+      display: block;
+      font-size: .9rem;
+      color: var(--navy);
+      font-weight: 700;
+    }
+    .qr-card a {
+      display: inline-block;
+      margin-top: .5rem;
+      font-size: .8rem;
+      color: var(--navy);
+      text-decoration: underline;
+    }
+
+    /* ── APP DOWNLOAD CARDS ── */
+    .app-download {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .app-platform {
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .app-platform .platform-icon { font-size: 2rem; margin-bottom: .5rem; }
+    .app-platform strong { display: block; font-size: 1rem; font-weight: 700; margin-bottom: .35rem; }
+    .app-platform a {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      color: var(--white);
+      font-size: .8rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: .4rem .9rem;
+      border-radius: 6px;
+      margin-top: .35rem;
+      border: 1px solid rgba(255,255,255,.25);
+    }
+    .app-platform a:hover { background: rgba(255,255,255,.25); }
+
+    /* ── INFO BOX ── */
+    .info-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--navy);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.25rem;
+      font-size: .88rem;
+      line-height: 1.6;
+      margin-top: 1rem;
+    }
+    .info-box strong { color: var(--navy); }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: .5rem;
+    }
+
+    /* ── TAG ── */
+    .tag {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .2rem .6rem;
+      border-radius: 4px;
+      margin-bottom: .75rem;
+    }
+    .tag.pink { background: #fce7f3; color: #9d174d; }
+    .tag.teal { background: #d1fae5; color: #065f46; }
+    .tag.orange { background: #ffedd5; color: #9a3412; }
+
+    /* ── DIVIDER ── */
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.6);
+      text-align: center;
+      padding: 2rem 1.5rem;
+      font-size: .8rem;
+    }
+    footer strong { color: var(--white); }
+
+    /* ── DONE BUTTON ── */
+    .mark-done-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: none;
+      border: 1px solid #d1fae5;
+      color: #16a34a;
+      border-radius: 6px;
+      padding: .4rem .8rem;
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background .15s;
+    }
+    .mark-done-btn:hover { background: #d1fae5; }
+    .mark-done-btn.marked { background: #d1fae5; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar-wrap {
+      background: rgba(255,255,255,.1);
+      border-radius: 100px;
+      height: 6px;
+      width: 160px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: #4ade80;
+      height: 100%;
+      border-radius: 100px;
+      transition: width .4s ease;
+    }
+    .progress-text {
+      font-size: .75rem;
+      color: rgba(255,255,255,.6);
+      text-align: right;
+      margin-top: .25rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .hero { padding: 2.5rem 1rem 2rem; }
+      .steps-wrapper { padding: 1.5rem 1rem 3rem; }
+      .qr-grid, .app-download { grid-template-columns: 1fr; }
+      .step-header { gap: .75rem; padding: 1rem 1.25rem; }
+      .step-body { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <div class="logo-icon">ROA</div>
+      <h1>Realty of America
+        <span>KC Team — Agent Onboarding</span>
+      </h1>
+    </div>
+    <div class="header-progress" id="header-progress">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="progress-text" id="progress-text">0 of 13 complete</div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Welcome to the Team</div>
+  <h2>ONBOARDING<br>STARTS HERE</h2>
+  <p>Follow each step below to get fully set up with Realty of America's Kansas City team. Complete them in order for the smoothest experience.</p>
+</div>
+
+<!-- QUICK INFO PANEL -->
+<div class="steps-wrapper" style="padding-bottom:0;">
+  <div class="step-card open" id="quick-info-panel" style="border-left:4px solid var(--gold);background:#fff;">
+    <div class="step-header" onclick="toggleStep('quick-info-panel')" style="cursor:pointer;">
+      <div class="step-number" style="background:var(--gold);color:var(--navy);font-size:1.2rem;">⚡</div>
+      <div class="step-title">
+        <h3 style="color:var(--navy);">Quick Start — Enter Your Info First</h3>
+        <p>Fill this in once to auto-fill your license lookups and Agent Bio form</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body" style="padding-top:.5rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+        <div>
+          <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin-bottom:.3rem;">First Name</label>
+          <input type="text" id="qi-first" placeholder="Andre" oninput="saveQuickInfo()" style="width:100%;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        </div>
+        <div>
+          <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin-bottom:.3rem;">Last Name</label>
+          <input type="text" id="qi-last" placeholder="Vargas" oninput="saveQuickInfo()" style="width:100%;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        </div>
+        <div>
+          <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin-bottom:.3rem;">Phone</label>
+          <input type="tel" id="qi-phone" placeholder="(816) 555-1234" oninput="formatPhone(this); saveQuickInfo()" style="width:100%;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        </div>
+      </div>
+      <p id="qi-saved-msg" style="font-size:.82rem;color:#16a34a;display:none;margin-top:.25rem;">✓ Info saved — will auto-fill throughout your onboarding</p>
+      <div style="margin-top:.75rem;padding:.5rem .75rem;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+        <span style="font-size:.78rem;color:#64748b;font-weight:500;">Session ID:</span>
+        <span id="session-id-display" style="font-size:.82rem;font-family:monospace;font-weight:700;color:var(--navy);letter-spacing:.05em;"></span>
+        <button onclick="copySessionId()" title="Copy Session ID" style="font-size:.75rem;padding:.2rem .55rem;border:1px solid #cbd5e1;border-radius:6px;background:#fff;cursor:pointer;color:#475569;margin-left:auto;">📋 Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEPS -->
+<div class="steps-wrapper">
+
+  <!-- STEP 1: Set Up Your Real Estate Gmail -->
+  <div class="step-card" id="step-1">
+    <div class="step-header" onclick="toggleStep('step-1')">
+      <div class="step-number" id="num-step-1">1</div>
+      <div class="step-title">
+        <h3>Set Up Your Real Estate Gmail</h3>
+        <p>Create a dedicated Google account for your real estate business</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+
+      <p style="font-size:.9rem;margin-bottom:1.25rem;">Your Google account connects your email, Drive, Meet, and ROA tools. Use a dedicated real estate Gmail — keep it separate from your personal account.</p>
+
+      <div style="margin-bottom:1rem;">
+        <label style="font-size:.88rem;font-weight:600;color:#444;display:block;margin-bottom:.4rem;">📧 Your Real Estate Gmail Address</label>
+        <input type="email" id="qi-gmail" placeholder="FirstLastRealtor@gmail.com" oninput="saveQuickInfo()" style="width:100%;max-width:380px;padding:.6rem .8rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        <p style="font-size:.8rem;color:#666;margin-top:.4rem;">💾 Saved automatically — pre-fills your Agent Bio form later</p>
+      </div>
+
+      <p style="font-size:.83rem;color:#666;margin-bottom:1.1rem;">Don't have a dedicated real estate Gmail yet? <a href="https://accounts.google.com/signup" target="_blank" rel="noopener" style="color:var(--navy);font-weight:600;">Create one here ↗</a></p>
+
+      <button class="mark-done-btn" onclick="markDone('step-1', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Kansas Realtor License -->
+  <div class="step-card" id="step-2">
+    <div class="step-header" onclick="toggleStep('step-2')">
+      <div class="step-number" id="num-step-2">2</div>
+      <div class="step-title">
+        <h3>Kansas Realtor License</h3>
+        <p>Look up and transfer your KS license</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag pink">Kansas Only</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">If you are a <strong>Kansas licensed Realtor</strong>, complete the following two steps to verify and transfer your license to Realty of America.</p>
+
+      <div class="section-label">Step A — Verify Your License</div>
+      <p style="font-size:.88rem;color:#555;margin-bottom:.75rem;">Look up your Kansas Realtor license in the state portal to confirm it's active and in good standing.</p>
+      <div class="btn-row" style="align-items:center;flex-wrap:wrap;gap:.5rem;">
+        <button onclick="lookupLicense('KS')" class="btn btn-gold" id="ks-lookup-btn">✨ Auto-Lookup My KS License</button>
+        <button onclick="searchKansas()" class="btn btn-navy" style="font-size:.83rem;">🔍 Search KREC Manually</button>
+      </div>
+      <div id="ks-copy-msg" style="font-size:.82rem;color:#16a34a;display:none;margin:.4rem 0 .6rem;">✓ Name copied to clipboard! Paste it into the First Name field on the KREC portal.</div>
+
+      <!-- KS Suggestion Card -->
+      <div id="ks-suggestion-area" style="margin-top:.75rem;display:none;"></div>
+
+      <div style="margin-top:.75rem;">
+        <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin-bottom:.3rem;">📌 KS License #</label>
+        <input type="text" id="qi-ks-lic" placeholder="e.g. 00123456" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin:.6rem 0 .3rem;">📅 KS License Expiration Date</label>
+        <input type="date" id="qi-ks-exp" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+      </div>
+
+      <hr class="divider" />
+
+      <div class="section-label">Step B — Transfer Your License</div>
+      <p style="font-size:.88rem;color:#555;margin-bottom:.75rem;">Use the Kansas License Transfer Portal to move your license to ROA. See the step-by-step guide below.</p>
+      <div class="btn-row">
+        <a href="https://aca-prod.accela.com/KANSAS/Login.aspx" target="_blank" class="btn btn-navy">🔗 License Transfer Portal</a>
+      </div>
+
+      <div class="info-box" style="margin-top:1rem;">
+        <strong>📋 Step-by-Step Guide:</strong> Follow this 17-step Scribe guide to create a Salesperson Move License Amendment in the Kansas portal. Works best on desktop.
+        <br><br>
+        <a href="https://scribehow.com/viewer/How_to_Create_a_Salesperson_Move_License_Amendment__BOxIiemnTQeGHaGXI_m03g" target="_blank" style="color:var(--navy);font-weight:600;">📖 View Kansas Transfer Guide ↗</a>
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-2', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Missouri Realtor License -->
+  <div class="step-card" id="step-3">
+    <div class="step-header" onclick="toggleStep('step-3')">
+      <div class="step-number" id="num-step-3">3</div>
+      <div class="step-title">
+        <h3>Missouri Realtor License</h3>
+        <p>Look up and transfer your MO license</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag" style="background:#fce7f3;color:#9d174d;">Missouri Only</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">If you are a <strong>Missouri licensed Realtor</strong>, complete the following two steps to verify and transfer your license via MoPro.</p>
+
+      <div class="section-label">Step A — Verify Your License</div>
+      <p style="font-size:.88rem;color:#555;margin-bottom:.75rem;">Search for your Missouri license in the MoPro portal.</p>
+      <div class="btn-row" style="align-items:center;flex-wrap:wrap;gap:.5rem;">
+        <button onclick="lookupLicense('MO')" class="btn btn-gold" id="mo-lookup-btn">✨ Auto-Lookup My MO License</button>
+        <button onclick="searchMissouri()" class="btn btn-navy" style="font-size:.83rem;">🔍 Search MoPro Manually</button>
+      </div>
+      <div id="mo-copy-msg" style="font-size:.82rem;color:#16a34a;display:none;margin:.4rem 0 .6rem;">✓ Name copied to clipboard! Paste it into the search field on MoPro.</div>
+
+      <!-- MO Suggestion Card -->
+      <div id="mo-suggestion-area" style="margin-top:.75rem;display:none;"></div>
+
+      <div style="margin-top:.75rem;">
+        <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin-bottom:.3rem;">📌 MO License #</label>
+        <input type="text" id="qi-mo-lic" placeholder="e.g. 2024012345" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin:.6rem 0 .3rem;">📅 MO License Expiration Date</label>
+        <input type="date" id="qi-mo-exp" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+      </div>
+
+      <hr class="divider" />
+
+      <div class="section-label">Step B — Transfer Your License</div>
+      <p style="font-size:.88rem;color:#555;margin-bottom:.75rem;">Log in to MoPro and initiate your license transfer to Realty of America.</p>
+      <div class="btn-row">
+        <a href="https://mopro.mo.gov/license/s/login/" target="_blank" class="btn btn-navy">🔗 License Transfer Portal</a>
+      </div>
+
+      <div class="info-box" style="margin-top:1rem;">
+        <strong>🎬 Video Tutorial:</strong> Watch the video below to see how to transfer your MoPro license efficiently using the MoPro application.
+        <br><br>
+        <a href="https://mopro.mo.gov" target="_blank" style="color:var(--navy);font-weight:600;">Transfer MoPro License — Video Guide ↗</a>
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-3', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: New Agent Info Form -->
+  <div class="step-card" id="step-4">
+    <div class="step-header" onclick="toggleStep('step-4')">
+      <div class="step-number" id="num-step-4">4</div>
+      <div class="step-title">
+        <h3>Fill Out New Agent Form</h3>
+        <p>Submit your information to get started</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag teal">Required</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">Please complete the Agent Bio form. <strong>Click submit once you have finished</strong> — this notifies the team to begin your setup.</p>
+      <button onclick="openPreFilledForm()" class="btn btn-green" style="font-size:1rem;">📝 Open Pre-Filled Agent Bio Form ⚡</button>
+      <div class="info-box" style="margin-top:.75rem;">
+        <strong>⚡ Auto-Fill:</strong> If you entered your info in the Quick Start panel above, the form will open with your name, email, phone, and license numbers already filled in — just review and submit!
+      </div>
+      <div id="jotform-fields-msg" style="font-size:.82rem;color:#555;margin-top:.5rem;display:none;"></div>
+      <button class="mark-done-btn" onclick="markDone('step-4', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Create ROA Account -->
+  <div class="step-card" id="step-5">
+    <div class="step-header" onclick="toggleStep('step-5')">
+      <div class="step-number" id="num-step-5">5</div>
+      <div class="step-title">
+        <h3>Create Your ROA Account</h3>
+        <p>Join the Realty of America platform</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag teal">Required</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">Create your Realty of America agent account. You'll verify your email first (Step 1 of 2) to confirm you're part of the ROA family.</p>
+      <a href="https://www.realtyofamerica.com/join-roa" target="_blank" class="btn btn-navy" style="font-size:1rem;">🏠 Join ROA / Create Account →</a>
+      <div class="info-box" style="margin-top:1rem;">
+        <strong>📧 Look for the verification email</strong> after entering your address. Check your spam folder if you don't see it within a few minutes.
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-5', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: Download Okta Verify -->
+  <div class="step-card" id="step-6">
+    <div class="step-header" onclick="toggleStep('step-6')">
+      <div class="step-number" id="num-step-6">6</div>
+      <div class="step-title">
+        <h3>Download Okta Verify</h3>
+        <p>Multi-factor authentication for ROA systems</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag teal">Required</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;"><strong>Okta Verify</strong> is used for secure sign-in to ROA's systems. Download it on your phone now so you're ready when prompted.</p>
+      <div class="app-download">
+        <div class="app-platform">
+          <div class="platform-icon">🍎</div>
+          <strong>Apple (iOS)</strong>
+          <div>iPhone / iPad</div>
+          <a href="https://apps.apple.com/us/app/okta-verify/id490179405" target="_blank">Download on App Store ↗</a>
+        </div>
+        <div class="app-platform">
+          <div class="platform-icon">🤖</div>
+          <strong>Android</strong>
+          <div>Google Play Store</div>
+          <a href="https://play.google.com/store/apps/details?id=com.okta.android.auth" target="_blank">Download on Play Store ↗</a>
+        </div>
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-6', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 6: Download ROA+ Agent App -->
+  <div class="step-card" id="step-7">
+    <div class="step-header" onclick="toggleStep('step-7')">
+      <div class="step-number" id="num-step-7">7</div>
+      <div class="step-title">
+        <h3>Download ROA+ Agent App</h3>
+        <p>Your main agent hub for deals and resources</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag teal">Required</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">The <strong>ROA+ Agent App</strong> is your go-to platform for listings, transactions, resources, and staying connected with your team.</p>
+      <div class="app-download">
+        <div class="app-platform">
+          <div class="platform-icon">🍎</div>
+          <strong>Apple (iOS)</strong>
+          <div>iPhone / iPad</div>
+          <a href="https://apps.apple.com/us/app/roa-agent-app/id6752661438" target="_blank">Download on App Store ↗</a>
+        </div>
+        <div class="app-platform">
+          <div class="platform-icon">🤖</div>
+          <strong>Android</strong>
+          <div>Google Play Store</div>
+          <a href="https://play.google.com/store/apps/details?id=com.roaagent" target="_blank">Download on Play Store ↗</a>
+        </div>
+      </div>
+      <div class="info-box" style="margin-top:1rem;">
+        <strong>🔑 Note:</strong> Log in using the same email you used to create your ROA account (Step 4) and verify with Okta.
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-7', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 7: Download Dotloop -->
+  <div class="step-card" id="step-8">
+    <div class="step-header" onclick="toggleStep('step-8')">
+      <div class="step-number" id="num-step-8">8</div>
+      <div class="step-title">
+        <h3>Download Dotloop</h3>
+        <p>E-signatures and transaction documents</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag teal">Required</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;"><strong>Dotloop</strong> is ROA's platform for digital signatures, transaction documents, and compliance. Download it on your phone and desktop.</p>
+      <div class="app-download">
+        <div class="app-platform">
+          <div class="platform-icon">🍎</div>
+          <strong>Apple (iOS)</strong>
+          <div>iPhone / iPad</div>
+          <a href="https://apps.apple.com/us/app/dotloop/id472053504" target="_blank">Download on App Store ↗</a>
+        </div>
+        <div class="app-platform">
+          <div class="platform-icon">🤖</div>
+          <strong>Android</strong>
+          <div>Google Play Store</div>
+          <a href="https://play.google.com/store/apps/details?id=com.dotloop.mobile" target="_blank">Download on Play Store ↗</a>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:.75rem;">
+        <a href="https://dotloop.com" target="_blank" class="btn btn-outline">🖥️ Open Dotloop on Desktop ↗</a>
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-8', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 8: Join WhatsApp Group -->
+  <div class="step-card" id="step-9">
+    <div class="step-header" onclick="toggleStep('step-9')">
+      <div class="step-number" id="num-step-9">9</div>
+      <div class="step-title">
+        <h3>Join the WhatsApp Group</h3>
+        <p>Stay connected with the KC team</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag orange">Communication</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">Scan the QR code or use the link to join the <strong>KC Team WhatsApp group</strong>. This is where day-to-day team communication happens.</p>
+      <div class="info-box">
+        <strong>📱 How to join:</strong> Open WhatsApp on your phone → tap the QR code icon or use the invite link from your broker/team lead.
+        <br><br>
+        <em>Contact your team lead for the current WhatsApp group invite link.</em>
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-9', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 9: Join Facebook Group -->
+  <div class="step-card" id="step-10">
+    <div class="step-header" onclick="toggleStep('step-10')">
+      <div class="step-number" id="num-step-10">10</div>
+      <div class="step-title">
+        <h3>Join the Facebook Group</h3>
+        <p>ROA KC Team private group</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag orange">Communication</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">Join the private <strong>ROA Kansas City Team Facebook group</strong> for announcements, resources, training, and team updates.</p>
+      <div class="info-box">
+        <strong>📘 How to join:</strong> Use the invite link or QR code provided by your team lead. You must have a personal Facebook account.
+        <br><br>
+        <em>Contact your team lead for the current Facebook group link.</em>
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-10', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 10: Add KC Team App -->
+  <div class="step-card" id="step-11">
+    <div class="step-header" onclick="toggleStep('step-11')">
+      <div class="step-number" id="num-step-11">11</div>
+      <div class="step-title">
+        <h3>Add KC Team App to Your Phone</h3>
+        <p>KC-specific resources and contacts</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag teal">Recommended</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">Save the <strong>ROA Kansas City Team app</strong> to your phone's home screen. This gives you quick access to KC-specific tools, contacts, and resources.</p>
+      <div class="info-box">
+        <strong>📲 How to add:</strong> Scan the QR code provided by your team lead. This may open a web app — tap <em>"Add to Home Screen"</em> from your browser menu.
+        <br><br>
+        <em>Contact your team lead for the KC Team App QR code or link.</em>
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-11', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 11: Create Facebook Cover Photo -->
+  <div class="step-card" id="step-12">
+    <div class="step-header" onclick="toggleStep('step-12')">
+      <div class="step-number" id="num-step-12">12</div>
+      <div class="step-title">
+        <h3>Create Your Facebook Cover Photo</h3>
+        <p>Branded ROA cover photo for your profile</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag" style="background:#fef9c3;color:#854d0e;">Branding</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">Use the Canva template to create a personalized <strong>ROA-branded Facebook cover photo</strong>. Add your name, phone number, and photo to the template.</p>
+      <a href="https://www.canva.com/design/DAGgs0TbJZY/B7Ft8WH3apBgAF0Y5Oph0w/view?utm_content=DAGgs0TbJZY&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink&mode=preview" target="_blank" class="btn btn-navy">🎨 Open Canva Template ↗</a>
+      <div class="info-box" style="margin-top:1rem;">
+        <strong>💡 Tip:</strong> Create a free Canva account at canva.com to edit and download the template. Replace "000.000.0000" with your real phone number.
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-12', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 12: Create Business Cards -->
+  <div class="step-card" id="step-13">
+    <div class="step-header" onclick="toggleStep('step-13')">
+      <div class="step-number" id="num-step-13">13</div>
+      <div class="step-title">
+        <h3>Order Your Business Cards</h3>
+        <p>Official ROA branded business cards</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <span class="tag" style="background:#fef9c3;color:#854d0e;">Branding</span>
+      <p style="font-size:.9rem;margin-bottom:1rem;">Order your official <strong>Realty of America business cards</strong> through the approved vendor. Cards include your name, photo, title, phone, and office address at 8100 Marty St Unit 105, Overland Park, KS 66204.</p>
+      <a href="https://www.canva.com/design/DAG-4BwMxZk/ibXXrRNbV2WL3MUpVkIHKQ/view?utm_content=DAG-4BwMxZk&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink&mode=preview" target="_blank" class="btn btn-navy">🎴 View Business Card Template ↗</a>
+      <div class="info-box" style="margin-top:1rem;">
+        <strong>🖨️ To order:</strong> Open the Canva template, add your name and details, then download and submit to your preferred printer — or ask your team lead about the approved printer.
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-13', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+  <!-- STEP 13: Stop Here / You're Done -->
+  <div class="step-card" id="step-14">
+    <div class="step-header" onclick="toggleStep('step-14')">
+      <div class="step-number" id="num-step-14">14</div>
+      <div class="step-title">
+        <h3>You're All Set — Stop Here For Now!</h3>
+        <p>Additional steps will follow from your team lead</p>
+      </div>
+      <span class="step-chevron">▼</span>
+    </div>
+    <div class="step-body">
+      <div style="text-align:center;padding:1.5rem 0;">
+        <div style="font-size:3rem;margin-bottom:.75rem;">🎉</div>
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.75rem;color:var(--navy);text-transform:uppercase;">Welcome to the ROA KC Team!</h3>
+        <p style="font-size:.9rem;color:#555;max-width:420px;margin:1rem auto 0;">You've completed the initial onboarding steps. Your team lead will reach out with next steps, your first training, and additional resources.</p>
+        <div class="btn-row" style="justify-content:center;margin-top:1.5rem;">
+          <a href="https://www.realtyofamerica.com/" target="_blank" class="btn btn-navy">Visit ROA Website ↗</a>
+        </div>
+      </div>
+      <button class="mark-done-btn" onclick="markDone('step-14', this)">✓ Mark complete</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong>Realty of America™</strong> — Kansas City Team<br>
+  8100 Marty Street, Unit 105 · Overland Park, KS 66204<br>
+  <span style="margin-top:.5rem;display:block;font-size:.7rem;">Questions? Contact your team lead or broker.</span>
+</footer>
+
+<script>
+  // ── LICENSE LOOKUP HELPER ──────────────────────────────────────────
+
+  const QI_KEY      = 'roa-quick-info';
+  const SESSION_KEY = 'roa-session-id';
+
+  function getOrCreateSessionId() {
+    let sid = localStorage.getItem(SESSION_KEY);
+    if (!sid) {
+      // ROA- + 8 random hex chars, e.g. ROA-3F7A2C1B
+      sid = 'ROA-' + Math.random().toString(16).slice(2,6).toUpperCase()
+                   + Math.random().toString(16).slice(2,6).toUpperCase();
+      localStorage.setItem(SESSION_KEY, sid);
+    }
+    return sid;
+  }
+
+  function initSessionId() {
+    const sid = getOrCreateSessionId();
+    const el = document.getElementById('session-id-display');
+    if (el) el.textContent = sid;
+  }
+
+  function copySessionId() {
+    const sid = getOrCreateSessionId();
+    navigator.clipboard.writeText(sid).then(() => {
+      const btn = event.target;
+      const orig = btn.textContent;
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
+    }).catch(() => {
+      prompt('Your Session ID (copy this):', sid);
+    });
+  }
+
+  function getQI() {
+    try { return JSON.parse(localStorage.getItem(QI_KEY) || '{}'); } catch { return {}; }
+  }
+
+  function formatPhone(input) {
+    let digits = input.value.replace(/\D/g, '').slice(0, 10);
+    if (digits.length >= 7) {
+      input.value = '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6);
+    } else if (digits.length >= 4) {
+      input.value = '(' + digits.slice(0,3) + ') ' + digits.slice(3);
+    } else if (digits.length > 0) {
+      input.value = '(' + digits;
+    }
+  }
+
+  function saveQuickInfo() {
+    const data = {
+      sessionId: getOrCreateSessionId(),
+      first: document.getElementById('qi-first').value.trim(),
+      last:  document.getElementById('qi-last').value.trim(),
+      email: document.getElementById('qi-gmail') ? document.getElementById('qi-gmail').value.trim() : '',
+      phone: document.getElementById('qi-phone').value.trim(),
+      gmail: document.getElementById('qi-gmail') ? document.getElementById('qi-gmail').value.trim() : '',
+      ksLic: document.getElementById('qi-ks-lic') ? document.getElementById('qi-ks-lic').value.trim() : '',
+      ksExp: document.getElementById('qi-ks-exp') ? document.getElementById('qi-ks-exp').value : '',
+      moLic: document.getElementById('qi-mo-lic') ? document.getElementById('qi-mo-lic').value.trim() : '',
+      moExp: document.getElementById('qi-mo-exp') ? document.getElementById('qi-mo-exp').value : '',
+      lastSaved: new Date().toISOString(),
+    };
+    localStorage.setItem(QI_KEY, JSON.stringify(data));
+    const msg = document.getElementById('qi-saved-msg');
+    if (msg && (data.first || data.last)) { msg.style.display = 'block'; }
+  }
+
+  function restoreQuickInfo() {
+    const d = getQI();
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    set('qi-first', d.first);
+    set('qi-last',  d.last);
+    set('qi-phone', d.phone);
+    set('qi-gmail', d.gmail);
+    set('qi-ks-lic', d.ksLic);
+    set('qi-ks-exp', d.ksExp);
+    set('qi-mo-lic', d.moLic);
+    set('qi-mo-exp', d.moExp);
+    if (d.first || d.last) {
+      const msg = document.getElementById('qi-saved-msg');
+      if (msg) msg.style.display = 'block';
+    }
+  }
+
+  function copyName() {
+    const d = getQI();
+    const name = [d.first, d.last].filter(Boolean).join(' ');
+    return name;
+  }
+
+  async function lookupLicense(state) {
+    const d = getQI();
+    const fullName = [d.first, d.last].filter(Boolean).join(' ').trim();
+    if (!fullName) {
+      alert('Please enter your First and Last Name in the Quick Start panel above first.');
+      return;
+    }
+
+    const areaId = state === 'KS' ? 'ks-suggestion-area' : 'mo-suggestion-area';
+    const btnId  = state === 'KS' ? 'ks-lookup-btn'      : 'mo-lookup-btn';
+    const area   = document.getElementById(areaId);
+    const btn    = document.getElementById(btnId);
+
+    // Show loading state
+    area.style.display = 'block';
+    area.innerHTML = `<div style="font-size:.88rem;color:#555;padding:.5rem 0;">
+      <span class="lookup-spinner">⏳</span> Searching for <strong>${fullName}</strong> in ${state} real estate records…
+    </div>`;
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/lookup-license', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: fullName, state })
+      });
+      const data = await res.json();
+      const results = data.results || [];
+
+      if (!results.length) {
+        area.innerHTML = `<div style="font-size:.88rem;color:#b45309;background:#fffbeb;border:1.5px solid #fde68a;border-radius:8px;padding:.7rem .9rem;">
+          😕 No public records found for <strong>${fullName}</strong>. Please enter your license number manually below.
+        </div>`;
+      } else {
+        const cards = results.map((r, i) => {
+          const licField = state === 'KS' ? 'qi-ks-lic' : 'qi-mo-lic';
+          const expField = state === 'KS' ? 'qi-ks-exp' : 'qi-mo-exp';
+          const expDisplay = r.expirationDate
+            ? new Date(r.expirationDate + 'T12:00:00').toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' })
+            : 'Exp date not found — enter manually';
+          const expValue = r.expirationDate || '';
+          return `
+          <div class="suggestion-card">
+            <div class="s-name">${r.agentName || fullName}</div>
+            ${r.brokerageName ? `<div class="s-detail">🏢 ${r.brokerageName}</div>` : ''}
+            <div class="s-detail">🪪 License #: <strong>${r.licenseNumber || 'Not found'}</strong></div>
+            <div class="s-detail">📅 Expires: ${expDisplay}</div>
+            <div class="s-source">Source: ${r.source || 'web'}</div>
+            <div class="suggestion-btn-row">
+              <button class="btn-confirm" onclick="confirmLicense('${licField}','${expField}','${r.licenseNumber || ''}','${expValue}','${areaId}','${btnId}')">✅ Yes, that's me — Use This</button>
+              <button class="btn-dismiss" onclick="dismissSuggestion('${areaId}','${btnId}')">❌ Not me</button>
+            </div>
+          </div>`;
+        }).join('');
+
+        const header = results.length === 1
+          ? `<div style="font-size:.85rem;font-weight:600;color:#1d4ed8;margin-bottom:.5rem;">🔎 Found 1 match — is this you?</div>`
+          : `<div style="font-size:.85rem;font-weight:600;color:#1d4ed8;margin-bottom:.5rem;">🔎 Found ${results.length} matches — which one is you?</div>`;
+        area.innerHTML = header + cards;
+      }
+    } catch (err) {
+      area.innerHTML = `<div style="font-size:.88rem;color:#dc2626;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:.7rem .9rem;">
+        ⚠️ Lookup unavailable right now. Please enter your license number manually.
+      </div>`;
+    }
+
+    btn.disabled = false;
+  }
+
+  function confirmLicense(licFieldId, expFieldId, licNum, expDate, areaId, btnId) {
+    if (licNum) {
+      const f = document.getElementById(licFieldId);
+      if (f) { f.value = licNum; saveQuickInfo(); }
+    }
+    if (expDate) {
+      const e = document.getElementById(expFieldId);
+      if (e) { e.value = expDate; saveQuickInfo(); }
+    }
+    const area = document.getElementById(areaId);
+    if (area) {
+      area.innerHTML = `<div style="font-size:.85rem;color:#16a34a;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:.6rem .9rem;">
+        ✅ License info filled in! Verify the expiration date below and update if needed.
+      </div>`;
+    }
+  }
+
+  function dismissSuggestion(areaId, btnId) {
+    const area = document.getElementById(areaId);
+    if (area) {
+      area.innerHTML = `<div style="font-size:.85rem;color:#555;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:8px;padding:.6rem .9rem;">
+        Suggestion dismissed. Please enter your license number manually below.
+      </div>`;
+    }
+  }
+
+  function searchKansas() {
+    const name = copyName();
+    if (name) {
+      navigator.clipboard.writeText(name).then(() => {
+        const msg = document.getElementById('ks-copy-msg');
+        if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 6000); }
+      }).catch(() => {});
+    }
+    window.open('https://aca-prod.accela.com/KANSAS/Cap/CapHome.aspx?module=Licenses&TabName=Licenses&TabList=Home%7C0%7CLicenses%7C1%7CCompliance%7C2%7CCurrentTabIndex%7C1', '_blank');
+  }
+
+  function searchMissouri() {
+    const name = copyName();
+    if (name) {
+      navigator.clipboard.writeText(name).then(() => {
+        const msg = document.getElementById('mo-copy-msg');
+        if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 6000); }
+      }).catch(() => {});
+    }
+    window.open('https://mopro.mo.gov/license/s/license-search', '_blank');
+  }
+
+  function openPreFilledForm() {
+    const d = getQI();
+    const base = 'https://form.jotform.com/250306471470046';
+    const params = new URLSearchParams();
+    if (d.first)  params.set('q38_agentPreferred[first]', d.first);
+    if (d.last)   params.set('q38_agentPreferred[last]',  d.last);
+    if (d.first || d.last) params.set('q12_legalName', [d.first, d.last].filter(Boolean).join(' '));
+    if (d.email)  params.set('q4_email',         d.email);
+    if (d.phone)  params.set('q17_phoneNumber',  d.phone.replace(/\D/g,''));
+    if (d.gmail)  params.set('q4_email',   d.gmail);
+    if (d.ksLic)  params.set('q7_ksLic',  d.ksLic);
+    if (d.ksExp)  params.set('q7_ksExp',  d.ksExp);
+    if (d.moLic)  params.set('q8_moLic',  d.moLic);
+    if (d.moExp)  params.set('q8_moExp',  d.moExp);
+    const url = params.toString() ? `${base}?${params.toString()}` : base;
+    window.open(url, '_blank');
+  }
+
+  // ── END LICENSE LOOKUP HELPER ──────────────────────────────────────
+
+  const TOTAL = 13;
+
+  function toggleStep(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  function markDone(id, btn) {
+    const card = document.getElementById(id);
+    const num = document.getElementById('num-' + id);
+    btn.classList.toggle('marked');
+    const isDone = btn.classList.contains('marked');
+    btn.textContent = isDone ? '✓ Completed!' : '✓ Mark complete';
+    if (isDone) {
+      num.classList.add('done');
+      num.textContent = '✓';
+    } else {
+      num.classList.remove('done');
+      num.textContent = id.replace('step-', '');
+    }
+    updateProgress();
+    // Save to localStorage
+    const doneSet = getDoneSet();
+    if (isDone) doneSet.add(id); else doneSet.delete(id);
+    localStorage.setItem('roa-onboarding-done', JSON.stringify([...doneSet]));
+  }
+
+  function getDoneSet() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('roa-onboarding-done') || '[]');
+      return new Set(saved);
+    } catch { return new Set(); }
+  }
+
+  function updateProgress() {
+    const done = document.querySelectorAll('.mark-done-btn.marked').length;
+    const pct = Math.round((done / TOTAL) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = done + ' of ' + TOTAL + ' complete';
+  }
+
+  // Restore saved progress on load
+  window.addEventListener('DOMContentLoaded', () => {
+    const doneSet = getDoneSet();
+    doneSet.forEach(id => {
+      const card = document.getElementById(id);
+      if (!card) return;
+      const btn = card.querySelector('.mark-done-btn');
+      const num = document.getElementById('num-' + id);
+      if (btn && num) {
+        btn.classList.add('marked');
+        btn.textContent = '✓ Completed!';
+        num.classList.add('done');
+        num.textContent = '✓';
+      }
+    });
+    updateProgress();
+    initSessionId();
+    restoreQuickInfo();
+
+    // Open first incomplete step automatically
+    for (let i = 1; i <= TOTAL; i++) {
+      const id = 'step-' + i;
+      if (!doneSet.has(id)) {
+        document.getElementById(id).classList.add('open');
+        break;
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
