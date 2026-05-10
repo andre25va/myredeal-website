@@ -1137,6 +1137,15 @@
           😕 No public records found for <strong>${fullName}</strong>. Please enter your license number manually below.
         </div>`;
       } else {
+        // KS: 8 digits (e.g. 00251801). MO: 10 digits year-prefixed (e.g. 2025006613)
+        function isValidFormat(licNum, st) {
+          if (!licNum) return false;
+          const n = licNum.replace(/\D/g, '');
+          if (st === 'KS') return n.length === 8;
+          if (st === 'MO') return n.length === 10 && /^20\d{2}/.test(n);
+          return true;
+        }
+
         const cards = results.map((r, i) => {
           const licField = state === 'KS' ? 'qi-ks-lic' : 'qi-mo-lic';
           const expField = state === 'KS' ? 'qi-ks-exp' : 'qi-mo-exp';
@@ -1144,6 +1153,14 @@
             ? new Date(r.expirationDate + 'T12:00:00').toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' })
             : 'Exp date not found — enter manually';
           const expValue = r.expirationDate || '';
+          const formatOk = isValidFormat(r.licenseNumber, state);
+          const actionRow = formatOk
+            ? `<button class="btn-confirm" onclick="confirmLicense('${licField}','${expField}','${r.licenseNumber || ''}','${expValue}','${areaId}','${btnId}')">✅ Yes, that's me — Use This</button>
+               <button class="btn-dismiss" onclick="dismissSuggestion('${areaId}','${btnId}')">❌ Not me</button>`
+            : `<div style="font-size:.82rem;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:.4rem .65rem;">
+                ⚠️ This license number doesn't match ${state} format — it may be from another state. Please enter your ${state} license manually.
+               </div>
+               <button class="btn-dismiss" onclick="dismissSuggestion('${areaId}','${btnId}')" style="margin-top:.3rem;">Dismiss</button>`;
           return `
           <div class="suggestion-card">
             <div class="s-name">${r.agentName || fullName}</div>
@@ -1152,8 +1169,7 @@
             <div class="s-detail">📅 Expires: ${expDisplay}</div>
             <div class="s-source">Source: ${r.source || 'web'}</div>
             <div class="suggestion-btn-row">
-              <button class="btn-confirm" onclick="confirmLicense('${licField}','${expField}','${r.licenseNumber || ''}','${expValue}','${areaId}','${btnId}')">✅ Yes, that's me — Use This</button>
-              <button class="btn-dismiss" onclick="dismissSuggestion('${areaId}','${btnId}')">❌ Not me</button>
+              ${actionRow}
             </div>
           </div>`;
         }).join('');
