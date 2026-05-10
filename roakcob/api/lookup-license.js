@@ -19,7 +19,16 @@ export default async function handler(req, res) {
     ? 'realtor.com, realestateagents.com, krec.ks.gov'
     : 'realtor.com, realestateagents.com, pr.mo.gov/licensee, mopro.mo.gov';
 
-  const prompt = `Search for the ${stateFullName} real estate license information for agent named "${name}".
+  // For MO, also try reversed name format (LAST, FIRST) since MoPro stores names that way
+  const nameParts = name.trim().split(/\s+/);
+  const reversedName = nameParts.length >= 2
+    ? `${nameParts[nameParts.length - 1]}, ${nameParts.slice(0, -1).join(' ')}`
+    : name;
+  const nameNote = state === 'MO'
+    ? `\nTry searching both "${name}" and "${reversedName}" (last name first format) since Missouri's database stores names as LAST, FIRST.`
+    : '';
+
+  const prompt = `Search for the ${stateFullName} real estate license information for agent named "${name}".${nameNote}
 Search these sources: ${stateSources} and any other real estate license databases.
 
 Return ONLY a valid JSON array. Each item in the array should represent one match and contain:
@@ -65,7 +74,6 @@ Return ONLY the raw JSON array with no markdown, no explanation, no code fences.
     try {
       results = JSON.parse(cleaned);
     } catch {
-      // If parsing fails, return empty
       results = [];
     }
 

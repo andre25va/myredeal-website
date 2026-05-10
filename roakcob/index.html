@@ -593,6 +593,7 @@
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0 .25rem;">
         <button onclick="copyAgentName(this)" style="font-size:.8rem;padding:.35rem .7rem;border:1.5px solid #dde1e9;border-radius:7px;background:#f8fafc;cursor:pointer;color:#475569;">📋 Copy Name</button>
+        <button onclick="copyAgentNameReversed(this)" style="font-size:.8rem;padding:.35rem .7rem;border:1.5px solid #dde1e9;border-radius:7px;background:#f8fafc;cursor:pointer;color:#475569;">📋 Copy as Last, First</button>
         <button onclick="copyMoLic(this)" style="font-size:.8rem;padding:.35rem .7rem;border:1.5px solid #dde1e9;border-radius:7px;background:#f8fafc;cursor:pointer;color:#475569;">📋 Copy MO License #</button>
       </div>
 
@@ -1209,6 +1210,14 @@
     const name = copyName();
     if (!name) { alert('Please enter your First and Last Name in the Quick Start panel above first.'); return; }
     copyToClipboard(name, btn, 'Name');
+  }
+
+  function copyAgentNameReversed(btn) {
+    const name = copyName();
+    if (!name) { alert('Please enter your First and Last Name in the Quick Start panel above first.'); return; }
+    const parts = name.trim().split(/\s+/);
+    const reversed = parts.length >= 2 ? `${parts[parts.length - 1]}, ${parts.slice(0, -1).join(' ')}` : name;
+    copyToClipboard(reversed, btn, 'Name (Last, First)');
   }
 
   function copyKsLic(btn) {
