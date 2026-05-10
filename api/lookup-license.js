@@ -71,6 +71,15 @@ Return ONLY the raw JSON array with no markdown, no explanation, no code fences.
 
     if (!Array.isArray(results)) results = results ? [results] : [];
 
+    // Deduplicate by license number — keep the first occurrence (best source)
+    const seen = new Set();
+    results = results.filter(r => {
+      const key = (r.licenseNumber || '').trim().toUpperCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
     return res.status(200).json({ results });
   } catch (err) {
     console.error('Lookup handler error:', err);
