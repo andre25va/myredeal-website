@@ -1002,18 +1002,22 @@
   function copyToClipboard(text, btn, label) {
     const origText = label || '📋 Copy';
     const done = () => { btn.textContent = '✅ Copied'; setTimeout(() => btn.textContent = origText, 1500); };
-    const fallback = () => {
-      try {
-        const ta = document.createElement('textarea');
-        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-        document.body.appendChild(ta); ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta); done();
-      } catch(e) { btn.textContent = '⚠️ Failed'; setTimeout(() => btn.textContent = origText, 1500); }
-    };
+    const fail = () => { btn.textContent = '⚠️ Failed'; setTimeout(() => btn.textContent = origText, 1500); };
+    // Always run execCommand first — synchronous, works in any focus state including after tab switch
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    let execOk = false;
+    try { execOk = document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    // Also try modern API (better on iOS 14.5+ and future-proof)
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done).catch(fallback);
-    } else { fallback(); }
+      navigator.clipboard.writeText(text).then(done).catch(() => execOk ? done() : fail());
+    } else {
+      execOk ? done() : fail();
+    }
   }
 
   function copyFieldValue(fieldId, btn) {
