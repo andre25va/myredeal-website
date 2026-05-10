@@ -19,17 +19,12 @@ export default async function handler(req, res) {
     ? 'realtor.com, realestateagents.com, krec.ks.gov'
     : 'realtor.com, realestateagents.com, pr.mo.gov/licensee, mopro.mo.gov';
 
-  const licenseNote = state === 'MO'
-    ? `\nIMPORTANT for Missouri: The license number is the official MO real estate license number issued by the Missouri Real Estate Commission (MREC). It is typically a short alphanumeric code and does NOT start with the current year (e.g. 2024, 2025). Do NOT return application numbers, case numbers, transaction IDs, or any number that starts with a 4-digit year — those are NOT license numbers. The real license number is usually found in the "License #" or "License Number" column on MoPro or pr.mo.gov.`
-    : `\nIMPORTANT for Kansas: The license number is the official KS real estate license number issued by KREC. It is typically a numeric code (e.g. 00251801). Do NOT return application numbers, case numbers, or transaction IDs.`;
-
   const prompt = `Search for the ${stateFullName} real estate license information for agent named "${name}".
 Search these sources: ${stateSources} and any other real estate license databases.
-${licenseNote}
 
 Return ONLY a valid JSON array. Each item in the array should represent one match and contain:
 - "agentName": full name as found on the source
-- "licenseNumber": the official real estate license number only (string) — never an application or case number
+- "licenseNumber": the official real estate license number as shown on the source (string)
 - "expirationDate": expiration date in YYYY-MM-DD format if found, otherwise null
 - "brokerageName": current brokerage or firm name if found, otherwise null
 - "source": domain name where this was found
