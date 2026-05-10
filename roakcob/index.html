@@ -548,7 +548,7 @@
           <button onclick="copyFieldValue('qi-ks-lic', this)" title="Copy KS License #" style="padding:.5rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;background:#fff;cursor:pointer;font-size:.85rem;white-space:nowrap;color:#475569;flex-shrink:0;">📋 Copy</button>
         </div>
         <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin:.6rem 0 .3rem;">📅 KS License Expiration Date</label>
-        <input type="date" id="qi-ks-exp" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        <input type="text" id="qi-ks-exp" oninput="saveQuickInfo()" onpaste="handleDatePaste(event,'qi-ks-exp')" placeholder="MM/DD/YYYY or paste any date" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
       </div>
 
       <hr class="divider" />
@@ -600,7 +600,7 @@
           <button onclick="copyFieldValue('qi-mo-lic', this)" title="Copy MO License #" style="padding:.5rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;background:#fff;cursor:pointer;font-size:.85rem;white-space:nowrap;color:#475569;flex-shrink:0;">📋 Copy</button>
         </div>
         <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin:.6rem 0 .3rem;">📅 MO License Expiration Date</label>
-        <input type="date" id="qi-mo-exp" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        <input type="text" id="qi-mo-exp" oninput="saveQuickInfo()" onpaste="handleDatePaste(event,'qi-mo-exp')" placeholder="MM/DD/YYYY or paste any date" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
       </div>
 
       <hr class="divider" />
@@ -923,6 +923,45 @@
     const sid = getOrCreateSessionId();
     const el = document.getElementById('session-id-display');
     if (el) el.textContent = sid;
+  }
+
+  function handleDatePaste(e, fieldId) {
+    e.preventDefault();
+    const raw = (e.clipboardData || window.clipboardData).getData('text').trim();
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+
+    // Try parsing the pasted text as a date
+    let parsed = null;
+
+    // Common formats: YYYY-MM-DD, MM/DD/YYYY, MM-DD-YYYY, "Month DD, YYYY", "DD Month YYYY"
+    const patterns = [
+      { re: /^(\d{4})-(\d{1,2})-(\d{1,2})$/, fn: m => new Date(+m[1], +m[2]-1, +m[3]) },
+      { re: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, fn: m => new Date(+m[3], +m[1]-1, +m[2]) },
+      { re: /^(\d{1,2})-(\d{1,2})-(\d{4})$/, fn: m => new Date(+m[3], +m[1]-1, +m[2]) },
+    ];
+
+    for (const { re, fn } of patterns) {
+      const m = raw.match(re);
+      if (m) { parsed = fn(m); break; }
+    }
+
+    // Fallback: try native Date parsing (handles "March 15, 2026" etc.)
+    if (!parsed || isNaN(parsed)) {
+      const attempt = new Date(raw);
+      if (!isNaN(attempt)) parsed = attempt;
+    }
+
+    if (parsed && !isNaN(parsed)) {
+      const mm = String(parsed.getMonth() + 1).padStart(2, '0');
+      const dd = String(parsed.getDate()).padStart(2, '0');
+      const yyyy = parsed.getFullYear();
+      el.value = `${mm}/${dd}/${yyyy}`;
+    } else {
+      // Can't parse — just paste raw text
+      el.value = raw;
+    }
+    saveQuickInfo();
   }
 
   function copyFieldValue(fieldId, btn) {
