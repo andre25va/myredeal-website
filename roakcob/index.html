@@ -446,7 +446,7 @@
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-badge">Welcome to the Team</div>
+  <div class="hero-badge">Welcome to the Kansas &amp; Missouri Team</div>
   <h2>ONBOARDING<br>STARTS HERE</h2>
   <p>Follow each step below to get fully set up with Realty of America's Kansas City team. Complete them in order for the smoothest experience.</p>
 </div>
@@ -543,7 +543,10 @@
 
       <div style="margin-top:.75rem;">
         <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin-bottom:.3rem;">📌 KS License #</label>
-        <input type="text" id="qi-ks-lic" placeholder="e.g. 00123456" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        <div style="display:flex;align-items:center;gap:.5rem;max-width:360px;">
+          <input type="text" id="qi-ks-lic" placeholder="e.g. 00123456" oninput="saveQuickInfo()" style="flex:1;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+          <button onclick="copyFieldValue('qi-ks-lic', this)" title="Copy KS License #" style="padding:.5rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;background:#fff;cursor:pointer;font-size:.85rem;white-space:nowrap;color:#475569;flex-shrink:0;">📋 Copy</button>
+        </div>
         <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin:.6rem 0 .3rem;">📅 KS License Expiration Date</label>
         <input type="date" id="qi-ks-exp" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
       </div>
@@ -592,7 +595,10 @@
 
       <div style="margin-top:.75rem;">
         <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin-bottom:.3rem;">📌 MO License #</label>
-        <input type="text" id="qi-mo-lic" placeholder="e.g. 2024012345" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+        <div style="display:flex;align-items:center;gap:.5rem;max-width:360px;">
+          <input type="text" id="qi-mo-lic" placeholder="e.g. 2024012345" oninput="saveQuickInfo()" style="flex:1;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
+          <button onclick="copyFieldValue('qi-mo-lic', this)" title="Copy MO License #" style="padding:.5rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;background:#fff;cursor:pointer;font-size:.85rem;white-space:nowrap;color:#475569;flex-shrink:0;">📋 Copy</button>
+        </div>
         <label style="font-size:.82rem;font-weight:600;color:#444;display:block;margin:.6rem 0 .3rem;">📅 MO License Expiration Date</label>
         <input type="date" id="qi-mo-exp" oninput="saveQuickInfo()" style="width:100%;max-width:300px;padding:.55rem .75rem;border:1.5px solid #dde1e9;border-radius:8px;font-size:.95rem;font-family:inherit;" />
       </div>
@@ -919,6 +925,15 @@
     if (el) el.textContent = sid;
   }
 
+  function copyFieldValue(fieldId, btn) {
+    const val = document.getElementById(fieldId)?.value?.trim();
+    if (!val) { btn.textContent = '⚠️ Empty'; setTimeout(() => btn.textContent = '📋 Copy', 1500); return; }
+    navigator.clipboard.writeText(val).then(() => {
+      btn.textContent = '✅ Copied';
+      setTimeout(() => btn.textContent = '📋 Copy', 1500);
+    });
+  }
+
   function copySessionId() {
     const sid = getOrCreateSessionId();
     navigator.clipboard.writeText(sid).then(() => {
@@ -1033,7 +1048,7 @@
           <div class="suggestion-card">
             <div class="s-name">${r.agentName || fullName}</div>
             ${r.brokerageName ? `<div class="s-detail">🏢 ${r.brokerageName}</div>` : ''}
-            <div class="s-detail">🪪 License #: <strong>${r.licenseNumber || 'Not found'}</strong></div>
+            <div class="s-detail" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">🪪 License #: <strong>${r.licenseNumber || 'Not found'}</strong>${r.licenseNumber ? `<button onclick="navigator.clipboard.writeText('${r.licenseNumber}').then(()=>{this.textContent='✅ Copied';setTimeout(()=>this.textContent='📋 Copy',1500)})" style="padding:.15rem .5rem;border:1.5px solid #dde1e9;border-radius:6px;background:#fff;cursor:pointer;font-size:.78rem;color:#475569;">📋 Copy</button>` : ''}</div>
             <div class="s-detail">📅 Expires: ${expDisplay}</div>
             <div class="s-source">Source: ${r.source || 'web'}</div>
             <div class="suggestion-btn-row">
