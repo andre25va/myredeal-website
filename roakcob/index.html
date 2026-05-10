@@ -908,6 +908,41 @@
   const QI_KEY      = 'roa-quick-info';
   const SESSION_KEY = 'roa-session-id';
 
+  // ── SUPABASE SYNC ──────────────────────────────────────────────────
+  const SUPA_URL = 'https://alxrmusieuzgssynktxg.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFseHJtdXNpZXV6Z3NzeW5rdHhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NjcyMzIsImV4cCI6MjA4OTI0MzIzMn0.p3AnSdYQM30KzPLjPQxa7fM--lnNZOe0U1L_81LgvNM';
+
+  async function syncToSupabase() {
+    try {
+      const d = getQI();
+      const sessionId = getOrCreateSessionId();
+      const doneArr = [...getDoneSet()];
+      const payload = {
+        session_id:        sessionId,
+        first_name:        d.first  || null,
+        last_name:         d.last   || null,
+        phone:             d.phone  || null,
+        gmail:             d.gmail  || null,
+        ks_license_number: d.ksLic  || null,
+        ks_expiration_date:d.ksExp  || null,
+        mo_license_number: d.moLic  || null,
+        mo_expiration_date:d.moExp  || null,
+        steps_completed:   doneArr,
+        last_saved:        new Date().toISOString(),
+      };
+      await fetch(`${SUPA_URL}/rest/v1/roa_agent_onboarding`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Authorization': `Bearer ${SUPA_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates',
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch(e) { /* silent fail — localStorage still works */ }
+  }
+
   function getOrCreateSessionId() {
     let sid = localStorage.getItem(SESSION_KEY);
     if (!sid) {
@@ -1017,6 +1052,7 @@
     localStorage.setItem(QI_KEY, JSON.stringify(data));
     const msg = document.getElementById('qi-saved-msg');
     if (msg && (data.first || data.last)) { msg.style.display = 'block'; }
+    syncToSupabase();
   }
 
   function restoreQuickInfo() {
@@ -1204,6 +1240,7 @@
     const doneSet = getDoneSet();
     if (isDone) doneSet.add(id); else doneSet.delete(id);
     localStorage.setItem('roa-onboarding-done', JSON.stringify([...doneSet]));
+    syncToSupabase();
   }
 
   function getDoneSet() {
