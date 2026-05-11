@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/roakcob/dashboard", "destination": "/roakcob/dashboard.html" }
+  ]
+}
