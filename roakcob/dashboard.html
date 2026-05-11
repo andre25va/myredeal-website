@@ -100,6 +100,8 @@
   .btn-email:hover { background:#16a34a; color:#fff; }
   .btn-copy { border-color:var(--muted); color:var(--muted); background:#fff; font-size:.7rem; }
   .btn-copy:hover { background:var(--muted); color:#fff; }
+  .btn-open { border-color:#7c3aed; color:#7c3aed; background:#fff; }
+  .btn-open:hover { background:#7c3aed; color:#fff; }
   .empty-row td { text-align:center; padding:3rem; color:var(--muted); }
 
   /* ── AGENT DETAIL MODAL ── */
@@ -303,6 +305,7 @@
   <div class="modal" id="modal-content">
     <div class="modal-header">
       <div class="modal-title" id="modal-agent-name">Agent Details</div>
+      <button id="modal-open-form-btn" class="btn-sm btn-open" style="font-size:.78rem;display:none;" onclick="">Open Form →</button>
       <button class="modal-close" onclick="closeModalDirect()">✕</button>
     </div>
     <div class="modal-body" id="modal-body"></div>
@@ -582,6 +585,7 @@ function renderTable() {
         <td>
           <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
             <button class="btn-sm btn-view" onclick="openModal(${JSON.stringify(a).replace(/"/g,'&quot;')})">View</button>
+            ${sid ? `<button class="btn-sm btn-open" onclick="window.open(BASE_URL+'?session='+encodeURIComponent('${esc(sid)}'),'_blank')" title="Open this agent's onboarding form">Open Form →</button>` : ''}
             ${email && sid ? `<button class="btn-sm btn-email" onclick="quickSendResume('${esc(email)}','${esc(name)}','${esc(sid)}',this)">📧 Send Link</button>` : ''}
             ${sid ? `<button class="btn-sm btn-copy" onclick="copyResumeUrl('${esc(sid)}',this)">🔗 Copy</button>` : ''}
           </div>
@@ -624,6 +628,16 @@ function copyResumeUrl(sessionId, btn) {
 
 // ══════════════════ AGENT MODAL ══════════════════
 function openModal(agent) {
+  // Wire up Open Form button in header
+  const openFormBtn = document.getElementById('modal-open-form-btn');
+  if (openFormBtn) {
+    if (agent.session_id) {
+      openFormBtn.style.display = 'inline-block';
+      openFormBtn.onclick = () => window.open(BASE_URL + '?session=' + encodeURIComponent(agent.session_id), '_blank');
+    } else {
+      openFormBtn.style.display = 'none';
+    }
+  }
   document.getElementById('modal-agent-name').textContent =
     [agent.first_name, agent.last_name].filter(Boolean).join(' ') || '(No name)';
   const resumeUrl = agent.session_id ? BASE_URL + '?session=' + encodeURIComponent(agent.session_id) : null;

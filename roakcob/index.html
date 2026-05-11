@@ -518,6 +518,19 @@
         <button onclick="copyResumeLink(this)" title="Copy Resume Link" style="font-size:.75rem;padding:.2rem .7rem;border:1px solid #012F65;border-radius:6px;background:#012F65;cursor:pointer;color:#fff;">🔗 Copy Resume Link</button>
         <button onclick="startNewAgent()" title="Clear all data and start a new agent session" style="font-size:.75rem;padding:.2rem .7rem;border:1px solid #dc2626;border-radius:6px;background:#fff;cursor:pointer;color:#dc2626;font-weight:700;margin-left:.5rem;">➕ New Agent</button>
         <button id="zoom-mode-btn" onclick="toggleZoomMode()" title="Toggle Zoom Mode — shows QR codes for all links" style="font-size:.75rem;padding:.2rem .7rem;border:1px solid #012F65;border-radius:6px;background:#fff;cursor:pointer;color:#012F65;font-weight:700;margin-left:.5rem;">📱 Zoom Mode</button>
+        <button onclick="toggleSessionLoader()" title="Load a different agent by Session ID" style="font-size:.75rem;padding:.2rem .7rem;border:1px solid #7c3aed;border-radius:6px;background:#fff;cursor:pointer;color:#7c3aed;font-weight:700;margin-left:.5rem;">🔍 Load Agent</button>
+      </div>
+      <!-- Session ID Loader (hidden by default) -->
+      <div id="session-loader-panel" style="display:none;margin-top:.6rem;padding:.6rem .75rem;background:#f5f3ff;border:1.5px solid #7c3aed;border-radius:8px;">
+        <div style="font-size:.8rem;font-weight:700;color:#7c3aed;margin-bottom:.4rem;">Load Agent by Session ID</div>
+        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+          <input type="text" id="session-loader-input" placeholder="ROA-XXXXXXXX" maxlength="12"
+            style="flex:1;min-width:140px;padding:.45rem .7rem;border:1.5px solid #7c3aed;border-radius:7px;font-size:.9rem;font-family:monospace;font-weight:700;color:#012F65;outline:none;"
+            onkeydown="if(event.key==='Enter')loadAgentBySession()" />
+          <button onclick="loadAgentBySession()" style="padding:.45rem 1rem;border:none;border-radius:7px;background:#7c3aed;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;">Load →</button>
+          <button onclick="toggleSessionLoader()" style="padding:.45rem .75rem;border:1.5px solid #94a3b8;border-radius:7px;background:#fff;color:#64748b;font-size:.82rem;cursor:pointer;">Cancel</button>
+        </div>
+        <div id="session-loader-msg" style="font-size:.78rem;margin-top:.35rem;color:#dc2626;display:none;"></div>
       </div>
     </div>
   </div>
@@ -1159,6 +1172,33 @@
     if (step2) step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   // ── End Onboarding Gate ────────────────────────────────────────────────────
+
+  // ── Session Loader (Load Agent by ID) ──────────────────────────────────────
+  function toggleSessionLoader() {
+    const panel = document.getElementById('session-loader-panel');
+    const isHidden = panel.style.display === 'none';
+    panel.style.display = isHidden ? 'block' : 'none';
+    if (isHidden) {
+      document.getElementById('session-loader-input').focus();
+      document.getElementById('session-loader-msg').style.display = 'none';
+    }
+  }
+
+  function loadAgentBySession() {
+    const raw = document.getElementById('session-loader-input').value.trim().toUpperCase();
+    const msg = document.getElementById('session-loader-msg');
+    // Accept with or without ROA- prefix
+    const sessionId = raw.startsWith('ROA-') ? raw : 'ROA-' + raw;
+    if (!/^ROA-[A-Z0-9]{6,10}$/.test(sessionId)) {
+      msg.style.display = 'block';
+      msg.textContent = 'Enter a valid Session ID (e.g. ROA-A9512854)';
+      return;
+    }
+    msg.style.display = 'none';
+    // Navigate to the session
+    window.location.href = '?session=' + encodeURIComponent(sessionId);
+  }
+  // ── End Session Loader ─────────────────────────────────────────────────────
 
   // ── Zoom Mode ─────────────────────────────────────────────────────────────
   let zoomModeOn = false;
