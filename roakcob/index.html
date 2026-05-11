@@ -1138,10 +1138,14 @@
     const btn = document.getElementById('step1-continue-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Unlocking…'; }
 
+    // Create session ID now (first time agent clicks Continue)
+    const sessionId = getOrCreateSessionId();
+    const sidEl = document.getElementById('session-id-display');
+    if (sidEl) sidEl.textContent = sessionId;
+
     // Notify tc@myredeal.com
     const firstName = (document.getElementById('qi-first')?.value || '').trim();
     const lastName  = (document.getElementById('qi-last')?.value  || '').trim();
-    const sessionId = localStorage.getItem('roa-session-id') || '';
     try {
       await fetch('/roakcob/api/notify-new-agent', {
         method: 'POST',
@@ -1301,9 +1305,9 @@
   }
 
   function initSessionId() {
-    const sid = getOrCreateSessionId();
+    const sid = localStorage.getItem(SESSION_KEY); // don't create yet
     const el = document.getElementById('session-id-display');
-    if (el) el.textContent = sid;
+    if (el) el.textContent = sid || '—';
   }
 
   function handleDatePaste(e, fieldId) {
