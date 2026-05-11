@@ -482,6 +482,7 @@
         <span style="font-size:.78rem;color:#64748b;font-weight:500;">Session ID:</span>
         <span id="session-id-display" style="font-size:.82rem;font-family:monospace;font-weight:700;color:var(--navy);letter-spacing:.05em;"></span>
         <button onclick="copySessionId()" title="Copy Session ID" style="font-size:.75rem;padding:.2rem .55rem;border:1px solid #cbd5e1;border-radius:6px;background:#fff;cursor:pointer;color:#475569;margin-left:auto;">📋 Copy</button>
+        <button onclick="copyResumeLink(this)" title="Copy Resume Link" style="font-size:.75rem;padding:.2rem .7rem;border:1px solid #012F65;border-radius:6px;background:#012F65;cursor:pointer;color:#fff;">🔗 Copy Resume Link</button>
       </div>
     </div>
   </div>
@@ -938,6 +939,7 @@
         mo_license_number: d.moLic  || null,
         mo_expiration_date:d.moExp  || null,
         steps_completed:   doneArr,
+        self_paced_tasks:  getSPTasksObj(),
         last_saved:        new Date().toISOString(),
       };
       await fetch(`${SUPA_URL}/rest/v1/roa_agent_onboarding`, {
@@ -951,6 +953,108 @@
         body: JSON.stringify(payload),
       });
     } catch(e) { /* silent fail — localStorage still works */ }
+  }
+
+  // Returns self-paced tasks as {key: true} object for Supabase
+  function getSPTasksObj() {
+    try {
+      const arr = JSON.parse(localStorage.getItem('sp_checklist') || '[]');
+      const obj = {};
+      arr.forEach(k => { obj[k] = true; });
+      return obj;
+    } catch(e) { return {}; }
+  }
+
+  // Copy resume link to clipboard
+  function copyResumeLink(btn) {
+    const sid = getOrCreateSessionId();
+    const url = window.location.origin + window.location.pathname + '?session=' + encodeURIComponent(sid);
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+    } catch(e) {}
+    navigator.clipboard && navigator.clipboard.writeText(url).catch(() => {});
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!'; btn.style.background = '#16a34a'; btn.style.borderColor = '#16a34a';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = '#012F65'; btn.style.borderColor = '#012F65'; }, 2000);
+  }
+
+  // Load agent data from Supabase by session_id and restore all fields
+  async function loadFromSupabase(sessionId) {
+    try {
+      const res = await fetch(
+        SUPA_URL + '/rest/v1/roa_agent_onboarding?session_id=eq.' + encodeURIComponent(sessionId) + '&limit=1',
+        { headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY } }
+      );
+      const rows = await res.json();
+      if (!rows || !rows.length) return;
+      const r = rows[0];
+      // Restore quick info fields
+      const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+      set('qi-first', r.first_name);
+      set('qi-last',  r.last_name);
+      set('qi-phone', r.phone);
+      set('qi-gmail', r.gmail);
+      set('qi-ks-lic', r.ks_license_number);
+      set('qi-ks-exp', r.ks_expiration_date);
+      set('qi-mo-lic', r.mo_license_number);
+      set('qi-mo-exp', r.mo_expiration_date);
+      // Save to localStorage
+      const qi = {
+        first: r.first_name || '', last: r.last_name || '',
+        phone: r.phone || '', gmail: r.gmail || '', email: r.gmail || '',
+        ksLic: r.ks_license_number || '', ksExp: r.ks_expiration_date || '',
+        moLic: r.mo_license_number || '', moExp: r.mo_expiration_date || ''
+      };
+      localStorage.setItem('roa-quick-info', JSON.stringify(qi));
+      // Restore steps completed
+      if (r.steps_completed && Array.isArray(r.steps_completed)) {
+        localStorage.setItem('roa-onboarding-done', JSON.stringify(r.steps_completed));
+      }
+      // Restore self-paced tasks
+      if (r.self_paced_tasks && typeof r.self_paced_tasks === 'object') {
+        const spArr = Object.keys(r.self_paced_tasks).filter(k => r.self_paced_tasks[k]);
+        localStorage.setItem('sp_checklist', JSON.stringify(spArr));
+      }
+      // Show restore banner
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:1rem;left:50%;transform:translateX(-50%);background:#012F65;color:#fff;padding:.75rem 1.5rem;border-radius:10px;font-size:.9rem;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.25);';
+      banner.textContent = '✅ Your progress has been restored!';
+      document.body.appendChild(banner);
+      setTimeout(() => banner.remove(), 4000);
+    } catch(e) { console.warn('Session restore failed:', e); }
+  }
+
+  // Check URL for ?session= param and restore if found
+  async function checkUrlSession() {
+    const params = new URLSearchParams(window.location.search);
+    const urlSession = params.get('session');
+    if (urlSession && urlSession.startsWith('ROA-')) {
+      // Override localStorage session with URL session
+      localStorage.setItem('roa-session-id', urlSession);
+      const el = document.getElementById('session-id-display');
+      if (el) el.textContent = urlSession;
+      await loadFromSupabase(urlSession);
+      // Re-run init after restore
+      restoreQuickInfo();
+      const doneSet = getDoneSet();
+      doneSet.forEach(id => {
+        const card = document.getElementById(id);
+        if (!card) return;
+        const btn = card.querySelector('.mark-done-btn');
+        const num = document.getElementById('num-' + id);
+        if (btn && num) {
+          btn.classList.add('marked'); btn.textContent = '✓ Completed!';
+          num.classList.add('done'); num.textContent = '✓';
+        }
+      });
+      updateProgress();
+      // Remove session param from URL without reload
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
   }
 
   function getOrCreateSessionId() {
@@ -1327,6 +1431,7 @@
     updateProgress();
     initSessionId();
     restoreQuickInfo();
+    checkUrlSession();
 
     // Open first incomplete step automatically
     for (let i = 1; i <= TOTAL; i++) {
@@ -1493,6 +1598,7 @@
         else { d.delete(key); item.classList.remove('sp-done'); }
         saveSPDone(d);
         updateSPProgress();
+        window.syncToSupabase && window.syncToSupabase();
       });
     });
     updateSPProgress();
