@@ -1,12 +1,4 @@
 {
-  "functions": {
-    "roakcob/api/lookup-license.js": { "maxDuration": 30 },
-    "roakcob/api/send-otp.js": { "maxDuration": 10 },
-    "roakcob/api/verify-otp.js": { "maxDuration": 10 },
-    "roakcob/api/get-agents.js": { "maxDuration": 10 },
-    "roakcob/api/send-resume-email.js": { "maxDuration": 10 },
-    "roakcob/api/manage-vas.js": { "maxDuration": 10 }
-  },
   "rewrites": [
     { "source": "/roakcob/dashboard", "destination": "/roakcob/dashboard.html" }
   ]
