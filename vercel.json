@@ -1,5 +1,10 @@
 {
   "rewrites": [
-    { "source": "/roakcob/dashboard", "destination": "/roakcob/dashboard.html" }
+    { "source": "/roakcob/dashboard", "destination": "/roakcob/dashboard.html" },
+    { "source": "/roakcob/api/send-otp", "destination": "/api/send-otp" },
+    { "source": "/roakcob/api/verify-otp", "destination": "/api/verify-otp" },
+    { "source": "/roakcob/api/get-agents", "destination": "/api/get-agents" },
+    { "source": "/roakcob/api/send-resume-email", "destination": "/api/send-resume-email" },
+    { "source": "/roakcob/api/manage-vas", "destination": "/api/manage-vas" }
   ]
 }
