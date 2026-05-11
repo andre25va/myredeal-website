@@ -1027,6 +1027,19 @@
     } catch(e) { console.warn('Session restore failed:', e); }
   }
 
+  // Check URL for ?new=1 — wipe all localStorage and start a fresh session
+  function checkNewAgentParam() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('new') === '1') {
+      // Clear all onboarding-related localStorage keys
+      ['roa-session-id', 'roa-quick-info', 'roa-onboarding-done', 'sp_checklist',
+       'qi-gmail', 'qi-ks-license', 'qi-ks-exp', 'qi-mo-license', 'qi-mo-exp'].forEach(k => localStorage.removeItem(k));
+      // Remove ?new=1 from URL cleanly (no reload)
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+  }
+
   // Check URL for ?session= param and restore if found
   async function checkUrlSession() {
     const params = new URLSearchParams(window.location.search);
@@ -1429,6 +1442,7 @@
       }
     });
     updateProgress();
+    checkNewAgentParam();  // must run first — clears stale data before anything loads
     initSessionId();
     restoreQuickInfo();
     checkUrlSession();
