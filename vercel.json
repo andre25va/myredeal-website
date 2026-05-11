@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/vadashboard", "destination": "/roakcob/dashboard.html" },
     { "source": "/roakcob/dashboard", "destination": "/roakcob/dashboard.html" },
     { "source": "/roakcob/api/send-otp", "destination": "/api/send-otp" },
     { "source": "/roakcob/api/verify-otp", "destination": "/api/verify-otp" },
