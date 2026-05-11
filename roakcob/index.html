@@ -188,6 +188,8 @@
       animation: fadeIn .2s ease;
     }
     .step-card.open .step-body { display: block; }
+    .step-card.step-done { border-left: 4px solid #22c55e; }
+    .step-card.step-done .step-header { background: #f0fdf4; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -1623,9 +1625,13 @@
     if (isDone) {
       num.classList.add('done');
       num.textContent = '✓';
+      card.classList.remove('open');   // collapse the step
+      card.classList.add('step-done'); // green border
     } else {
       num.classList.remove('done');
       num.textContent = id.replace('step-', '');
+      card.classList.add('open');      // re-expand so they can edit
+      card.classList.remove('step-done');
     }
     updateProgress();
     // Save to localStorage
@@ -1662,6 +1668,8 @@
         btn.textContent = '✓ Completed!';
         num.classList.add('done');
         num.textContent = '✓';
+        card.classList.remove('open');   // keep collapsed on reload
+        card.classList.add('step-done'); // green border
       }
     });
     updateProgress();
