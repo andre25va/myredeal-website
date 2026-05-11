@@ -1339,5 +1339,166 @@
   });
 </script>
 
+
+<!-- SELF-PACED TASKS SECTION -->
+<div style="max-width:760px;margin:3rem auto 1rem;padding:0 1rem;">
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+    <div style="flex:1;height:2px;background:#e5e7eb;"></div>
+    <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;font-weight:700;color:#6b7280;letter-spacing:0.08em;white-space:nowrap;">SELF-PACED TASKS</span>
+    <div style="flex:1;height:2px;background:#e5e7eb;"></div>
+  </div>
+  <p style="font-family:'Inter',sans-serif;font-size:0.9rem;color:#6b7280;margin-bottom:1.5rem;text-align:center;">Complete these on your own schedule — your progress is saved automatically.</p>
+
+  <div id="sp-progress-bar" style="background:#e5e7eb;border-radius:999px;height:8px;margin-bottom:0.5rem;">
+    <div id="sp-fill" style="background:#012F65;height:8px;border-radius:999px;width:0%;transition:width 0.3s;"></div>
+  </div>
+  <p id="sp-text" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#6b7280;text-align:right;margin-bottom:2rem;">0 of 0 complete</p>
+
+  <!-- Group: Account & App Setup -->
+  <div class="sp-group" style="margin-bottom:1.5rem;">
+    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Account & App Setup</div>
+    <div class="sp-item" data-key="sp_welcome_email"><label><input type="checkbox"> Check for ROA welcome email (check spam)</label></div>
+    <div class="sp-item" data-key="sp_okta_signin"><label><input type="checkbox"> Sign into Okta (company name: ROA WORLD)</label></div>
+    <div class="sp-item" data-key="sp_roa_apps"><label><input type="checkbox"> Sign into all ROA apps</label></div>
+    <div class="sp-item" data-key="sp_chrome_bookmarks"><label><input type="checkbox"> Set up Chrome — create a bookmarks folder named <strong>ROA KC</strong></label></div>
+    <div class="sp-item" data-key="sp_chrome_ext"><label><input type="checkbox"> Add Okta browser extension to Chrome</label></div>
+  </div>
+
+  <!-- Group: Broker Engine -->
+  <div class="sp-group" style="margin-bottom:1.5rem;">
+    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Broker Engine</div>
+    <div class="sp-item" data-key="sp_bank_profile"><label><input type="checkbox"> Add banking info in Settings → Edit Profile</label></div>
+    <div class="sp-item" data-key="sp_bank_reports"><label><input type="checkbox"> Add banking info under Reports</label></div>
+  </div>
+
+  <!-- Group: Work Vivo Groups -->
+  <div class="sp-group" style="margin-bottom:1.5rem;">
+    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Work Vivo</div>
+    <div class="sp-item" data-key="sp_wv_ks"><label><input type="checkbox"> Join Kansas group</label></div>
+    <div class="sp-item" data-key="sp_wv_mo"><label><input type="checkbox"> Join Missouri group</label></div>
+    <div class="sp-item" data-key="sp_wv_women"><label><input type="checkbox"> Join Women of ROA group (if applicable)</label></div>
+  </div>
+
+  <!-- Group: Training & Resources -->
+  <div class="sp-group" style="margin-bottom:1.5rem;">
+    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Training & Resources</div>
+    <div class="sp-item" data-key="sp_training_vids"><label><input type="checkbox"> Watch training videos</label></div>
+    <div class="sp-item" data-key="sp_kc_help"><label><input type="checkbox"> Save KC Help Site — go through all tabs and state info</label></div>
+    <div class="sp-item" data-key="sp_policies"><label><input type="checkbox"> Read Policies & Procedures</label></div>
+    <div class="sp-item" data-key="sp_branding"><label><input type="checkbox"> Review ROA branding guidelines</label></div>
+    <div class="sp-item" data-key="sp_state_resources"><label><input type="checkbox"> Review state resources (KS / MO)</label></div>
+    <div class="sp-item" data-key="sp_marketing_hub"><label><input type="checkbox"> Save link to ROA Marketing HUB</label></div>
+    <div class="sp-item" data-key="sp_email_sig"><label><input type="checkbox"> Set up ROA email signature</label></div>
+  </div>
+
+  <!-- Group: Marketing & Social Profiles -->
+  <div class="sp-group" style="margin-bottom:1.5rem;">
+    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Marketing & Social Profiles</div>
+    <div class="sp-item" data-key="sp_fb_group"><label><input type="checkbox"> Verify you're in the Facebook group (ROA KC Team)</label></div>
+    <div class="sp-item" data-key="sp_fb_banner"><label><input type="checkbox"> Upload Facebook banner</label></div>
+    <div class="sp-item" data-key="sp_fb_bio"><label><input type="checkbox"> Post agent bio on Facebook (post on Mondays)</label></div>
+    <div class="sp-item" data-key="sp_fb_moved"><label><input type="checkbox"> Post "I Moved" Facebook picture</label></div>
+    <div class="sp-item" data-key="sp_roa_dashboard"><label><input type="checkbox"> Create ROA Agent Dashboard profile</label></div>
+    <div class="sp-item" data-key="sp_realtor_pro"><label><input type="checkbox"> Set up Realtor.com Pro account</label></div>
+    <div class="sp-item" data-key="sp_homes_pro"><label><input type="checkbox"> Set up Homes.com Pro account</label></div>
+    <div class="sp-item" data-key="sp_redfin"><label><input type="checkbox"> Apply as Redfin Partner Agent</label></div>
+    <div class="sp-item" data-key="sp_zillow"><label><input type="checkbox"> Create Zillow realtor account</label></div>
+    <div class="sp-item" data-key="sp_mls_profile"><label><input type="checkbox"> Complete MLS profile</label></div>
+    <div class="sp-item" data-key="sp_mls_website"><label><input type="checkbox"> Add MLS website info</label></div>
+  </div>
+
+  <!-- Group: MLS & Listings -->
+  <div class="sp-group" style="margin-bottom:1.5rem;">
+    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">MLS & Listings</div>
+    <div class="sp-item" data-key="sp_mls_listoffice"><label><input type="checkbox"> Add REOFAM List Office ID (res detail → bottom section → add/remove)</label></div>
+    <div class="sp-item" data-key="sp_mls_search"><label><input type="checkbox"> Search LIST office ID after adding</label></div>
+    <div class="sp-item" data-key="sp_redfin_pics"><label><input type="checkbox"> Download listing photos from Redfin.com (not the app — no screenshots)</label></div>
+    <div class="sp-item" data-key="sp_merriam_signs"><label><input type="checkbox"> Sign company Merriam signs</label></div>
+  </div>
+
+  <!-- Group: Transaction Tools -->
+  <div class="sp-group" style="margin-bottom:2rem;">
+    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Transaction Tools</div>
+    <div class="sp-item" data-key="sp_skyslope"><label><input type="checkbox"> Set up SkySlope (used to upload docs once under contract)</label></div>
+    <div class="sp-item" data-key="sp_dotloop_templates"><label><input type="checkbox"> Set up Dotloop templates (<a href="https://my.dotloop.com/loops" target="_blank" style="color:#012F65;">Heartland13</a>)</label></div>
+    <div class="sp-item" data-key="sp_dotloop_team"><label><input type="checkbox"> Add team members in Dotloop — info@andrevargasteam.com, tc@myredeal.com (TC role), amy.rodriguez@roaworld.com (Broker role)</label></div>
+    <div class="sp-item" data-key="sp_paperwork_note"><label><input type="checkbox"> Noted: Paperwork must be submitted within 10 days of agreements — no commission/CDA without required paperwork</label></div>
+    <div class="sp-item" data-key="sp_tc_services"><label><input type="checkbox"> Noted: TC services available at $300/transaction via MyReDeal</label></div>
+  </div>
+</div>
+
+<style>
+.sp-item {
+  padding: 0.55rem 0.75rem;
+  margin-bottom: 0.35rem;
+  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  transition: background 0.2s;
+}
+.sp-item:hover { background: #f3f4f6; }
+.sp-item label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: #374151;
+  line-height: 1.5;
+}
+.sp-item input[type="checkbox"] {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  accent-color: #012F65;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.sp-item.sp-done {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+.sp-item.sp-done label { color: #6b7280; text-decoration: line-through; }
+</style>
+
+<script>
+(function() {
+  const SP_KEY = 'sp_checklist';
+  function getSPDone() {
+    try { return new Set(JSON.parse(localStorage.getItem(SP_KEY) || '[]')); } catch(e) { return new Set(); }
+  }
+  function saveSPDone(set) {
+    localStorage.setItem(SP_KEY, JSON.stringify([...set]));
+  }
+  function updateSPProgress() {
+    const items = document.querySelectorAll('.sp-item');
+    const done = document.querySelectorAll('.sp-item.sp-done').length;
+    const pct = items.length ? Math.round((done / items.length) * 100) : 0;
+    document.getElementById('sp-fill').style.width = pct + '%';
+    document.getElementById('sp-text').textContent = done + ' of ' + items.length + ' complete';
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    const done = getSPDone();
+    document.querySelectorAll('.sp-item').forEach(function(item) {
+      const key = item.dataset.key;
+      const cb = item.querySelector('input[type="checkbox"]');
+      if (done.has(key)) {
+        cb.checked = true;
+        item.classList.add('sp-done');
+      }
+      cb.addEventListener('change', function() {
+        const d = getSPDone();
+        if (cb.checked) { d.add(key); item.classList.add('sp-done'); }
+        else { d.delete(key); item.classList.remove('sp-done'); }
+        saveSPDone(d);
+        updateSPProgress();
+      });
+    });
+    updateSPProgress();
+  });
+})();
+</script>
+
 </body>
 </html>
