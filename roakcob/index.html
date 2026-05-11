@@ -549,6 +549,12 @@
       <p style="font-size:.83rem;color:#666;margin-bottom:1.1rem;">Don't have a dedicated real estate Gmail yet? <a href="https://accounts.google.com/signup" target="_blank" rel="noopener" style="color:var(--navy);font-weight:600;">Create one here ↗</a></p>
 
       <button class="mark-done-btn" onclick="markDone('step-1', this)">✓ Mark complete</button>
+
+      <!-- Gate: Continue button (hidden once gate is cleared) -->
+      <div id="step1-continue-wrap" style="margin-top:1.25rem;display:none;">
+        <button id="step1-continue-btn" onclick="continueOnboarding()" style="background:var(--navy);color:var(--gold);border:none;border-radius:8px;padding:.75rem 1.75rem;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.02em;">Continue to Full Onboarding →</button>
+        <p id="step1-continue-msg" style="font-size:.82rem;color:#dc2626;margin-top:.5rem;display:none;">Please enter your Gmail address above first.</p>
+      </div>
     </div>
   </div>
 
@@ -1073,12 +1079,83 @@
     if (params.get('new') === '1') {
       // Clear all onboarding-related localStorage keys
       ['roa-session-id', 'roa-quick-info', 'roa-onboarding-done', 'sp_checklist',
-       'qi-gmail', 'qi-ks-license', 'qi-ks-exp', 'qi-mo-license', 'qi-mo-exp'].forEach(k => localStorage.removeItem(k));
+       'qi-gmail', 'qi-ks-license', 'qi-ks-exp', 'qi-mo-license', 'qi-mo-exp',
+       'roa_gate_cleared'].forEach(k => localStorage.removeItem(k));
       // Remove ?new=1 from URL cleanly (no reload)
       const cleanUrl = window.location.pathname;
       window.history.replaceState({}, '', cleanUrl);
     }
   }
+
+  // ── Onboarding Gate ────────────────────────────────────────────────────────
+  function initGate() {
+    const cleared = localStorage.getItem('roa_gate_cleared') === '1';
+    if (cleared) return; // returning agent — show everything
+
+    // Hide steps 2–14 and the self-paced section
+    for (let i = 2; i <= 14; i++) {
+      const el = document.getElementById('step-' + i);
+      if (el) el.style.display = 'none';
+    }
+    const spSection = document.querySelector('.self-paced-section, #self-paced-section, [data-section="self-paced"]');
+    if (spSection) spSection.style.display = 'none';
+
+    // Also hide the divider before self-paced if present
+    document.querySelectorAll('hr').forEach(hr => hr.style.display = 'none');
+
+    // Show the Continue button
+    const wrap = document.getElementById('step1-continue-wrap');
+    if (wrap) wrap.style.display = 'block';
+
+    // Force Step 1 open
+    const step1 = document.getElementById('step-1');
+    if (step1 && !step1.classList.contains('open')) step1.classList.add('open');
+  }
+
+  async function continueOnboarding() {
+    const gmail = (document.getElementById('qi-gmail')?.value || '').trim();
+    const msg = document.getElementById('step1-continue-msg');
+    if (!gmail) {
+      if (msg) msg.style.display = 'block';
+      return;
+    }
+    if (msg) msg.style.display = 'none';
+
+    // Disable button while sending
+    const btn = document.getElementById('step1-continue-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Unlocking…'; }
+
+    // Notify tc@myredeal.com
+    const firstName = (document.getElementById('qi-first')?.value || '').trim();
+    const lastName  = (document.getElementById('qi-last')?.value  || '').trim();
+    const sessionId = localStorage.getItem('roa-session-id') || '';
+    try {
+      await fetch('/roakcob/api/notify-new-agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, gmail, sessionId })
+      });
+    } catch(e) { /* silent fail — gate still clears */ }
+
+    // Mark gate cleared and reveal everything
+    localStorage.setItem('roa_gate_cleared', '1');
+    for (let i = 2; i <= 14; i++) {
+      const el = document.getElementById('step-' + i);
+      if (el) el.style.display = '';
+    }
+    document.querySelectorAll('hr').forEach(hr => hr.style.display = '');
+    const spSection = document.querySelector('.self-paced-section, #self-paced-section, [data-section="self-paced"]');
+    if (spSection) spSection.style.display = '';
+
+    // Hide the continue wrap
+    const wrap = document.getElementById('step1-continue-wrap');
+    if (wrap) wrap.style.display = 'none';
+
+    // Scroll to Step 2
+    const step2 = document.getElementById('step-2');
+    if (step2) step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  // ── End Onboarding Gate ────────────────────────────────────────────────────
 
   // ── Zoom Mode ─────────────────────────────────────────────────────────────
   let zoomModeOn = false;
@@ -1133,7 +1210,8 @@
   function startNewAgent() {
     if (!confirm('Start a new agent session? This will clear all current agent data from this device.')) return;
     ['roa-session-id', 'roa-quick-info', 'roa-onboarding-done', 'sp_checklist',
-     'qi-gmail', 'qi-ks-license', 'qi-ks-exp', 'qi-mo-license', 'qi-mo-exp'].forEach(k => localStorage.removeItem(k));
+     'qi-gmail', 'qi-ks-license', 'qi-ks-exp', 'qi-mo-license', 'qi-mo-exp',
+     'roa_gate_cleared'].forEach(k => localStorage.removeItem(k));
     window.location.reload();
   }
 
@@ -1144,6 +1222,7 @@
     if (urlSession && urlSession.startsWith('ROA-')) {
       // Override localStorage session with URL session
       localStorage.setItem('roa-session-id', urlSession);
+      localStorage.setItem('roa_gate_cleared', '1'); // returning agent — skip gate
       const el = document.getElementById('session-id-display');
       if (el) el.textContent = urlSession;
       await loadFromSupabase(urlSession);
@@ -1543,6 +1622,7 @@
     initSessionId();
     restoreQuickInfo();
     checkUrlSession();
+    initGate();  // lock steps 2-14 until agent enters Gmail and clicks Continue
 
     // Open first incomplete step automatically
     for (let i = 1; i <= TOTAL; i++) {
