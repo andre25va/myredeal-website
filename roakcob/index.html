@@ -1137,6 +1137,9 @@
       });
     } catch(e) { /* silent fail — gate still clears */ }
 
+    // Save to Supabase so agent appears in VA dashboard immediately
+    saveQuickInfo();
+
     // Mark gate cleared and reveal everything
     localStorage.setItem('roa_gate_cleared', '1');
     for (let i = 2; i <= 14; i++) {
