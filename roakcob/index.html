@@ -1446,22 +1446,31 @@
 
 
 <!-- SELF-PACED TASKS SECTION -->
-<div style="max-width:760px;margin:3rem auto 1rem;padding:0 1rem;">
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
-    <div style="flex:1;height:2px;background:#e5e7eb;"></div>
-    <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;font-weight:700;color:#6b7280;letter-spacing:0.08em;white-space:nowrap;">SELF-PACED TASKS</span>
-    <div style="flex:1;height:2px;background:#e5e7eb;"></div>
-  </div>
-  <p style="font-family:'Inter',sans-serif;font-size:0.9rem;color:#6b7280;margin-bottom:1.5rem;text-align:center;">Complete these on your own schedule — your progress is saved automatically.</p>
+<div style="background:linear-gradient(180deg,#f1f5ff 0%,#f8f9ff 100%);border-top:3px solid #FBBE2C;margin-top:3rem;padding:2.5rem 1rem 3rem;">
+<div style="max-width:760px;margin:0 auto;">
 
-  <div id="sp-progress-bar" style="background:#e5e7eb;border-radius:999px;height:8px;margin-bottom:0.5rem;">
-    <div id="sp-fill" style="background:#012F65;height:8px;border-radius:999px;width:0%;transition:width 0.3s;"></div>
+  <!-- Section Header -->
+  <div style="text-align:center;margin-bottom:1.75rem;">
+    <div style="display:inline-flex;align-items:center;gap:0.6rem;background:#012F65;color:#FBBE2C;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:0.4rem 1.1rem;border-radius:999px;margin-bottom:0.85rem;">
+      <span>✅</span> Self-Paced Tasks
+    </div>
+    <p style="font-family:'Inter',sans-serif;font-size:0.9rem;color:#4b5563;margin:0;">Complete these on your own schedule — your progress is saved automatically.</p>
   </div>
-  <p id="sp-text" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#6b7280;text-align:right;margin-bottom:2rem;">0 of 0 complete</p>
+
+  <!-- Progress Bar -->
+  <div style="background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem 1.25rem;margin-bottom:2rem;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;">Overall Progress</span>
+      <span id="sp-text" style="font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:600;color:#FBBE2C;background:#012F65;padding:0.15rem 0.65rem;border-radius:999px;">0 of 0 complete</span>
+    </div>
+    <div id="sp-progress-bar" style="background:#e5e7eb;border-radius:999px;height:12px;overflow:hidden;">
+      <div id="sp-fill" style="background:linear-gradient(90deg,#012F65,#1e4d8c);height:12px;border-radius:999px;width:0%;transition:width 0.4s ease;"></div>
+    </div>
+  </div>
 
   <!-- Group: Account & App Setup -->
-  <div class="sp-group" style="margin-bottom:1.5rem;">
-    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Account & App Setup</div>
+  <div class="sp-group">
+    <div class="sp-group-title">🔐 Account & App Setup</div>
     <div class="sp-item" data-key="sp_welcome_email"><label><input type="checkbox"> Check for ROA welcome email (check spam)</label></div>
     <div class="sp-item" data-key="sp_okta_signin"><label><input type="checkbox"> Sign into Okta (company name: ROA WORLD)</label></div>
     <div class="sp-item" data-key="sp_roa_apps"><label><input type="checkbox"> Sign into all ROA apps</label></div>
@@ -1470,23 +1479,23 @@
   </div>
 
   <!-- Group: Broker Engine -->
-  <div class="sp-group" style="margin-bottom:1.5rem;">
-    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Broker Engine</div>
+  <div class="sp-group">
+    <div class="sp-group-title">🏢 Broker Engine</div>
     <div class="sp-item" data-key="sp_bank_profile"><label><input type="checkbox"> Add banking info in Settings → Edit Profile</label></div>
     <div class="sp-item" data-key="sp_bank_reports"><label><input type="checkbox"> Add banking info under Reports</label></div>
   </div>
 
   <!-- Group: Work Vivo Groups -->
-  <div class="sp-group" style="margin-bottom:1.5rem;">
-    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Work Vivo</div>
+  <div class="sp-group">
+    <div class="sp-group-title">💬 Work Vivo</div>
     <div class="sp-item" data-key="sp_wv_ks"><label><input type="checkbox"> Join Kansas group</label></div>
     <div class="sp-item" data-key="sp_wv_mo"><label><input type="checkbox"> Join Missouri group</label></div>
     <div class="sp-item" data-key="sp_wv_women"><label><input type="checkbox"> Join Women of ROA group (if applicable)</label></div>
   </div>
 
   <!-- Group: Training & Resources -->
-  <div class="sp-group" style="margin-bottom:1.5rem;">
-    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Training & Resources</div>
+  <div class="sp-group">
+    <div class="sp-group-title">📚 Training & Resources</div>
     <div class="sp-item" data-key="sp_training_vids"><label><input type="checkbox"> Watch training videos</label></div>
     <div class="sp-item" data-key="sp_kc_help"><label><input type="checkbox"> Save KC Help Site — go through all tabs and state info</label></div>
     <div class="sp-item" data-key="sp_policies"><label><input type="checkbox"> Read Policies & Procedures</label></div>
@@ -1497,8 +1506,8 @@
   </div>
 
   <!-- Group: Marketing & Social Profiles -->
-  <div class="sp-group" style="margin-bottom:1.5rem;">
-    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Marketing & Social Profiles</div>
+  <div class="sp-group">
+    <div class="sp-group-title">📣 Marketing & Social Profiles</div>
     <div class="sp-item" data-key="sp_fb_group"><label><input type="checkbox"> Verify you're in the Facebook group (ROA KC Team)</label></div>
     <div class="sp-item" data-key="sp_fb_banner"><label><input type="checkbox"> Upload Facebook banner</label></div>
     <div class="sp-item" data-key="sp_fb_bio"><label><input type="checkbox"> Post agent bio on Facebook (post on Mondays)</label></div>
@@ -1513,8 +1522,8 @@
   </div>
 
   <!-- Group: MLS & Listings -->
-  <div class="sp-group" style="margin-bottom:1.5rem;">
-    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">MLS & Listings</div>
+  <div class="sp-group">
+    <div class="sp-group-title">🏡 MLS & Listings</div>
     <div class="sp-item" data-key="sp_mls_listoffice"><label><input type="checkbox"> Add REOFAM List Office ID (res detail → bottom section → add/remove)</label></div>
     <div class="sp-item" data-key="sp_mls_search"><label><input type="checkbox"> Search LIST office ID after adding</label></div>
     <div class="sp-item" data-key="sp_redfin_pics"><label><input type="checkbox"> Download listing photos from Redfin.com (not the app — no screenshots)</label></div>
@@ -1522,49 +1531,116 @@
   </div>
 
   <!-- Group: Transaction Tools -->
-  <div class="sp-group" style="margin-bottom:2rem;">
-    <div class="sp-group-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:700;color:#012F65;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.75rem;border-left:3px solid #FBBE2C;padding-left:0.6rem;">Transaction Tools</div>
+  <div class="sp-group" style="margin-bottom:0;">
+    <div class="sp-group-title">📋 Transaction Tools</div>
     <div class="sp-item" data-key="sp_skyslope"><label><input type="checkbox"> Set up SkySlope (used to upload docs once under contract)</label></div>
     <div class="sp-item" data-key="sp_dotloop_templates"><label><input type="checkbox"> Set up Dotloop templates (<a href="https://my.dotloop.com/loops" target="_blank" style="color:#012F65;">Heartland13</a>)</label></div>
     <div class="sp-item" data-key="sp_dotloop_team"><label><input type="checkbox"> Add team members in Dotloop — info@andrevargasteam.com, tc@myredeal.com (TC role), amy.rodriguez@roaworld.com (Broker role)</label></div>
     <div class="sp-item" data-key="sp_paperwork_note"><label><input type="checkbox"> Noted: Paperwork must be submitted within 10 days of agreements — no commission/CDA without required paperwork</label></div>
     <div class="sp-item" data-key="sp_tc_services"><label><input type="checkbox"> Noted: TC services available at $300/transaction via MyReDeal</label></div>
   </div>
+
+</div>
 </div>
 
 <style>
-.sp-item {
-  padding: 0.55rem 0.75rem;
-  margin-bottom: 0.35rem;
-  border-radius: 8px;
-  background: #f9fafb;
+/* ── Self-Paced Group Card ── */
+.sp-group {
+  background: white;
+  border-radius: 14px;
   border: 1px solid #e5e7eb;
-  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(1,47,101,0.07);
+  padding: 1.1rem 1.1rem 0.65rem;
+  margin-bottom: 1.25rem;
 }
-.sp-item:hover { background: #f3f4f6; }
+.sp-group-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #012F65;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid #FBBE2C;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* ── Task Item ── */
+.sp-item {
+  padding: 0.55rem 0.6rem;
+  margin-bottom: 0.3rem;
+  border-radius: 8px;
+  background: #f8faff;
+  border: 1px solid #eef1f8;
+  transition: background 0.15s, border-color 0.15s;
+}
+.sp-item:last-child { margin-bottom: 0.45rem; }
+.sp-item:hover { background: #eef3ff; border-color: #c7d6f5; }
+
 .sp-item label {
   display: flex;
   align-items: flex-start;
-  gap: 0.65rem;
+  gap: 0.7rem;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  font-size: 0.88rem;
-  color: #374151;
+  font-size: 0.875rem;
+  color: #1f2937;
   line-height: 1.5;
 }
+
+/* ── Custom Checkbox ── */
 .sp-item input[type="checkbox"] {
-  margin-top: 3px;
-  width: 16px;
-  height: 16px;
-  accent-color: #012F65;
-  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid #c4cad8;
+  border-radius: 5px;
+  background: white;
   cursor: pointer;
+  position: relative;
+  margin-top: 1px;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
+.sp-item input[type="checkbox"]:hover {
+  border-color: #012F65;
+  box-shadow: 0 0 0 3px rgba(1,47,101,0.1);
+}
+.sp-item input[type="checkbox"]:checked {
+  background: #012F65;
+  border-color: #012F65;
+}
+.sp-item input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: 2.5px solid #FBBE2C;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+/* ── Done State ── */
 .sp-item.sp-done {
   background: #f0fdf4;
-  border-color: #bbf7d0;
+  border-color: #86efac;
 }
-.sp-item.sp-done label { color: #6b7280; text-decoration: line-through; }
+.sp-item.sp-done label {
+  color: #6b7280;
+  text-decoration: line-through;
+}
+.sp-item.sp-done:hover {
+  background: #dcfce7;
+  border-color: #4ade80;
+}
 </style>
 
 <script>
