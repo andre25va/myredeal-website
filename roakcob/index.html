@@ -483,6 +483,7 @@
         <span id="session-id-display" style="font-size:.82rem;font-family:monospace;font-weight:700;color:var(--navy);letter-spacing:.05em;"></span>
         <button onclick="copySessionId()" title="Copy Session ID" style="font-size:.75rem;padding:.2rem .55rem;border:1px solid #cbd5e1;border-radius:6px;background:#fff;cursor:pointer;color:#475569;margin-left:auto;">📋 Copy</button>
         <button onclick="copyResumeLink(this)" title="Copy Resume Link" style="font-size:.75rem;padding:.2rem .7rem;border:1px solid #012F65;border-radius:6px;background:#012F65;cursor:pointer;color:#fff;">🔗 Copy Resume Link</button>
+        <button onclick="startNewAgent()" title="Clear all data and start a new agent session" style="font-size:.75rem;padding:.2rem .7rem;border:1px solid #dc2626;border-radius:6px;background:#fff;cursor:pointer;color:#dc2626;font-weight:700;margin-left:.5rem;">➕ New Agent</button>
       </div>
     </div>
   </div>
@@ -1038,6 +1039,14 @@
       const cleanUrl = window.location.pathname;
       window.history.replaceState({}, '', cleanUrl);
     }
+  }
+
+  // "New Agent" button — confirms then wipes everything and reloads fresh
+  function startNewAgent() {
+    if (!confirm('Start a new agent session? This will clear all current agent data from this device.')) return;
+    ['roa-session-id', 'roa-quick-info', 'roa-onboarding-done', 'sp_checklist',
+     'qi-gmail', 'qi-ks-license', 'qi-ks-exp', 'qi-mo-license', 'qi-mo-exp'].forEach(k => localStorage.removeItem(k));
+    window.location.reload();
   }
 
   // Check URL for ?session= param and restore if found
