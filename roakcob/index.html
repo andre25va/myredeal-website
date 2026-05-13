@@ -1021,7 +1021,7 @@
         self_paced_tasks:  getSPTasksObj(),
         last_saved:        new Date().toISOString(),
       };
-      await fetch(`${SUPA_URL}/rest/v1/roa_agent_onboarding`, {
+      await fetch(`${SUPA_URL}/rest/v1/roa_agent_onboarding?on_conflict=session_id`, {
         method: 'POST',
         headers: {
           'apikey': SUPA_KEY,
