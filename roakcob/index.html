@@ -1645,6 +1645,16 @@
       num.textContent = '✓';
       card.classList.remove('open');   // collapse the step
       card.classList.add('step-done'); // green border
+      // Auto-open and scroll to the next step
+      const stepNum = parseInt(id.replace('step-', ''));
+      const nextStep = document.getElementById('step-' + (stepNum + 1));
+      if (nextStep) {
+        nextStep.classList.add('open');
+        nextStep.classList.remove('step-done');
+        setTimeout(() => {
+          nextStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
     } else {
       num.classList.remove('done');
       num.textContent = id.replace('step-', '');
