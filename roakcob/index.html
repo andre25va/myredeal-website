@@ -1125,8 +1125,8 @@
     const cleared = localStorage.getItem('roa_gate_cleared') === '1';
     if (cleared) return; // returning agent — show everything
 
-    // Hide steps 2–14 and the self-paced section
-    for (let i = 2; i <= 14; i++) {
+    // Hide steps 2–15 and the self-paced section
+    for (let i = 2; i <= 15; i++) {
       const el = document.getElementById('step-' + i);
       if (el) el.style.display = 'none';
     }
@@ -1179,7 +1179,7 @@
 
     // Mark gate cleared and reveal everything
     localStorage.setItem('roa_gate_cleared', '1');
-    for (let i = 2; i <= 14; i++) {
+    for (let i = 2; i <= 15; i++) {
       const el = document.getElementById('step-' + i);
       if (el) el.style.display = '';
     }
@@ -1627,7 +1627,7 @@
 
   // ── END LICENSE LOOKUP HELPER ──────────────────────────────────────
 
-  const TOTAL = 13;
+  const TOTAL = 15;
 
   function toggleStep(id) {
     const card = document.getElementById(id);
