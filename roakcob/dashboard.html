@@ -315,36 +315,37 @@
 <script>
 // ══════════════════ CONSTANTS ══════════════════
 const SESSION_STORE = 'roa-va-session';
-const TOTAL_STEPS = 14;
+const TOTAL_STEPS = 15;
 
 const STEP_NAMES = [
   'Real Estate Gmail','KS License','MO License','New Agent Form','Join ROA',
-  'Okta Verify','ROA+ App','Dotloop','WhatsApp Group','Facebook Group',
-  'KC Team App','Facebook Cover','Business Cards','All Done!'
+  'Transfer MLS','Okta Verify','ROA+ App','Dotloop','WhatsApp Group','Facebook Group',
+  'KC Team App','Facebook Cover','Business Cards','All Done! 🎉'
 ];
 
 const SP_GROUPS = [
-  { group:'Account & App Setup', keys:['welcome-email','okta-chrome','roa-dashboard','roa-mobile','chrome-complete'] },
-  { group:'Broker Engine', keys:['broker-bank-profile','broker-bank-reports'] },
-  { group:'Work Vivo', keys:['workvivo-ks','workvivo-mo','workvivo-women'] },
-  { group:'Training & Resources', keys:['training-videos','kc-help-site','company-policies','brand-guide','marketing-hub','email-signature'] },
-  { group:'Marketing & Social', keys:['fb-banner','fb-bio','fb-moved','zillow-profile','realtor-profile','homes-profile','google-profile','linkedin-profile'] },
-  { group:'MLS & Listings', keys:['reofam-office','redfin-photos','merriam-signs'] },
-  { group:'Transaction Tools', keys:['skyslope-setup','dotloop-team','paperwork-rules','tc-services'] },
+  { group:'🔐 Account & App Setup', keys:['sp_welcome_email','sp_okta_signin','sp_roa_apps','sp_chrome_bookmarks','sp_chrome_ext'] },
+  { group:'🏢 Broker Engine', keys:['sp_bank_profile','sp_bank_reports'] },
+  { group:'📚 Training & Resources', keys:['sp_training_vids','sp_kc_help','sp_policies','sp_branding','sp_state_resources','sp_marketing_hub','sp_email_sig','sp_success_vault'] },
+  { group:'📣 Marketing & Social Profiles', keys:['sp_fb_group','sp_fb_banner','sp_fb_bio','sp_fb_moved','sp_roa_dashboard','sp_realtor_pro','sp_homes_pro','sp_redfin','sp_zillow'] },
+  { group:'🏠 MLS & Listings', keys:['sp_mls_profile','sp_mls_website','sp_mls_listoffice','sp_mls_search','sp_redfin_pics','sp_merriam_signs'] },
+  { group:'📋 Transaction Tools', keys:['sp_skyslope','sp_dotloop_templates','sp_dotloop_team','sp_paperwork_note','sp_tc_services'] },
 ];
 
 const SP_LABELS = {
-  'welcome-email':'Welcome Email','okta-chrome':'Okta Chrome Ext','roa-dashboard':'ROA Dashboard',
-  'roa-mobile':'ROA Mobile App','chrome-complete':'Chrome Setup Done',
-  'broker-bank-profile':'Bank Info — Profile','broker-bank-reports':'Bank Info — Reports',
-  'workvivo-ks':'Work Vivo KS','workvivo-mo':'Work Vivo MO','workvivo-women':'Women of ROA',
-  'training-videos':'Training Videos','kc-help-site':'KC Help Site','company-policies':'Policies',
-  'brand-guide':'Brand Guide','marketing-hub':'Marketing Hub','email-signature':'Email Signature',
-  'fb-banner':'FB Banner','fb-bio':'FB Bio','fb-moved':'FB I Moved','zillow-profile':'Zillow',
-  'realtor-profile':'Realtor.com','homes-profile':'Homes.com','google-profile':'Google Business',
-  'linkedin-profile':'LinkedIn','reofam-office':'REOFAM Office ID','redfin-photos':'Redfin Photos',
-  'merriam-signs':'Merriam Signs','skyslope-setup':'SkySlope','dotloop-team':'Dotloop Team',
-  'paperwork-rules':'Paperwork Rules','tc-services':'TC Services',
+  'sp_welcome_email':'Welcome Email','sp_okta_signin':'Sign into Okta','sp_roa_apps':'Sign into ROA Apps',
+  'sp_chrome_bookmarks':'Chrome ROA KC Bookmarks','sp_chrome_ext':'Okta Chrome Extension',
+  'sp_bank_profile':'Bank Info — Profile','sp_bank_reports':'Bank Info — Reports',
+  'sp_training_vids':'Training Videos','sp_kc_help':'KC Help Site','sp_policies':'Policies & Procedures',
+  'sp_branding':'ROA Branding Guidelines','sp_state_resources':'State Resources (KS/MO)',
+  'sp_marketing_hub':'ROA Marketing Hub','sp_email_sig':'Email Signature','sp_success_vault':'Success Vault Checklist',
+  'sp_fb_group':'Facebook Group','sp_fb_banner':'FB Banner','sp_fb_bio':'FB Agent Bio',
+  'sp_fb_moved':'FB I Moved Post','sp_roa_dashboard':'ROA Agent Dashboard',
+  'sp_realtor_pro':'Realtor.com Pro','sp_homes_pro':'Homes.com Pro','sp_redfin':'Redfin Partner Agent','sp_zillow':'Zillow Account',
+  'sp_mls_profile':'MLS Profile','sp_mls_website':'MLS Website Info','sp_mls_listoffice':'REOFAM List Office ID',
+  'sp_mls_search':'Search List Office ID','sp_redfin_pics':'Redfin Listing Photos','sp_merriam_signs':'Merriam Signs',
+  'sp_skyslope':'SkySlope Setup','sp_dotloop_templates':'Dotloop Templates','sp_dotloop_team':'Dotloop Team Members',
+  'sp_paperwork_note':'Paperwork 10-Day Rule','sp_tc_services':'TC Services Noted',
 };
 
 const ALL_SP_KEYS = SP_GROUPS.flatMap(g => g.keys);
