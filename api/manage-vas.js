@@ -4,6 +4,7 @@
 
 const SUPA_URL = process.env.SUPABASE_URL;
 const SUPA_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const RESEND_KEY = process.env.RESEND_API_KEY;
 
 async function supaFetch(path, opts = {}) {
   const res = await fetch(`${SUPA_URL}/rest/v1${path}`, {
@@ -30,6 +31,42 @@ async function verifyAdminSession(token) {
   return s;
 }
 
+async function sendWelcomeEmail(name, email) {
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${RESEND_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'ROA Dashboard <tc@myredeal.com>',
+        to: [email],
+        subject: "You've Been Added to the ROA VA Dashboard",
+        html: `
+          <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:2rem;">
+            <h2 style="color:#012F65;margin-bottom:.5rem;">Welcome to the ROA VA Dashboard</h2>
+            <p style="color:#374151;">Hi ${name},</p>
+            <p style="color:#374151;">You've been added as a VA to the Realty of America KC Team dashboard.</p>
+            <p style="color:#374151;"><strong>Here's how to log in:</strong></p>
+            <ol style="color:#374151;line-height:1.8;">
+              <li>Go to <a href="https://myredeal.com/vadashboard" style="color:#012F65;font-weight:600;">myredeal.com/vadashboard</a></li>
+              <li>Enter your email: <strong>${email}</strong></li>
+              <li>Click <strong>Send Code</strong> — a 6-digit code will arrive in your inbox</li>
+              <li>Enter the code to access the dashboard</li>
+            </ol>
+            <p style="color:#6b7280;font-size:.85rem;margin-top:1.5rem;">If you have any questions, contact your admin.</p>
+            <hr style="border:none;border-top:1px solid #e5e7eb;margin:1.5rem 0;">
+            <p style="color:#9ca3af;font-size:.8rem;">Realty of America · Kansas City Team</p>
+          </div>
+        `,
+      }),
+    });
+  } catch (e) {
+    console.error('Welcome email failed:', e);
+  }
+}
+
 export default async function handler(req, res) {
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   const session = await verifyAdminSession(token);
@@ -53,6 +90,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: err.includes('duplicate') ? 'Email already exists' : 'Failed to add VA' });
     }
     const rows = await r.json();
+    // Send welcome email (non-blocking)
+    await sendWelcomeEmail(name, email);
     return res.status(200).json({ success: true, va: rows[0] });
   }
 
