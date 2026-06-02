@@ -261,7 +261,7 @@ function removeSection(id) {
 function addMeasurement(sectionId) {
   const sec = sections.find(s => s.id === sectionId);
   if (!sec) return;
-  sec.measurements.push({ id: Date.now() + Math.random(), label: '', L: '', W: '' });
+  sec.measurements.push({ id: Date.now() + Math.random(), L: '', W: '' });
   renderSections();
 }
 
@@ -304,23 +304,18 @@ function renderSections() {
 function measHTML(sid, m) {
   return `
     <div class="meas-card">
-      <input class="meas-label-input" type="text" placeholder="Label (optional — e.g. Left Run, Island Front)"
-        value="${esc(m.label)}"
-        oninput="updateMeasField(${sid},${m.id},'label',this.value)">
       <div class="meas-dims">
         <div class="dim-group">
-          <label>Length (in)</label>
-          <input type="number" class="dim-input" placeholder="0" value="${m.L}" min="0"
+          <input type="number" class="dim-input" placeholder="Length" value="${m.L}" min="0"
             oninput="updateMeasField(${sid},${m.id},'L',this.value)">
         </div>
         <span class="x-sym">×</span>
         <div class="dim-group">
-          <label>Width (in)</label>
-          <input type="number" class="dim-input" placeholder="0" value="${m.W}" min="0"
+          <input type="number" class="dim-input" placeholder="Width" value="${m.W}" min="0"
             oninput="updateMeasField(${sid},${m.id},'W',this.value)">
         </div>
         <span class="sqft-result" id="sqr-${m.id}">${sqftOf(m)} sq ft</span>
-        <button class="btn btn-danger btn-sm" style="margin-top:14px" onclick="removeMeasurement(${sid},${m.id})">✕</button>
+        <button class="btn btn-danger btn-sm" onclick="removeMeasurement(${sid},${m.id})">✕</button>
       </div>
     </div>`;
 }
