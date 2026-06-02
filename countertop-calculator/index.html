@@ -26,6 +26,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .field input { width: 100%; padding: 10px 13px; border: 1.5px solid #e5e7eb; border-radius: 9px; font-size: 14px; color: #111; transition: border-color 0.2s, box-shadow 0.2s; background: #fafafa; }
 .field input:focus { outline: none; border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.08); background: white; }
 
+/* Sections */
 .section-card { border: 1.5px solid #e5e7eb; border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
 .section-header { background: linear-gradient(to right, #eef2ff, #f5f7ff); padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e5e7eb; }
 .section-name-input { font-size: 14px; font-weight: 700; color: #1e3a5f; border: none; background: transparent; flex: 1; min-width: 0; }
@@ -44,6 +45,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .x-sym { color: #9ca3af; font-size: 18px; font-weight: 600; margin-top: 14px; }
 .sqft-result { background: #dcfce7; color: #166534; padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; margin-top: 14px; white-space: nowrap; }
 
+/* Buttons */
 .btn { display: inline-flex; align-items: center; gap: 5px; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
 .btn-primary { background: #1e3a5f; color: white; }
 .btn-primary:hover { background: #162d4a; }
@@ -55,6 +57,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; background: linear-gradient(135deg, #166534, #15803d); color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.2px; }
 .btn-submit:hover { background: linear-gradient(135deg, #14532d, #166534); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(21,128,61,0.3); }
 
+/* Add-ons */
 .addon-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .addon-chip { border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 9px 10px; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; color: #374151; transition: all 0.15s; background: white; }
 .addon-chip:hover { border-color: #1e3a5f; color: #1e3a5f; background: #eef2ff; }
@@ -63,6 +66,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .addon-num-input { width: 72px; padding: 7px 8px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; text-align: center; background: white; color: #111; }
 .addon-row-label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px; }
 
+/* Plan image */
 .upload-zone { border: 2px dashed #d1d5db; border-radius: 12px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
 .upload-zone:hover { border-color: #1e3a5f; background: #eef2ff; }
 .upload-zone .icon { font-size: 36px; margin-bottom: 8px; }
@@ -70,6 +74,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .upload-zone .sub { font-size: 12px; color: #9ca3af; }
 .plan-preview { max-width: 100%; border-radius: 10px; margin-top: 14px; border: 1px solid #e5e7eb; }
 
+/* Summary */
 .summary-line { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
 .summary-line:last-child { border-bottom: none; }
 .summary-line .lbl { color: #6b7280; }
@@ -79,11 +84,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .summary-section-name { font-size: 13px; font-weight: 700; color: #1e3a5f; margin-bottom: 4px; }
 .summary-section-sub { font-size: 12px; color: #6b7280; }
 
+/* Success */
 #successView { display: none; text-align: center; padding: 60px 20px; }
 #successView .icon { font-size: 64px; margin-bottom: 16px; }
 #successView h2 { font-size: 26px; font-weight: 800; color: #1e3a5f; margin-bottom: 8px; }
 #successView p { color: #6b7280; font-size: 15px; margin-bottom: 24px; }
 
+/* Divider */
 .divider { height: 1px; background: #f0f0f0; margin: 4px 0 14px; }
 
 @media (max-width: 580px) {
@@ -105,6 +112,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 <div class="container">
 
+  <!-- SUCCESS VIEW -->
   <div id="successView">
     <div class="icon">✅</div>
     <h2>Quote Submitted!</h2>
@@ -112,40 +120,83 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <button class="btn btn-primary" onclick="resetForm()" style="font-size:15px;padding:12px 28px;">Start New Quote</button>
   </div>
 
+  <!-- MAIN FORM -->
   <div id="formView">
 
+    <!-- Project Details -->
     <div class="card">
       <div class="card-title"><span>📋 Project Details</span></div>
       <div class="form-row">
-        <div class="field"><label>Project Name</label><input type="text" id="projectName" placeholder="e.g. Smith Kitchen Remodel"></div>
-        <div class="field"><label>Customer Name</label><input type="text" id="customerName" placeholder="Full name"></div>
+        <div class="field">
+          <label>Project Name</label>
+          <input type="text" id="projectName" placeholder="e.g. Smith Kitchen Remodel">
+        </div>
+        <div class="field">
+          <label>Customer Name</label>
+          <input type="text" id="customerName" placeholder="Full name">
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="field">
+          <label>Job Site Address</label>
+          <input type="text" id="addressLine" placeholder="123 Main St">
+        </div>
+      </div>
+      <div class="form-row" style="grid-template-columns: 2fr 1fr 1fr;">
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="addressCity" placeholder="City">
+        </div>
+        <div class="field">
+          <label>State</label>
+          <input type="text" id="addressState" placeholder="TX" maxlength="2">
+        </div>
+        <div class="field">
+          <label>Zip</label>
+          <input type="text" id="addressZip" placeholder="00000" maxlength="10">
+        </div>
       </div>
       <div class="form-row">
-        <div class="field"><label>Measurer Name</label><input type="text" id="measurerName" placeholder="Your name"></div>
-        <div class="field"><label>Measurer Email</label><input type="email" id="measurerEmail" placeholder="you@email.com"></div>
+        <div class="field">
+          <label>Measurer Name</label>
+          <input type="text" id="measurerName" placeholder="Your name">
+        </div>
+        <div class="field">
+          <label>Measurer Email</label>
+          <input type="email" id="measurerEmail" placeholder="you@email.com">
+        </div>
       </div>
       <div class="form-row">
-        <div class="field"><label>Date</label><input type="text" id="quoteDate" readonly></div>
-        <div class="field"><label>Price Per Sq Ft ($)</label><input type="number" id="pricePerSqFt" placeholder="0.00" min="0" step="0.01" oninput="updateSummary()"></div>
+        <div class="field">
+          <label>Date</label>
+          <input type="text" id="quoteDate" readonly>
+        </div>
+        <div class="field">
+          <label>Price Per Sq Ft ($)</label>
+          <input type="number" id="pricePerSqFt" placeholder="0.00" min="0" step="0.01" oninput="updateSummary()">
+        </div>
       </div>
     </div>
 
+    <!-- Sections & Measurements -->
     <div class="card">
       <div class="card-title">
-        <span>📐 Sections & Measurements</span>
+        <span>📐 Sections &amp; Measurements</span>
         <button type="button" class="btn btn-outline btn-sm" onclick="addSection()">+ Add Section</button>
       </div>
       <div id="sectionsContainer"></div>
     </div>
 
+    <!-- Add-Ons -->
     <div class="card">
-      <div class="card-title"><span>🔧 Add-Ons & Cutouts</span></div>
+      <div class="card-title"><span>🔧 Add-Ons &amp; Cutouts</span></div>
       <div class="addon-presets" id="addonPresets"></div>
       <div class="divider"></div>
       <div id="addonList"></div>
       <button type="button" class="btn btn-outline btn-sm" onclick="addCustomAddon()">+ Custom Add-On</button>
     </div>
 
+    <!-- Plan Image -->
     <div class="card">
       <div class="card-title"><span>📷 Plan / Layout Photo</span></div>
       <div class="upload-zone" onclick="document.getElementById('planInput').click()">
@@ -157,31 +208,44 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <div id="planPreview"></div>
     </div>
 
+    <!-- Summary -->
     <div class="card">
       <div class="card-title"><span>💰 Quote Summary</span></div>
       <div id="summaryBody"></div>
     </div>
 
-    <button class="btn-submit" onclick="submitQuote()">📄 Generate PDF & Submit Quote</button>
-    <p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:10px">PDF downloads automatically · Copy emailed to measurer · Quote saved to system</p>
+    <!-- Submit -->
+    <button class="btn-submit" onclick="submitQuote()">
+      📄 Generate PDF &amp; Submit Quote
+    </button>
+    <p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:10px">
+      PDF downloads automatically · Copy emailed to measurer · Quote saved to system
+    </p>
 
   </div>
 </div>
 
 <script>
+// ─── State ───────────────────────────────────────────────────────────────────
 let sections = [];
 let addons = [];
 let planImageB64 = null;
 let planImageType = null;
 let sectionCounter = 0;
 
-const PRESETS = ['Sink Cutout','Faucet Hole','Soap Dispenser Hole','Cooktop Cutout','Edge Profile','Backsplash','Seam','Miter','Corbel'];
+const PRESETS = [
+  'Sink Cutout','Faucet Hole','Soap Dispenser Hole',
+  'Cooktop Cutout','Edge Profile','Backsplash',
+  'Seam','Miter','Corbel'
+];
 
+// ─── Init ────────────────────────────────────────────────────────────────────
 document.getElementById('quoteDate').value = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 renderAddonPresets();
 addSection();
 updateSummary();
 
+// ─── Sections ────────────────────────────────────────────────────────────────
 function addSection() {
   const id = ++sectionCounter;
   sections.push({ id, name: 'Section ' + id, measurements: [] });
@@ -274,6 +338,7 @@ function updateMeasField(sid, mid, field, val) {
   updateSummary();
 }
 
+// ─── Add-ons ─────────────────────────────────────────────────────────────────
 function renderAddonPresets() {
   document.getElementById('addonPresets').innerHTML = PRESETS.map(name =>
     `<button type="button" class="addon-chip" onclick="addAddon('${name}')">${name}</button>`
@@ -312,6 +377,7 @@ function renderAddons() {
   `).join('');
 }
 
+// ─── Plan Image ───────────────────────────────────────────────────────────────
 function handleImage(e) {
   const file = e.target.files[0]; if (!file) return;
   const reader = new FileReader();
@@ -324,13 +390,13 @@ function handleImage(e) {
   };
   reader.readAsDataURL(file);
 }
-
 function clearImage() {
   planImageB64 = null; planImageType = null;
   document.getElementById('planPreview').innerHTML = '';
   document.getElementById('planInput').value = '';
 }
 
+// ─── Summary ──────────────────────────────────────────────────────────────────
 function updateSummary() {
   const tot = totalSqft();
   const ppsf = parseFloat(document.getElementById('pricePerSqFt').value) || 0;
@@ -370,9 +436,15 @@ function updateSummary() {
   document.getElementById('summaryBody').innerHTML = html;
 }
 
+// ─── Submit ───────────────────────────────────────────────────────────────────
 async function submitQuote() {
   const projectName  = document.getElementById('projectName').value.trim() || 'Untitled Project';
   const customerName = document.getElementById('customerName').value.trim() || '—';
+  const addressLine  = document.getElementById('addressLine').value.trim();
+  const addressCity  = document.getElementById('addressCity').value.trim();
+  const addressState = document.getElementById('addressState').value.trim();
+  const addressZip   = document.getElementById('addressZip').value.trim();
+  const fullAddress  = [addressLine, addressCity, addressState, addressZip].filter(Boolean).join(', ') || '—';
   const measurerName = document.getElementById('measurerName').value.trim() || '—';
   const measurerEmail= document.getElementById('measurerEmail').value.trim();
   const date         = document.getElementById('quoteDate').value;
@@ -384,14 +456,16 @@ async function submitQuote() {
 
   if (!measurerEmail) { alert('Please enter the measurer email address.'); return; }
 
-  await generatePDF({ projectName, customerName, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand });
+  // 1. Generate & download PDF
+  await generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand });
 
+  // 2. Submit to FormSubmit (→ info@andrevargasteam.com)
   const sectionsSummary = sections.map(sec =>
     `${sec.name} [${sectionSqft(sec)} sqft]: ` +
-    sec.measurements.map(m => `${m.label ? m.label+': ' : ''}${m.L||0}"L x ${m.W||0}"W = ${sqftOf(m)}sqft`).join(' | ')
+    sec.measurements.map(m => `${m.label ? m.label+': ' : ''}${m.L||0}"L × ${m.W||0}"W = ${sqftOf(m)}sqft`).join(' | ')
   ).join('\n');
   const addonsSummary = addons.map(a =>
-    `${a.name} x${a.qty} @ $${parseFloat(a.price||0).toFixed(2)} = $${((parseFloat(a.qty)||0)*(parseFloat(a.price)||0)).toFixed(2)}`
+    `${a.name} ×${a.qty} @ $${parseFloat(a.price||0).toFixed(2)} = $${((parseFloat(a.qty)||0)*(parseFloat(a.price)||0)).toFixed(2)}`
   ).join('\n');
 
   const body = new FormData();
@@ -400,6 +474,7 @@ async function submitQuote() {
   body.append('_template',       'table');
   body.append('Project_Name',    projectName);
   body.append('Customer_Name',   customerName);
+  body.append('Job_Site_Address', fullAddress);
   body.append('Measurer_Name',   measurerName);
   body.append('Measurer_Email',  measurerEmail);
   body.append('Date',            date);
@@ -415,26 +490,30 @@ async function submitQuote() {
     await fetch('https://formsubmit.co/ajax/info@andrevargasteam.com', { method:'POST', body });
   } catch(e) { console.warn('FormSubmit issue:', e); }
 
+  // 3. Open mailto to measurer
   setTimeout(() => {
     const mailBody = encodeURIComponent(
-      `Hi ${measurerName},\n\nYour countertop quote for "${projectName}" is ready.\n\nCustomer: ${customerName}\nDate: ${date}\n\n--- SECTIONS ---\n` +
+      `Hi ${measurerName},\n\nYour countertop quote for "${projectName}" is ready.\n\n` +
+      `Customer: ${customerName}\nAddress: ${fullAddress}\nDate: ${date}\n\n--- SECTIONS ---\n` +
       sections.map(sec =>
         `${sec.name}: ${sectionSqft(sec)} sq ft\n` +
-        sec.measurements.map(m => `  ${m.label ? m.label+': ' : ''}${m.L||0}" x ${m.W||0}" = ${sqftOf(m)} sq ft`).join('\n')
+        sec.measurements.map(m => `  ${m.label ? m.label+': ' : ''}${m.L||0}" × ${m.W||0}" = ${sqftOf(m)} sq ft`).join('\n')
       ).join('\n') +
       `\n\n--- SUMMARY ---\nTotal Sq Ft: ${tot} sq ft\nPrice/Sq Ft: $${ppsf.toFixed(2)}\nMaterial Cost: $${matCost.toFixed(2)}` +
       (addOns > 0 ? `\nAdd-Ons: $${addOns.toFixed(2)}` : '') +
       `\nGrand Total: $${grand.toFixed(2)}\n\nSee attached PDF for full details.\n\nThank you!`
     );
-    window.open(`mailto:${measurerEmail}?subject=Countertop Quote -- ${encodeURIComponent(projectName)}&body=${mailBody}`, '_blank');
+    window.open(`mailto:${measurerEmail}?subject=Countertop Quote — ${encodeURIComponent(projectName)}&body=${mailBody}`, '_blank');
   }, 1000);
 
+  // 4. Show success
   document.getElementById('formView').style.display = 'none';
   document.getElementById('successView').style.display = 'block';
   window.scrollTo(0,0);
 }
 
-async function generatePDF({ projectName, customerName, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand }) {
+// ─── PDF Generation ───────────────────────────────────────────────────────────
+async function generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand }) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const W = doc.internal.pageSize.getWidth();
@@ -446,6 +525,7 @@ async function generatePDF({ projectName, customerName, measurerName, measurerEm
     if (y + needed > H - 20) { doc.addPage(); y = 20; }
   }
 
+  // ── Header ──
   doc.setFillColor(30, 58, 95);
   doc.rect(0, 0, W, 38, 'F');
   doc.setTextColor(255, 255, 255);
@@ -456,14 +536,17 @@ async function generatePDF({ projectName, customerName, measurerName, measurerEm
   doc.text('info@andrevargasteam.com', R, 27, { align:'right' });
   y = 50;
 
+  // ── Project Info ──
   doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
   doc.text('PROJECT INFORMATION', L, y); y += 5;
   doc.setDrawColor(30,58,95); doc.setLineWidth(0.5); doc.line(L, y, R, y); y += 8;
   doc.setTextColor(50,50,50); doc.setFontSize(10); doc.setFont('helvetica','normal');
   doc.text(`Project:    ${projectName}`, L, y); y += 6;
   doc.text(`Customer:   ${customerName}`, L, y); y += 6;
+  doc.text(`Address:    ${fullAddress}`, L, y); y += 6;
   doc.text(`Measurer:   ${measurerName}   |   ${measurerEmail}`, L, y); y += 14;
 
+  // ── Sections ──
   doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
   doc.text('MEASUREMENTS', L, y); y += 5;
   doc.line(L, y, R, y); y += 8;
@@ -476,16 +559,18 @@ async function generatePDF({ projectName, customerName, measurerName, measurerEm
     doc.text(`${sec.name}`, L+4, y+3);
     doc.text(`${sectionSqft(sec)} sq ft`, R, y+3, { align:'right' });
     y += 12;
+
     doc.setTextColor(70,70,70); doc.setFontSize(9); doc.setFont('helvetica','normal');
     for (const m of sec.measurements) {
       checkPage(8);
       const lbl = m.label ? `${m.label}:  ` : '';
-      doc.text(`    ${lbl}${m.L||0}" x ${m.W||0}"  =  ${sqftOf(m)} sq ft`, L, y);
+      doc.text(`    ${lbl}${m.L||0}" × ${m.W||0}"  =  ${sqftOf(m)} sq ft`, L, y);
       y += 5.5;
     }
     y += 4;
   }
 
+  // ── Add-Ons ──
   if (addons.length > 0) {
     checkPage(30);
     doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
@@ -495,13 +580,14 @@ async function generatePDF({ projectName, customerName, measurerName, measurerEm
     for (const a of addons) {
       checkPage(7);
       const lineTotal = ((parseFloat(a.qty)||0)*(parseFloat(a.price)||0)).toFixed(2);
-      doc.text(`${a.name}  x${a.qty}  @  $${parseFloat(a.price||0).toFixed(2)} each`, L+4, y);
+      doc.text(`${a.name}  ×${a.qty}  @  $${parseFloat(a.price||0).toFixed(2)} each`, L+4, y);
       doc.text(`$${lineTotal}`, R, y, { align:'right' });
       y += 5.5;
     }
     y += 6;
   }
 
+  // ── Summary Box ──
   checkPage(50);
   const boxH = addons.length > 0 ? 52 : 44;
   doc.setFillColor(240, 247, 255);
@@ -520,6 +606,7 @@ async function generatePDF({ projectName, customerName, measurerName, measurerEm
   doc.text(`GRAND TOTAL:  $${grand.toFixed(2)}`, L+8, y);
   y += 20;
 
+  // ── Plan Image ──
   if (planImageB64) {
     checkPage(40);
     doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
@@ -533,12 +620,14 @@ async function generatePDF({ projectName, customerName, measurerName, measurerEm
     } catch(e) { console.warn('Image error:', e); }
   }
 
+  // ── Footer ──
   doc.setFontSize(8); doc.setTextColor(160,160,160); doc.setFont('helvetica','normal');
   doc.text('Generated by Countertop Quote Calculator', W/2, H-10, { align:'center' });
 
   doc.save(`quote-${projectName.replace(/\s+/g,'-')}.pdf`);
 }
 
+// ─── Reset ────────────────────────────────────────────────────────────────────
 function resetForm() {
   sections = []; addons = []; planImageB64 = null; sectionCounter = 0;
   ['projectName','customerName','measurerName','measurerEmail','pricePerSqFt'].forEach(id => {
@@ -552,6 +641,7 @@ function resetForm() {
   window.scrollTo(0,0);
 }
 
+// ─── Helper ───────────────────────────────────────────────────────────────────
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
