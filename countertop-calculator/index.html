@@ -256,6 +256,9 @@ function addSection() {
 }
 
 function removeSection(id) {
+  const sec = sections.find(s => s.id === id);
+  const name = sec ? `"${sec.name || 'this section'}"` : 'this section';
+  if (!confirm(`Delete ${name} and all its measurements?`)) return;
   sections = sections.filter(s => s.id !== id);
   renderSections(); updateSummary();
 }
@@ -268,6 +271,7 @@ function addMeasurement(sectionId) {
 }
 
 function removeMeasurement(sectionId, mId) {
+  if (!confirm('Remove this measurement?')) return;
   const sec = sections.find(s => s.id === sectionId);
   if (sec) sec.measurements = sec.measurements.filter(m => m.id !== mId);
   renderSections(); updateSummary();
@@ -355,6 +359,9 @@ function addAddon(name, price=0) {
 function addCustomAddon() { addAddon('Custom Add-On', 0); }
 
 function removeAddon(id) {
+  const addon = addons.find(a => a.id === id);
+  const name = addon ? `"${addon.name}"` : 'this add-on';
+  if (!confirm(`Remove ${name}?`)) return;
   addons = addons.filter(a => a.id !== id);
   renderAddons(); updateSummary();
 }
