@@ -32,6 +32,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .section-name-input { font-size: 14px; font-weight: 700; color: #1e3a5f; border: none; background: transparent; flex: 1; min-width: 0; }
 .section-name-input:focus { outline: none; }
 .section-sqft-badge { background: #dcfce7; color: #166534; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.section-total-bar { margin-top: 12px; padding: 10px 14px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 8px; font-size: 14px; font-weight: 700; color: #166534; text-align: right; }
 .section-body { padding: 16px; }
 
 .meas-card { background: transparent; border: none; padding: 4px 0; margin-bottom: 4px; }
@@ -297,6 +298,9 @@ function renderSections() {
           ${sec.measurements.map(m => measHTML(sec.id, m)).join('')}
         </div>
         <button class="btn btn-outline btn-sm" onclick="addMeasurement(${sec.id})">+ Add Measurement</button>
+        <div class="section-total-bar">
+          Section Total: <span id="stot-bot-${sec.id}">${sectionSqft(sec)} sq ft</span>
+        </div>
       </div>
     </div>
   `).join('');
@@ -331,6 +335,8 @@ function updateMeasField(sid, mid, field, val) {
   if (badge) badge.textContent = sqftOf(m) + ' sq ft';
   const stot = document.getElementById('stot-' + sid);
   if (stot) stot.textContent = sectionSqft(sec) + ' sq ft';
+  const stotBot = document.getElementById('stot-bot-' + sid);
+  if (stotBot) stotBot.textContent = sectionSqft(sec) + ' sq ft';
   updateSummary();
 }
 
