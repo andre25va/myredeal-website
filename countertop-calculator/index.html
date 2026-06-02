@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countertop Quote Calculator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+
+.header { background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); color: white; padding: 20px 24px; display: flex; align-items: center; gap: 14px; }
+.header-icon { font-size: 32px; }
+.header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+.header p { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+
+.container { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+
+.card { background: white; border-radius: 14px; padding: 22px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid #eaecf0; }
+.card-title { font-size: 14px; font-weight: 700; color: #1e3a5f; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; letter-spacing: 0.2px; }
+.card-title span { display: flex; align-items: center; gap: 6px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-row.full { grid-template-columns: 1fr; }
+.field label { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 5px; }
+.field input { width: 100%; padding: 10px 13px; border: 1.5px solid #e5e7eb; border-radius: 9px; font-size: 14px; color: #111; transition: border-color 0.2s, box-shadow 0.2s; background: #fafafa; }
+.field input:focus { outline: none; border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.08); background: white; }
+
+.section-card { border: 1.5px solid #e5e7eb; border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+.section-header { background: linear-gradient(to right, #eef2ff, #f5f7ff); padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e5e7eb; }
+.section-name-input { font-size: 14px; font-weight: 700; color: #1e3a5f; border: none; background: transparent; flex: 1; min-width: 0; }
+.section-name-input:focus { outline: none; }
+.section-sqft-badge { background: #dcfce7; color: #166534; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.section-body { padding: 16px; }
+
+.meas-card { background: #f8faff; border: 1px solid #e8edf8; border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.meas-label-input { width: 100%; padding: 7px 10px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 12px; margin-bottom: 10px; background: white; color: #111; }
+.meas-label-input:focus { outline: none; border-color: #1e3a5f; }
+.meas-dims { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.dim-group { display: flex; flex-direction: column; }
+.dim-group label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+.dim-input { width: 90px; padding: 8px 10px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 14px; text-align: center; background: white; color: #111; }
+.dim-input:focus { outline: none; border-color: #1e3a5f; }
+.x-sym { color: #9ca3af; font-size: 18px; font-weight: 600; margin-top: 14px; }
+.sqft-result { background: #dcfce7; color: #166534; padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; margin-top: 14px; white-space: nowrap; }
+
+.btn { display: inline-flex; align-items: center; gap: 5px; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
+.btn-primary { background: #1e3a5f; color: white; }
+.btn-primary:hover { background: #162d4a; }
+.btn-outline { background: white; color: #1e3a5f; border: 1.5px solid #c7d2e8; }
+.btn-outline:hover { background: #eef2ff; }
+.btn-danger { background: #fff1f2; color: #be123c; border: 1.5px solid #fecdd3; }
+.btn-danger:hover { background: #ffe4e6; }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; background: linear-gradient(135deg, #166534, #15803d); color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.2px; }
+.btn-submit:hover { background: linear-gradient(135deg, #14532d, #166534); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(21,128,61,0.3); }
+
+.addon-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.addon-chip { border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 9px 10px; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; color: #374151; transition: all 0.15s; background: white; }
+.addon-chip:hover { border-color: #1e3a5f; color: #1e3a5f; background: #eef2ff; }
+.addon-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f8faff; border: 1px solid #e8edf8; border-radius: 9px; margin-bottom: 8px; }
+.addon-row-name { flex: 1; padding: 7px 10px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; font-weight: 600; background: white; color: #111; }
+.addon-num-input { width: 72px; padding: 7px 8px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; text-align: center; background: white; color: #111; }
+.addon-row-label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px; }
+
+.upload-zone { border: 2px dashed #d1d5db; border-radius: 12px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.upload-zone:hover { border-color: #1e3a5f; background: #eef2ff; }
+.upload-zone .icon { font-size: 36px; margin-bottom: 8px; }
+.upload-zone .title { font-size: 14px; font-weight: 700; color: #1e3a5f; margin-bottom: 4px; }
+.upload-zone .sub { font-size: 12px; color: #9ca3af; }
+.plan-preview { max-width: 100%; border-radius: 10px; margin-top: 14px; border: 1px solid #e5e7eb; }
+
+.summary-line { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
+.summary-line:last-child { border-bottom: none; }
+.summary-line .lbl { color: #6b7280; }
+.summary-line .val { font-weight: 600; color: #111; }
+.summary-grand { font-size: 22px; font-weight: 900; color: #1e3a5f; }
+.summary-section-block { background: #f8faff; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; }
+.summary-section-name { font-size: 13px; font-weight: 700; color: #1e3a5f; margin-bottom: 4px; }
+.summary-section-sub { font-size: 12px; color: #6b7280; }
+
+#successView { display: none; text-align: center; padding: 60px 20px; }
+#successView .icon { font-size: 64px; margin-bottom: 16px; }
+#successView h2 { font-size: 26px; font-weight: 800; color: #1e3a5f; margin-bottom: 8px; }
+#successView p { color: #6b7280; font-size: 15px; margin-bottom: 24px; }
+
+.divider { height: 1px; background: #f0f0f0; margin: 4px 0 14px; }
+
+@media (max-width: 580px) {
+  .form-row { grid-template-columns: 1fr; }
+  .addon-presets { grid-template-columns: repeat(2, 1fr); }
+  .meas-dims { gap: 7px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">🪨</div>
+  <div>
+    <h1>Countertop Quote Calculator</h1>
+    <p>Professional Measurement & Pricing Tool</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <div id="successView">
+    <div class="icon">✅</div>
+    <h2>Quote Submitted!</h2>
+    <p>Your PDF has been downloaded automatically.<br>A copy has been sent to the system and the measurer's email.</p>
+    <button class="btn btn-primary" onclick="resetForm()" style="font-size:15px;padding:12px 28px;">Start New Quote</button>
+  </div>
+
+  <div id="formView">
+
+    <div class="card">
+      <div class="card-title"><span>📋 Project Details</span></div>
+      <div class="form-row">
+        <div class="field"><label>Project Name</label><input type="text" id="projectName" placeholder="e.g. Smith Kitchen Remodel"></div>
+        <div class="field"><label>Customer Name</label><input type="text" id="customerName" placeholder="Full name"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Measurer Name</label><input type="text" id="measurerName" placeholder="Your name"></div>
+        <div class="field"><label>Measurer Email</label><input type="email" id="measurerEmail" placeholder="you@email.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Date</label><input type="text" id="quoteDate" readonly></div>
+        <div class="field"><label>Price Per Sq Ft ($)</label><input type="number" id="pricePerSqFt" placeholder="0.00" min="0" step="0.01" oninput="updateSummary()"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>📐 Sections & Measurements</span>
+        <button type="button" class="btn btn-outline btn-sm" onclick="addSection()">+ Add Section</button>
+      </div>
+      <div id="sectionsContainer"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>🔧 Add-Ons & Cutouts</span></div>
+      <div class="addon-presets" id="addonPresets"></div>
+      <div class="divider"></div>
+      <div id="addonList"></div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="addCustomAddon()">+ Custom Add-On</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>📷 Plan / Layout Photo</span></div>
+      <div class="upload-zone" onclick="document.getElementById('planInput').click()">
+        <div class="icon">📁</div>
+        <div class="title">Click to upload plan image</div>
+        <div class="sub">JPG, PNG, HEIC, PDF supported</div>
+      </div>
+      <input type="file" id="planInput" accept="image/*" style="display:none" onchange="handleImage(event)">
+      <div id="planPreview"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>💰 Quote Summary</span></div>
+      <div id="summaryBody"></div>
+    </div>
+
+    <button class="btn-submit" onclick="submitQuote()">📄 Generate PDF & Submit Quote</button>
+    <p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:10px">PDF downloads automatically · Copy emailed to measurer · Quote saved to system</p>
+
+  </div>
+</div>
+
+<script>
+let sections = [];
+let addons = [];
+let planImageB64 = null;
+let planImageType = null;
+let sectionCounter = 0;
+
+const PRESETS = ['Sink Cutout','Faucet Hole','Soap Dispenser Hole','Cooktop Cutout','Edge Profile','Backsplash','Seam','Miter','Corbel'];
+
+document.getElementById('quoteDate').value = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+renderAddonPresets();
+addSection();
+updateSummary();
+
+function addSection() {
+  const id = ++sectionCounter;
+  sections.push({ id, name: 'Section ' + id, measurements: [] });
+  addMeasurement(id);
+  renderSections();
+}
+
+function removeSection(id) {
+  sections = sections.filter(s => s.id !== id);
+  renderSections(); updateSummary();
+}
+
+function addMeasurement(sectionId) {
+  const sec = sections.find(s => s.id === sectionId);
+  if (!sec) return;
+  sec.measurements.push({ id: Date.now() + Math.random(), label: '', L: '', W: '' });
+  renderSections();
+}
+
+function removeMeasurement(sectionId, mId) {
+  const sec = sections.find(s => s.id === sectionId);
+  if (sec) sec.measurements = sec.measurements.filter(m => m.id !== mId);
+  renderSections(); updateSummary();
+}
+
+function sqftOf(m) {
+  const l = parseFloat(m.L) || 0, w = parseFloat(m.W) || 0;
+  return (l && w) ? Math.ceil((l * w) / 144) : 0;
+}
+
+function sectionSqft(sec) { return sec.measurements.reduce((s,m) => s + sqftOf(m), 0); }
+function totalSqft() { return sections.reduce((s, sec) => s + sectionSqft(sec), 0); }
+function addonTotal() { return addons.reduce((s,a) => s + (parseFloat(a.qty)||0)*(parseFloat(a.price)||0), 0); }
+
+function renderSections() {
+  const c = document.getElementById('sectionsContainer');
+  c.innerHTML = sections.map(sec => `
+    <div class="section-card">
+      <div class="section-header">
+        <input class="section-name-input" type="text" value="${esc(sec.name)}"
+          placeholder="Section name (e.g. Kitchen Island)"
+          oninput="sections.find(s=>s.id===${sec.id}).name=this.value; document.getElementById('stot-${sec.id}').textContent=sectionSqft(sections.find(s=>s.id===${sec.id}))+' sq ft'; updateSummary();">
+        <span class="section-sqft-badge" id="stot-${sec.id}">${sectionSqft(sec)} sq ft</span>
+        <button class="btn btn-danger btn-sm" onclick="removeSection(${sec.id})">✕</button>
+      </div>
+      <div class="section-body">
+        <div id="mcon-${sec.id}">
+          ${sec.measurements.map(m => measHTML(sec.id, m)).join('')}
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addMeasurement(${sec.id})">+ Add Measurement</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function measHTML(sid, m) {
+  return `
+    <div class="meas-card">
+      <input class="meas-label-input" type="text" placeholder="Label (optional — e.g. Left Run, Island Front)"
+        value="${esc(m.label)}"
+        oninput="updateMeasField(${sid},${m.id},'label',this.value)">
+      <div class="meas-dims">
+        <div class="dim-group">
+          <label>Length (in)</label>
+          <input type="number" class="dim-input" placeholder="0" value="${m.L}" min="0"
+            oninput="updateMeasField(${sid},${m.id},'L',this.value)">
+        </div>
+        <span class="x-sym">×</span>
+        <div class="dim-group">
+          <label>Width (in)</label>
+          <input type="number" class="dim-input" placeholder="0" value="${m.W}" min="0"
+            oninput="updateMeasField(${sid},${m.id},'W',this.value)">
+        </div>
+        <span class="sqft-result" id="sqr-${m.id}">${sqftOf(m)} sq ft</span>
+        <button class="btn btn-danger btn-sm" style="margin-top:14px" onclick="removeMeasurement(${sid},${m.id})">✕</button>
+      </div>
+    </div>`;
+}
+
+function updateMeasField(sid, mid, field, val) {
+  const sec = sections.find(s => s.id === sid);
+  if (!sec) return;
+  const m = sec.measurements.find(m => m.id === mid);
+  if (!m) return;
+  m[field] = val;
+  const badge = document.getElementById('sqr-' + mid);
+  if (badge) badge.textContent = sqftOf(m) + ' sq ft';
+  const stot = document.getElementById('stot-' + sid);
+  if (stot) stot.textContent = sectionSqft(sec) + ' sq ft';
+  updateSummary();
+}
+
+function renderAddonPresets() {
+  document.getElementById('addonPresets').innerHTML = PRESETS.map(name =>
+    `<button type="button" class="addon-chip" onclick="addAddon('${name}')">${name}</button>`
+  ).join('');
+}
+
+function addAddon(name, price=0) {
+  addons.push({ id: Date.now()+Math.random(), name, qty: 1, price });
+  renderAddons(); updateSummary();
+}
+
+function addCustomAddon() { addAddon('Custom Add-On', 0); }
+
+function removeAddon(id) {
+  addons = addons.filter(a => a.id !== id);
+  renderAddons(); updateSummary();
+}
+
+function renderAddons() {
+  document.getElementById('addonList').innerHTML = addons.map(a => `
+    <div class="addon-row">
+      <input class="addon-row-name" type="text" value="${esc(a.name)}" placeholder="Add-on name"
+        oninput="addons.find(x=>x.id===${a.id}).name=this.value">
+      <div>
+        <span class="addon-row-label">Qty</span>
+        <input type="number" class="addon-num-input" value="${a.qty}" min="1"
+          oninput="addons.find(x=>x.id===${a.id}).qty=this.value; updateSummary()">
+      </div>
+      <div>
+        <span class="addon-row-label">Price ($)</span>
+        <input type="number" class="addon-num-input" value="${a.price}" min="0" step="0.01"
+          oninput="addons.find(x=>x.id===${a.id}).price=this.value; updateSummary()">
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="removeAddon(${a.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function handleImage(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    planImageB64 = ev.target.result;
+    planImageType = file.type;
+    document.getElementById('planPreview').innerHTML = `
+      <img src="${planImageB64}" class="plan-preview" alt="Plan">
+      <button class="btn btn-danger btn-sm" style="margin-top:10px" onclick="clearImage()">Remove Image</button>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage() {
+  planImageB64 = null; planImageType = null;
+  document.getElementById('planPreview').innerHTML = '';
+  document.getElementById('planInput').value = '';
+}
+
+function updateSummary() {
+  const tot = totalSqft();
+  const ppsf = parseFloat(document.getElementById('pricePerSqFt').value) || 0;
+  const matCost = tot * ppsf;
+  const addOns = addonTotal();
+  const grand = matCost + addOns;
+
+  let html = '';
+  if (sections.length) {
+    html += sections.map(sec => `
+      <div class="summary-section-block">
+        <div class="summary-section-name">${esc(sec.name)}</div>
+        <div class="summary-section-sub">
+          ${sec.measurements.map(m => {
+            const lbl = m.label ? m.label + ': ' : '';
+            return `${lbl}${m.L||0}" × ${m.W||0}" = ${sqftOf(m)} sq ft`;
+          }).join(' &nbsp;|&nbsp; ')}
+        </div>
+        <div style="font-size:13px;font-weight:700;color:#166534;margin-top:4px">Subtotal: ${sectionSqft(sec)} sq ft</div>
+      </div>
+    `).join('');
+  }
+
+  html += `
+    <div class="summary-line" style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:4px">
+      <span style="font-weight:800">Total Sq Ft</span>
+      <span style="font-weight:800;color:#1e3a5f">${tot} sq ft</span>
+    </div>
+    <div class="summary-line"><span class="lbl">Price Per Sq Ft</span><span class="val">$${ppsf.toFixed(2)}</span></div>
+    <div class="summary-line"><span class="lbl">Material Cost</span><span class="val">$${matCost.toFixed(2)}</span></div>
+    ${addOns > 0 ? `<div class="summary-line"><span class="lbl">Add-Ons</span><span class="val">$${addOns.toFixed(2)}</span></div>` : ''}
+    <div class="summary-line" style="border-top:2px solid #1e3a5f;margin-top:8px;padding-top:12px">
+      <span style="font-weight:900;font-size:16px">Grand Total</span>
+      <span class="summary-grand">$${grand.toFixed(2)}</span>
+    </div>
+  `;
+  document.getElementById('summaryBody').innerHTML = html;
+}
+
+async function submitQuote() {
+  const projectName  = document.getElementById('projectName').value.trim() || 'Untitled Project';
+  const customerName = document.getElementById('customerName').value.trim() || '—';
+  const measurerName = document.getElementById('measurerName').value.trim() || '—';
+  const measurerEmail= document.getElementById('measurerEmail').value.trim();
+  const date         = document.getElementById('quoteDate').value;
+  const ppsf         = parseFloat(document.getElementById('pricePerSqFt').value) || 0;
+  const tot          = totalSqft();
+  const matCost      = tot * ppsf;
+  const addOns       = addonTotal();
+  const grand        = matCost + addOns;
+
+  if (!measurerEmail) { alert('Please enter the measurer email address.'); return; }
+
+  await generatePDF({ projectName, customerName, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand });
+
+  const sectionsSummary = sections.map(sec =>
+    `${sec.name} [${sectionSqft(sec)} sqft]: ` +
+    sec.measurements.map(m => `${m.label ? m.label+': ' : ''}${m.L||0}"L x ${m.W||0}"W = ${sqftOf(m)}sqft`).join(' | ')
+  ).join('\n');
+  const addonsSummary = addons.map(a =>
+    `${a.name} x${a.qty} @ $${parseFloat(a.price||0).toFixed(2)} = $${((parseFloat(a.qty)||0)*(parseFloat(a.price)||0)).toFixed(2)}`
+  ).join('\n');
+
+  const body = new FormData();
+  body.append('_subject',        `[Countertop Quote] ${projectName}`);
+  body.append('_captcha',        'false');
+  body.append('_template',       'table');
+  body.append('Project_Name',    projectName);
+  body.append('Customer_Name',   customerName);
+  body.append('Measurer_Name',   measurerName);
+  body.append('Measurer_Email',  measurerEmail);
+  body.append('Date',            date);
+  body.append('Total_Sq_Ft',     tot + ' sq ft');
+  body.append('Price_Per_Sq_Ft', '$' + ppsf.toFixed(2));
+  body.append('Material_Cost',   '$' + matCost.toFixed(2));
+  body.append('Addon_Total',     '$' + addOns.toFixed(2));
+  body.append('Grand_Total',     '$' + grand.toFixed(2));
+  body.append('Sections_Detail', sectionsSummary);
+  if (addons.length) body.append('Addons_Detail', addonsSummary);
+
+  try {
+    await fetch('https://formsubmit.co/ajax/info@andrevargasteam.com', { method:'POST', body });
+  } catch(e) { console.warn('FormSubmit issue:', e); }
+
+  setTimeout(() => {
+    const mailBody = encodeURIComponent(
+      `Hi ${measurerName},\n\nYour countertop quote for "${projectName}" is ready.\n\nCustomer: ${customerName}\nDate: ${date}\n\n--- SECTIONS ---\n` +
+      sections.map(sec =>
+        `${sec.name}: ${sectionSqft(sec)} sq ft\n` +
+        sec.measurements.map(m => `  ${m.label ? m.label+': ' : ''}${m.L||0}" x ${m.W||0}" = ${sqftOf(m)} sq ft`).join('\n')
+      ).join('\n') +
+      `\n\n--- SUMMARY ---\nTotal Sq Ft: ${tot} sq ft\nPrice/Sq Ft: $${ppsf.toFixed(2)}\nMaterial Cost: $${matCost.toFixed(2)}` +
+      (addOns > 0 ? `\nAdd-Ons: $${addOns.toFixed(2)}` : '') +
+      `\nGrand Total: $${grand.toFixed(2)}\n\nSee attached PDF for full details.\n\nThank you!`
+    );
+    window.open(`mailto:${measurerEmail}?subject=Countertop Quote -- ${encodeURIComponent(projectName)}&body=${mailBody}`, '_blank');
+  }, 1000);
+
+  document.getElementById('formView').style.display = 'none';
+  document.getElementById('successView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+async function generatePDF({ projectName, customerName, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand }) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const L = 20, R = W - 20;
+  let y = 0;
+
+  function checkPage(needed=20) {
+    if (y + needed > H - 20) { doc.addPage(); y = 20; }
+  }
+
+  doc.setFillColor(30, 58, 95);
+  doc.rect(0, 0, W, 38, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20); doc.setFont('helvetica','bold');
+  doc.text('COUNTERTOP QUOTE', L, 17);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text(date, L, 27);
+  doc.text('info@andrevargasteam.com', R, 27, { align:'right' });
+  y = 50;
+
+  doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
+  doc.text('PROJECT INFORMATION', L, y); y += 5;
+  doc.setDrawColor(30,58,95); doc.setLineWidth(0.5); doc.line(L, y, R, y); y += 8;
+  doc.setTextColor(50,50,50); doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text(`Project:    ${projectName}`, L, y); y += 6;
+  doc.text(`Customer:   ${customerName}`, L, y); y += 6;
+  doc.text(`Measurer:   ${measurerName}   |   ${measurerEmail}`, L, y); y += 14;
+
+  doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
+  doc.text('MEASUREMENTS', L, y); y += 5;
+  doc.line(L, y, R, y); y += 8;
+
+  for (const sec of sections) {
+    checkPage(30);
+    doc.setFillColor(238,242,255);
+    doc.roundedRect(L, y-4, R-L, 10, 2, 2, 'F');
+    doc.setTextColor(30,58,95); doc.setFontSize(11); doc.setFont('helvetica','bold');
+    doc.text(`${sec.name}`, L+4, y+3);
+    doc.text(`${sectionSqft(sec)} sq ft`, R, y+3, { align:'right' });
+    y += 12;
+    doc.setTextColor(70,70,70); doc.setFontSize(9); doc.setFont('helvetica','normal');
+    for (const m of sec.measurements) {
+      checkPage(8);
+      const lbl = m.label ? `${m.label}:  ` : '';
+      doc.text(`    ${lbl}${m.L||0}" x ${m.W||0}"  =  ${sqftOf(m)} sq ft`, L, y);
+      y += 5.5;
+    }
+    y += 4;
+  }
+
+  if (addons.length > 0) {
+    checkPage(30);
+    doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
+    doc.text('ADD-ONS & CUTOUTS', L, y); y += 5;
+    doc.line(L, y, R, y); y += 8;
+    doc.setTextColor(70,70,70); doc.setFontSize(9); doc.setFont('helvetica','normal');
+    for (const a of addons) {
+      checkPage(7);
+      const lineTotal = ((parseFloat(a.qty)||0)*(parseFloat(a.price)||0)).toFixed(2);
+      doc.text(`${a.name}  x${a.qty}  @  $${parseFloat(a.price||0).toFixed(2)} each`, L+4, y);
+      doc.text(`$${lineTotal}`, R, y, { align:'right' });
+      y += 5.5;
+    }
+    y += 6;
+  }
+
+  checkPage(50);
+  const boxH = addons.length > 0 ? 52 : 44;
+  doc.setFillColor(240, 247, 255);
+  doc.roundedRect(L, y, R-L, boxH, 5, 5, 'F');
+  doc.setDrawColor(30,58,95); doc.setLineWidth(0.8);
+  doc.roundedRect(L, y, R-L, boxH, 5, 5, 'S');
+  y += 10;
+  doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
+  doc.text('QUOTE SUMMARY', L+8, y); y += 9;
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(60,60,60);
+  doc.text(`Total Sq Ft: ${tot} sq ft`, L+8, y);
+  doc.text(`Price/Sq Ft: $${ppsf.toFixed(2)}`, L+80, y); y += 6;
+  doc.text(`Material Cost: $${matCost.toFixed(2)}`, L+8, y);
+  if (addons.length > 0) { doc.text(`Add-Ons: $${addOns.toFixed(2)}`, L+80, y); y += 6; } else y += 6;
+  doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(30,58,95);
+  doc.text(`GRAND TOTAL:  $${grand.toFixed(2)}`, L+8, y);
+  y += 20;
+
+  if (planImageB64) {
+    checkPage(40);
+    doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
+    doc.text('PLAN / LAYOUT', L, y); y += 5;
+    doc.setDrawColor(30,58,95); doc.line(L, y, R, y); y += 8;
+    try {
+      const itype = planImageType && planImageType.includes('png') ? 'PNG' : 'JPEG';
+      const maxW = R - L, maxH = 130;
+      doc.addImage(planImageB64, itype, L, y, maxW, maxH, '', 'FAST');
+      y += maxH + 6;
+    } catch(e) { console.warn('Image error:', e); }
+  }
+
+  doc.setFontSize(8); doc.setTextColor(160,160,160); doc.setFont('helvetica','normal');
+  doc.text('Generated by Countertop Quote Calculator', W/2, H-10, { align:'center' });
+
+  doc.save(`quote-${projectName.replace(/\s+/g,'-')}.pdf`);
+}
+
+function resetForm() {
+  sections = []; addons = []; planImageB64 = null; sectionCounter = 0;
+  ['projectName','customerName','measurerName','measurerEmail','pricePerSqFt'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('planPreview').innerHTML = '';
+  document.getElementById('addonList').innerHTML = '';
+  addSection(); updateSummary();
+  document.getElementById('successView').style.display = 'none';
+  document.getElementById('formView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>
