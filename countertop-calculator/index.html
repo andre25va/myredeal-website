@@ -666,15 +666,24 @@ async function generatePDF({ projectName, customerName, fullAddress, measurerNam
 
   // ── Plan Image ──
   if (planImageB64) {
-    checkPage(40);
+    const maxW = R - L;
+    const minImgH = 60; // minimum useful image height
+    // Always start image section on a fresh page if less than 80 units remain
+    const spaceLeft = H - 20 - y;
+    if (spaceLeft < 80) { doc.addPage(); y = 20; }
     doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
     doc.text('PLAN / LAYOUT', L, y); y += 5;
     doc.setDrawColor(30,58,95); doc.line(L, y, R, y); y += 8;
     try {
       const itype = planImageType && planImageType.includes('png') ? 'PNG' : 'JPEG';
-      const maxW = R - L, maxH = 130;
-      doc.addImage(planImageB64, itype, L, y, maxW, maxH, '', 'FAST');
-      y += maxH + 6;
+      // Use remaining page height (leave 20 for footer), capped at 180
+      const availH = Math.min(H - 20 - y, 180);
+      const imgH = Math.max(availH, minImgH);
+      // If even min height doesn't fit, new page
+      if (H - 20 - y < minImgH) { doc.addPage(); y = 20; }
+      const finalH = Math.min(H - 20 - y, 180);
+      doc.addImage(planImageB64, itype, L, y, maxW, finalH, '', 'FAST');
+      y += finalH + 6;
     } catch(e) { console.warn('Image error:', e); }
   }
 
