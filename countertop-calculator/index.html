@@ -845,6 +845,49 @@ function resetForm() {
   switchTab('form');
 }
 
+// ─── Seed Demo Quote (first load only) ───────────────────────────────────────
+(function seedDemo() {
+  const existing = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+  if (existing.length > 0) return; // already has data
+  const demo = {
+    quoteId: 'QT-20260601-DEMO',
+    projectName: '14741 OP — Demo Kitchen',
+    customerName: 'Nagaraju Reddy',
+    addressLine: '14741 Outpost Ridge Ln',
+    addressCity: 'Humble', addressState: 'TX', addressZip: '77396',
+    fullAddress: '14741 Outpost Ridge Ln, Humble, TX 77396',
+    measurerName: 'Andre Vargas',
+    measurerEmail: 'info@andrevargasteam.com',
+    date: '2026-06-01',
+    ppsf: '65.00', tot: 52.00, matCost: 3380.00,
+    grand: 3655.00,
+    sections: [
+      { id: 's1', name: 'Kitchen Perimeter', rows: [
+          { id: 'r1', l: '144', w: '26' },
+          { id: 'r2', l: '72',  w: '26' }
+        ]
+      },
+      { id: 's2', name: 'Kitchen Island', rows: [
+          { id: 'r3', l: '96', w: '42' }
+        ]
+      },
+      { id: 's3', name: 'Bathroom', rows: [
+          { id: 'r4', l: '61', w: '22' }
+        ]
+      }
+    ],
+    addons: [
+      { id: 'a1', name: 'Sink Cutout',     qty: 1, price: 150 },
+      { id: 'a2', name: 'Faucet Hole',     qty: 3, price: 25  },
+      { id: 'a3', name: 'Edge Profile',    qty: 1, price: 0   }
+    ],
+    planImageB64: null,
+    planImageType: null,
+    savedAt: new Date('2026-06-01T10:30:00').toISOString()
+  };
+  localStorage.setItem('ctq_history', JSON.stringify([demo]));
+})();
+
 // ─── History & PIN ────────────────────────────────────────────────────────────
 const HISTORY_PIN = '1396';
 let pinBuffer = '';
