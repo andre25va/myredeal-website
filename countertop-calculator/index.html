@@ -105,6 +105,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </style>
 </head>
 <body>
+<!-- Hidden iframe: absorbs FormSubmit redirect so page doesn't navigate away -->
+<iframe name="formsubmit_iframe" style="display:none" title="form-target"></iframe>
 
 <div class="header">
   <div class="header-icon">🪨</div>
@@ -541,11 +543,55 @@ async function submitQuote() {
   body.append('Grand_Total',     '$' + grand.toFixed(2));
   body.append('Sections_Detail', sectionsSummary);
   if (addons.length) body.append('Addons_Detail', addonsSummary);
-  if (pdfBlob) body.append('attachment', new File([pdfBlob], pdfFileName, { type: 'application/pdf' }));
+  // Use hidden form POST — FormSubmit AJAX does not support file attachments
+  const fields = {
+    '_subject':        `[Countertop Quote] ${projectName}`,
+    '_captcha':        'false',
+    '_template':       'table',
+    '_next':           'https://andre25va.github.io/myredeal-website/countertop-calculator/',
+    'Quote_ID':        QUOTE_ID,
+    'Project_Name':    projectName,
+    'Customer_Name':   customerName,
+    'Job_Site_Address': fullAddress,
+    'Measurer_Name':   measurerName,
+    'Measurer_Email':  measurerEmail,
+    'Date':            date,
+    'Total_Sq_Ft':     tot + ' sq ft',
+    'Price_Per_Sq_Ft': '$' + ppsf.toFixed(2),
+    'Material_Cost':   '$' + matCost.toFixed(2),
+    'Addon_Total':     '$' + addOns.toFixed(2),
+    'Grand_Total':     '$' + grand.toFixed(2),
+    'Sections_Detail': sectionsSummary,
+  };
+  if (addons.length) fields['Addons_Detail'] = addonsSummary;
 
-  try {
-    await fetch('https://formsubmit.co/ajax/info@andrevargasteam.com', { method:'POST', body });
-  } catch(e) { console.warn('FormSubmit issue:', e); }
+  const formEl = document.createElement('form');
+  formEl.method = 'POST';
+  formEl.action = 'https://formsubmit.co/info@andrevargasteam.com';
+  formEl.enctype = 'multipart/form-data';
+  formEl.target = 'formsubmit_iframe';
+  formEl.style.display = 'none';
+
+  for (const [name, value] of Object.entries(fields)) {
+    const inp = document.createElement('input');
+    inp.type = 'hidden'; inp.name = name; inp.value = value;
+    formEl.appendChild(inp);
+  }
+
+  if (pdfBlob) {
+    try {
+      const fileInp = document.createElement('input');
+      fileInp.type = 'file'; fileInp.name = 'attachment'; fileInp.style.display = 'none';
+      const dt = new DataTransfer();
+      dt.items.add(new File([pdfBlob], pdfFileName, { type: 'application/pdf' }));
+      fileInp.files = dt.files;
+      formEl.appendChild(fileInp);
+    } catch(e) { console.warn('PDF attachment error:', e); }
+  }
+
+  document.body.appendChild(formEl);
+  formEl.submit();
+  setTimeout(() => { try { document.body.removeChild(formEl); } catch(e){} }, 5000);
 
   // 3. Open mailto to measurer
   setTimeout(() => {
