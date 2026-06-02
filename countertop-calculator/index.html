@@ -14,7 +14,33 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
 .header p { font-size: 12px; opacity: 0.75; margin-top: 2px; }
 
-.container { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+.container { max-width: 820px; margin: 0 auto; padding: 16px 16px 60px; }
+
+/* ── Tab Nav ── */
+.tab-nav { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid #eaecf0; gap: 4px; }
+.tab-btn { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 9px; font-size: 14px; font-weight: 600; color: #6b7280; cursor: pointer; transition: all 0.15s; }
+.tab-btn.active { background: #1e3a5f; color: white; }
+.tab-btn:hover:not(.active) { background: #f3f4f6; }
+
+/* ── History Cards ── */
+.history-quote-card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid #eaecf0; }
+.hqc-project { font-size: 16px; font-weight: 700; color: #1e3a5f; }
+.hqc-id { font-size: 11px; color: #9ca3af; font-family: monospace; margin-top: 2px; }
+.hqc-total { font-size: 22px; font-weight: 800; color: #16a34a; margin: 8px 0 4px; }
+.hqc-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+/* ── PIN Modal ── */
+.pin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.pin-modal { background: white; border-radius: 20px; padding: 32px 28px 24px; max-width: 320px; width: 90%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,0.25); transition: transform 0.08s; }
+.pin-modal h3 { font-size: 20px; font-weight: 700; color: #1e3a5f; margin-bottom: 6px; }
+.pin-modal p { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+.pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 24px; }
+.pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #d1d5db; background: white; transition: all 0.15s; }
+.pin-dot.filled { background: #1e3a5f; border-color: #1e3a5f; transform: scale(1.15); }
+.pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.pin-key { padding: 15px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 18px; font-weight: 700; background: white; color: #1e3a5f; cursor: pointer; transition: all 0.1s; user-select: none; }
+.pin-key:active { background: #eef2ff; border-color: #1e3a5f; transform: scale(0.95); }
+.pin-error { color: #ef4444; font-size: 13px; font-weight: 600; min-height: 20px; }
 
 .card { background: white; border-radius: 14px; padding: 22px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid #eaecf0; }
 .card-title { font-size: 14px; font-weight: 700; color: #1e3a5f; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; letter-spacing: 0.2px; }
@@ -117,6 +143,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div>
 
 <div class="container">
+
+  <!-- TAB NAV -->
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tabNewQuote" onclick="switchTab('form')">📝 New Quote</button>
+    <button class="tab-btn" id="tabHistory" onclick="openHistoryTab()">📋 History 🔒</button>
+  </div>
 
   <!-- SUCCESS VIEW -->
   <div id="successView">
@@ -229,6 +261,46 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </p>
 
   </div>
+
+  <!-- HISTORY VIEW -->
+  <div id="historyView" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-size:18px;font-weight:700;color:#1e3a5f;">📋 Quote History</h2>
+      <button class="btn btn-outline btn-sm" onclick="renderHistory()" style="font-size:13px;">↻ Refresh</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+</div>
+
+<!-- PIN MODAL -->
+<div id="pinOverlay" class="pin-overlay" style="display:none;" onclick="closePinModal(event)">
+  <div class="pin-modal" id="pinModal" onclick="event.stopPropagation()">
+    <div style="font-size:40px;margin-bottom:8px;">🔒</div>
+    <h3>History Access</h3>
+    <p>Enter your 4-digit PIN to view saved quotes</p>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key" onclick="pinKey('back')" style="color:#6b7280;font-size:22px;">⌫</button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
+      <button class="pin-key" onclick="closePinModal()" style="color:#6b7280;font-size:16px;">✕</button>
+    </div>
+    <div class="pin-error" id="pinError"></div>
+  </div>
 </div>
 
 <script>
@@ -247,7 +319,7 @@ function generateQuoteId() {
   const rand = Math.random().toString(36).substring(2,6).toUpperCase();
   return `QT-${date}-${rand}`;
 }
-const QUOTE_ID = generateQuoteId();
+let QUOTE_ID = generateQuoteId();
 document.addEventListener('DOMContentLoaded', () => {
   const badge = document.getElementById('quoteIdDisplay');
   if (badge) badge.textContent = QUOTE_ID;
@@ -516,6 +588,19 @@ async function submitQuote() {
     }
   }
 
+  // 1b. Save snapshot to local history
+  saveQuoteToHistory({
+    quoteId: QUOTE_ID, projectName, customerName, fullAddress,
+    addressLine: document.getElementById('addressLine').value.trim(),
+    addressCity:  document.getElementById('addressCity').value.trim(),
+    addressState: document.getElementById('addressState').value.trim(),
+    addressZip:   document.getElementById('addressZip').value.trim(),
+    measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand,
+    sections: JSON.parse(JSON.stringify(sections)),
+    addons:   JSON.parse(JSON.stringify(addons)),
+    planImageB64, planImageType
+  });
+
   // 2. Submit to FormSubmit (→ info@andrevargasteam.com)
   const sectionsSummary = sections.map(sec =>
     `${sec.name} [${sectionSqft(sec)} sqft]: ` +
@@ -611,7 +696,11 @@ async function submitQuote() {
 
   // 4. Show success
   document.getElementById('formView').style.display = 'none';
+  document.getElementById('formView').style.display = 'none';
+  document.getElementById('historyView').style.display = 'none';
   document.getElementById('successView').style.display = 'block';
+  document.getElementById('tabNewQuote').classList.remove('active');
+  document.getElementById('tabHistory').classList.remove('active');
   window.scrollTo(0,0);
 }
 
@@ -742,16 +831,185 @@ async function generatePDF({ projectName, customerName, fullAddress, measurerNam
 
 // ─── Reset ────────────────────────────────────────────────────────────────────
 function resetForm() {
-  sections = []; addons = []; planImageB64 = null; sectionCounter = 0;
-  ['projectName','customerName','measurerName','measurerEmail','pricePerSqFt'].forEach(id => {
-    document.getElementById(id).value = '';
+  sections = []; addons = []; planImageB64 = null; planImageType = null; sectionCounter = 0;
+  QUOTE_ID = generateQuoteId();
+  ['projectName','customerName','measurerName','measurerEmail','pricePerSqFt',
+   'addressLine','addressCity','addressState','addressZip'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
   });
+  const badge = document.getElementById('quoteIdDisplay');
+  if (badge) badge.textContent = QUOTE_ID;
   document.getElementById('planPreview').innerHTML = '';
   document.getElementById('addonList').innerHTML = '';
   addSection(); updateSummary();
-  document.getElementById('successView').style.display = 'none';
-  document.getElementById('formView').style.display = 'block';
-  window.scrollTo(0,0);
+  switchTab('form');
+}
+
+// ─── History & PIN ────────────────────────────────────────────────────────────
+const HISTORY_PIN = '1396';
+let pinBuffer = '';
+
+function switchTab(tab) {
+  const fv = document.getElementById('formView');
+  const hv = document.getElementById('historyView');
+  const sv = document.getElementById('successView');
+  const btnF = document.getElementById('tabNewQuote');
+  const btnH = document.getElementById('tabHistory');
+  if (tab === 'form') {
+    sv.style.display = 'none';
+    fv.style.display = 'block';
+    hv.style.display = 'none';
+    btnF.classList.add('active');
+    btnH.classList.remove('active');
+  } else {
+    sv.style.display = 'none';
+    fv.style.display = 'none';
+    hv.style.display = 'block';
+    btnF.classList.remove('active');
+    btnH.classList.add('active');
+  }
+  window.scrollTo(0, 0);
+}
+
+function openHistoryTab() {
+  pinBuffer = '';
+  updatePinDots();
+  document.getElementById('pinError').textContent = '';
+  document.getElementById('pinOverlay').style.display = 'flex';
+}
+
+function closePinModal(e) {
+  if (!e || e.target === document.getElementById('pinOverlay')) {
+    document.getElementById('pinOverlay').style.display = 'none';
+    if (document.getElementById('historyView').style.display === 'none') {
+      document.getElementById('tabNewQuote').classList.add('active');
+      document.getElementById('tabHistory').classList.remove('active');
+    }
+  }
+}
+
+function pinKey(k) {
+  if (k === 'back') {
+    pinBuffer = pinBuffer.slice(0, -1);
+  } else if (pinBuffer.length < 4) {
+    pinBuffer += k;
+  }
+  updatePinDots();
+  if (pinBuffer.length === 4) setTimeout(checkPin, 150);
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('pd' + i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+
+function checkPin() {
+  if (pinBuffer === HISTORY_PIN) {
+    document.getElementById('pinOverlay').style.display = 'none';
+    switchTab('history');
+    renderHistory();
+  } else {
+    document.getElementById('pinError').textContent = 'Incorrect PIN — try again';
+    pinBuffer = '';
+    updatePinDots();
+    const m = document.getElementById('pinModal');
+    m.style.transform = 'translateX(-10px)';
+    setTimeout(() => { m.style.transform = 'translateX(10px)'; }, 80);
+    setTimeout(() => { m.style.transform = 'translateX(0)'; }, 160);
+  }
+}
+
+function saveQuoteToHistory(snap) {
+  try {
+    const hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+    const idx = hist.findIndex(q => q.quoteId === snap.quoteId);
+    if (idx >= 0) hist[idx] = snap; else hist.unshift(snap);
+    localStorage.setItem('ctq_history', JSON.stringify(hist));
+  } catch(e) { console.warn('History save failed:', e); }
+}
+
+function renderHistory() {
+  const hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+  const el = document.getElementById('historyList');
+  if (!hist.length) {
+    el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#9ca3af;">
+      <div style="font-size:52px;margin-bottom:14px;">📋</div>
+      <p style="font-size:16px;font-weight:600;color:#6b7280;">No quotes saved yet</p>
+      <p style="font-size:13px;margin-top:6px;">Quotes are saved automatically when you submit.</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = hist.map(q => `
+    <div class="history-quote-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="hqc-project">${esc(q.projectName||'Untitled Project')}</div>
+          <div class="hqc-id">${esc(q.quoteId)}</div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:#9ca3af;">${esc(q.date||'')}</div>
+      </div>
+      <div style="font-size:12px;color:#6b7280;margin:8px 0 4px;">
+        👤 ${esc(q.customerName||'—')} &nbsp;·&nbsp; 📍 ${esc(q.fullAddress||'—')}
+      </div>
+      <div class="hqc-total">$${Number(q.grand||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">
+        ${q.tot||0} sq ft @ $${Number(q.ppsf||0).toFixed(2)}/sq ft
+        ${q.sections ? ' &nbsp;·&nbsp; ' + q.sections.length + ' section(s)' : ''}
+        ${q.addons && q.addons.length ? ' &nbsp;·&nbsp; ' + q.addons.length + ' add-on(s)' : ''}
+      </div>
+      <div class="hqc-actions">
+        <button class="btn btn-primary" style="flex:1;font-size:13px;padding:9px 12px;"
+          onclick="loadQuoteIntoForm(${JSON.stringify(q.quoteId)})">✏️ Load &amp; Edit</button>
+        <button class="btn btn-outline" style="font-size:13px;padding:9px 12px;"
+          onclick="deleteHistoryItem(${JSON.stringify(q.quoteId)})">🗑️ Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadQuoteIntoForm(id) {
+  const hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+  const q = hist.find(x => x.quoteId === id);
+  if (!q) return;
+  sections = JSON.parse(JSON.stringify(q.sections || []));
+  addons   = JSON.parse(JSON.stringify(q.addons || []));
+  sectionCounter = sections.length ? Math.max(...sections.map(s => s.id)) : 0;
+  planImageB64   = q.planImageB64  || null;
+  planImageType  = q.planImageType || null;
+  QUOTE_ID = q.quoteId;
+
+  document.getElementById('projectName').value   = q.projectName  || '';
+  document.getElementById('customerName').value  = q.customerName || '';
+  document.getElementById('addressLine').value   = q.addressLine  || '';
+  document.getElementById('addressCity').value   = q.addressCity  || '';
+  document.getElementById('addressState').value  = q.addressState || '';
+  document.getElementById('addressZip').value    = q.addressZip   || '';
+  document.getElementById('measurerName').value  = q.measurerName || '';
+  document.getElementById('measurerEmail').value = q.measurerEmail|| '';
+  document.getElementById('quoteDate').value     = q.date         || '';
+  document.getElementById('pricePerSqFt').value  = q.ppsf         || '';
+
+  const badge = document.getElementById('quoteIdDisplay');
+  if (badge) badge.textContent = QUOTE_ID;
+
+  if (planImageB64) {
+    document.getElementById('planPreview').innerHTML =
+      `<img src="data:${planImageType};base64,${planImageB64}" style="max-width:100%;border-radius:8px;margin-top:8px;">`;
+  } else {
+    document.getElementById('planPreview').innerHTML = '';
+  }
+
+  renderSections(); renderAddons(); updateSummary();
+  switchTab('form');
+}
+
+function deleteHistoryItem(id) {
+  if (!confirm('Delete this quote from history? This cannot be undone.')) return;
+  let hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+  hist = hist.filter(q => q.quoteId !== id);
+  localStorage.setItem('ctq_history', JSON.stringify(hist));
+  renderHistory();
 }
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
