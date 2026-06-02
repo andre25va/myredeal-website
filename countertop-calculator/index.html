@@ -34,16 +34,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .section-sqft-badge { background: #dcfce7; color: #166534; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
 .section-body { padding: 16px; }
 
-.meas-card { background: #f8faff; border: 1px solid #e8edf8; border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.meas-card { background: transparent; border: none; padding: 4px 0; margin-bottom: 4px; }
 .meas-label-input { width: 100%; padding: 7px 10px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 12px; margin-bottom: 10px; background: white; color: #111; }
 .meas-label-input:focus { outline: none; border-color: #1e3a5f; }
 .meas-dims { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.dim-group { display: flex; flex-direction: column; }
+.dim-group { display: flex; flex-direction: column; flex: 1; min-width: 100px; }
 .dim-group label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-.dim-input { width: 90px; padding: 8px 10px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 14px; text-align: center; background: white; color: #111; }
+.dim-input { width: 100%; padding: 10px 14px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 15px; background: white; color: #111; -moz-appearance: textfield; }
+.dim-input::-webkit-outer-spin-button, .dim-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .dim-input:focus { outline: none; border-color: #1e3a5f; }
-.x-sym { color: #9ca3af; font-size: 18px; font-weight: 600; margin-top: 14px; }
-.sqft-result { background: #dcfce7; color: #166534; padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; margin-top: 14px; white-space: nowrap; }
+.x-sym { color: #9ca3af; font-size: 18px; font-weight: 600; flex-shrink: 0; }
+.sqft-result { background: #dcfce7; color: #166534; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
 
 /* Buttons */
 .btn { display: inline-flex; align-items: center; gap: 5px; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
