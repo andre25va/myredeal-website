@@ -847,8 +847,16 @@ function resetForm() {
 
 // ─── Seed Demo Quote (first load only) ───────────────────────────────────────
 (function seedDemo() {
+  // Migrate old demo with string IDs → remove it so fresh one is seeded
   const existing = JSON.parse(localStorage.getItem('ctq_history') || '[]');
-  if (existing.length > 0) return; // already has data
+  const hasBadDemo = existing.some(q => q.quoteId === 'QT-20260601-DEMO' &&
+    q.sections && q.sections[0] && typeof q.sections[0].id === 'string');
+  if (hasBadDemo) {
+    const cleaned = existing.filter(q => q.quoteId !== 'QT-20260601-DEMO');
+    localStorage.setItem('ctq_history', JSON.stringify(cleaned));
+  }
+  const refreshed = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+  if (refreshed.length > 0) return; // already has good data
   const demo = {
     quoteId: 'QT-20260601-DEMO',
     projectName: '14741 OP — Demo Kitchen',
@@ -862,24 +870,24 @@ function resetForm() {
     ppsf: '65.00', tot: 52.00, matCost: 3380.00,
     grand: 3655.00,
     sections: [
-      { id: 's1', name: 'Kitchen Perimeter', rows: [
-          { id: 'r1', l: '144', w: '26' },
-          { id: 'r2', l: '72',  w: '26' }
+      { id: 1, name: 'Kitchen Perimeter', measurements: [
+          { id: 101, L: '144', W: '26' },
+          { id: 102, L: '72',  W: '26' }
         ]
       },
-      { id: 's2', name: 'Kitchen Island', rows: [
-          { id: 'r3', l: '96', w: '42' }
+      { id: 2, name: 'Kitchen Island', measurements: [
+          { id: 201, L: '96', W: '42' }
         ]
       },
-      { id: 's3', name: 'Bathroom', rows: [
-          { id: 'r4', l: '61', w: '22' }
+      { id: 3, name: 'Bathroom', measurements: [
+          { id: 301, L: '61', W: '22' }
         ]
       }
     ],
     addons: [
-      { id: 'a1', name: 'Sink Cutout',     qty: 1, price: 150 },
-      { id: 'a2', name: 'Faucet Hole',     qty: 3, price: 25  },
-      { id: 'a3', name: 'Edge Profile',    qty: 1, price: 0   }
+      { id: 1, name: 'Sink Cutout',  qty: 1, price: 150 },
+      { id: 2, name: 'Faucet Hole',  qty: 3, price: 25  },
+      { id: 3, name: 'Edge Profile', qty: 1, price: 0   }
     ],
     planImageB64: null,
     planImageType: null,
@@ -1015,9 +1023,28 @@ function loadQuoteIntoForm(id) {
   const hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
   const q = hist.find(x => x.quoteId === id);
   if (!q) return;
-  sections = JSON.parse(JSON.stringify(q.sections || []));
-  addons   = JSON.parse(JSON.stringify(q.addons || []));
-  sectionCounter = sections.length ? Math.max(...sections.map(s => s.id)) : 0;
+
+  // Normalize sections: reassign sequential numeric IDs, support both 'rows' and 'measurements' keys
+  sectionCounter = 0;
+  sections = (q.sections || []).map(sec => {
+    const sid = ++sectionCounter;
+    const rawMeas = sec.measurements || sec.rows || [];
+    const measurements = rawMeas.map(m => ({
+      id: Date.now() + Math.random(),
+      L: m.L || m.l || '',
+      W: m.W || m.w || ''
+    }));
+    return { id: sid, name: sec.name || ('Section ' + sid), measurements };
+  });
+
+  // Normalize addons: ensure numeric IDs
+  addons = (q.addons || []).map((a, i) => ({
+    id: i + 1,
+    name: a.name || '',
+    qty:  a.qty  || 1,
+    price: a.price || 0
+  }));
+
   planImageB64   = q.planImageB64  || null;
   planImageType  = q.planImageType || null;
   QUOTE_ID = q.quoteId;
