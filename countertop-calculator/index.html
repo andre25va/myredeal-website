@@ -1011,9 +1011,9 @@ function renderHistory() {
       </div>
       <div class="hqc-actions">
         <button class="btn btn-primary" style="flex:1;font-size:13px;padding:9px 12px;"
-          onclick="loadQuoteIntoForm(${JSON.stringify(q.quoteId)})">✏️ Load &amp; Edit</button>
+          onclick="loadQuoteIntoForm('${q.quoteId}')">✏️ Load &amp; Edit</button>
         <button class="btn btn-outline" style="font-size:13px;padding:9px 12px;"
-          onclick="deleteHistoryItem(${JSON.stringify(q.quoteId)})">🗑️ Delete</button>
+          onclick="deleteHistoryItem('${q.quoteId}')">🗑️ Delete</button>
       </div>
     </div>
   `).join('');
