@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Countertop Quote Calculator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
@@ -543,15 +544,26 @@ function renderAddons() {
 // ─── Plan Image ───────────────────────────────────────────────────────────────
 function handleImage(e) {
   const file = e.target.files[0]; if (!file) return;
+  const isHeic = file.type === 'image/heic' || file.type === 'image/heif'
+               || file.name.toLowerCase().endsWith('.heic')
+               || file.name.toLowerCase().endsWith('.heif');
+  if (isHeic && typeof heic2any !== 'undefined') {
+    heic2any({ blob: file, toType: 'image/jpeg', quality: 0.88 })
+      .then(blob => processImageBlob(blob))
+      .catch(() => readRaw(file));
+  } else {
+    processImageBlob(file);
+  }
+}
+function processImageBlob(blob) {
   const reader = new FileReader();
   reader.onload = ev => {
     const img = new Image();
     img.onload = () => {
-      // Scale down large images (iPhone = 4000x3000+) to avoid canvas memory limits
       const MAX = 1920;
-      let w = img.naturalWidth  || img.width;
+      let w = img.naturalWidth || img.width;
       let h = img.naturalHeight || img.height;
-      if (!w || !h) { fallback(); return; }
+      if (!w || !h) { useSrc(ev.target.result); return; }
       if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
       const canvas = document.createElement('canvas');
       canvas.width  = w;
@@ -559,20 +571,23 @@ function handleImage(e) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
       const b64 = canvas.toDataURL('image/jpeg', 0.88);
-      if (!b64 || b64 === 'data:,') { fallback(); return; }
-      planImageB64  = b64;
-      planImageType = 'image/jpeg';
-      showPreview(planImageB64);
+      if (!b64 || b64 === 'data:,') { useSrc(ev.target.result); return; }
+      useSrc(b64);
     };
-    img.onerror = fallback;
-    function fallback() {
-      planImageB64  = ev.target.result;
-      planImageType = file.type;
-      showPreview(planImageB64);
-    }
+    img.onerror = () => useSrc(ev.target.result);
     img.src = ev.target.result;
   };
+  reader.readAsDataURL(blob);
+}
+function readRaw(file) {
+  const reader = new FileReader();
+  reader.onload = ev => useSrc(ev.target.result);
   reader.readAsDataURL(file);
+}
+function useSrc(src) {
+  planImageB64  = src;
+  planImageType = 'image/jpeg';
+  showPreview(src);
 }
 function showPreview(src) {
   document.querySelector('.upload-zone').style.display = 'none';
