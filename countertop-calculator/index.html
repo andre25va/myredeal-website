@@ -376,7 +376,9 @@ const PRESETS = [
 
 const PRESET_PRICES = {
   'Sink Cutout': 200,
-  'Seam': 40
+  'Seam': 40,
+  'Faucet Hole': 25,
+  'Soap Dispenser': 25
 };
 
 // ─── Init ────────────────────────────────────────────────────────────────────
@@ -501,8 +503,8 @@ function addCustomAddon() { addAddon('Custom Add-On', 0); }
 function initDefaultAddons() {
   addAddon('Sink Cutout',    200);
   addAddon('Seam',            40);
-  addAddon('Faucet Hole',      0);
-  addAddon('Soap Dispenser',   0);
+  addAddon('Faucet Hole',     25);
+  addAddon('Soap Dispenser',  25);
 }
 
 function removeAddon(id) {
