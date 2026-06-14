@@ -545,33 +545,44 @@ function handleImage(e) {
   const file = e.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    // Convert any format (including HEIC) to JPEG via canvas so jsPDF can embed it
     const img = new Image();
     img.onload = () => {
+      // Scale down large images (iPhone = 4000x3000+) to avoid canvas memory limits
+      const MAX = 1920;
+      let w = img.naturalWidth  || img.width;
+      let h = img.naturalHeight || img.height;
+      if (!w || !h) { fallback(); return; }
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
       const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      canvas.getContext('2d').drawImage(img, 0, 0);
-      planImageB64  = canvas.toDataURL('image/jpeg', 0.88);
+      canvas.width  = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const b64 = canvas.toDataURL('image/jpeg', 0.88);
+      if (!b64 || b64 === 'data:,') { fallback(); return; }
+      planImageB64  = b64;
       planImageType = 'image/jpeg';
-      document.getElementById('planPreview').innerHTML = `
-        <img src="${planImageB64}" class="plan-preview" alt="Plan">
-        <button class="btn btn-danger btn-sm" style="margin-top:10px" onclick="clearImage()">Remove Image</button>`;
+      showPreview(planImageB64);
     };
-    img.onerror = () => {
-      // Fallback: store as-is
+    img.onerror = fallback;
+    function fallback() {
       planImageB64  = ev.target.result;
       planImageType = file.type;
-      document.getElementById('planPreview').innerHTML = `
-        <img src="${planImageB64}" class="plan-preview" alt="Plan">
-        <button class="btn btn-danger btn-sm" style="margin-top:10px" onclick="clearImage()">Remove Image</button>`;
-    };
+      showPreview(planImageB64);
+    }
     img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
+function showPreview(src) {
+  document.querySelector('.upload-zone').style.display = 'none';
+  document.getElementById('planPreview').innerHTML = `
+    <img src="${src}" style="max-width:100%;border-radius:8px;margin-top:10px;display:block;" alt="Plan">
+    <button class="btn btn-danger btn-sm" style="margin-top:10px" onclick="clearImage()">Remove Image</button>`;
+}
 function clearImage() {
   planImageB64 = null; planImageType = null;
+  document.querySelector('.upload-zone').style.display = '';
   document.getElementById('planPreview').innerHTML = '';
   document.getElementById('planInput').value = '';
 }
