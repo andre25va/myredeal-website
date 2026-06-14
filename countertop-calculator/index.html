@@ -1010,8 +1010,10 @@ function renderHistory() {
         ${q.addons && q.addons.length ? ' &nbsp;·&nbsp; ' + q.addons.length + ' add-on(s)' : ''}
       </div>
       <div class="hqc-actions">
-        <button class="btn btn-primary" style="flex:1;font-size:13px;padding:9px 12px;"
+        <button class="btn btn-primary" style="flex:2;font-size:13px;padding:9px 12px;"
           onclick="loadQuoteIntoForm('${q.quoteId}')">✏️ Load &amp; Edit</button>
+        <button class="btn btn-outline" style="flex:1;font-size:13px;padding:9px 12px;background:#f0fdf4;border-color:#16a34a;color:#15803d;"
+          onclick="downloadHistoryPDF('${q.quoteId}')">📄 PDF</button>
         <button class="btn btn-outline" style="font-size:13px;padding:9px 12px;"
           onclick="deleteHistoryItem('${q.quoteId}')">🗑️ Delete</button>
       </div>
@@ -1072,6 +1074,72 @@ function loadQuoteIntoForm(id) {
 
   renderSections(); renderAddons(); updateSummary();
   switchTab('form');
+}
+
+async function downloadHistoryPDF(id) {
+  const hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+  const q = hist.find(x => x.quoteId === id);
+  if (!q) { alert('Quote not found in history.'); return; }
+
+  // Save current global state
+  const _sections     = sections;
+  const _addons       = addons;
+  const _planImageB64  = planImageB64;
+  const _planImageType = planImageType;
+  const _QUOTE_ID      = QUOTE_ID;
+
+  // Load history quote data into globals temporarily
+  sectionCounter = 0;
+  sections = (q.sections || []).map(sec => {
+    const sid = ++sectionCounter;
+    const rawMeas = sec.measurements || sec.rows || [];
+    return {
+      id: sid,
+      name: sec.name || ('Section ' + sid),
+      measurements: rawMeas.map(m => ({ id: Date.now() + Math.random(), L: m.L||m.l||'', W: m.W||m.w||'' }))
+    };
+  });
+  addons       = (q.addons || []).map((a, i) => ({ id: i+1, name: a.name||'', qty: a.qty||1, price: a.price||0 }));
+  planImageB64  = q.planImageB64  || null;
+  planImageType = q.planImageType || null;
+  QUOTE_ID      = q.quoteId;
+
+  // Build PDF params
+  const ppsf    = parseFloat(q.ppsf)  || 0;
+  const tot     = parseFloat(q.tot)   || 0;
+  const matCost = ppsf * tot;
+  const addOns  = addons.reduce((s,a) => s + (parseFloat(a.qty)||0)*(parseFloat(a.price)||0), 0);
+  const grand   = matCost + addOns;
+  const fullAddress = [q.addressLine, q.addressCity, q.addressState, q.addressZip].filter(Boolean).join(', ') || '—';
+
+  try {
+    const blob = await generatePDF({
+      projectName:  q.projectName  || '—',
+      customerName: q.customerName || '—',
+      fullAddress,
+      measurerName:  q.measurerName  || '—',
+      measurerEmail: q.measurerEmail || '—',
+      date:   q.date   || new Date().toLocaleDateString(),
+      ppsf, tot, matCost, addOns, grand
+    });
+
+    const fname = `Quote-${QUOTE_ID}-${(q.projectName||'project').replace(/[^a-z0-9]/gi,'-')}.pdf`;
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fname, { type:'application/pdf' })] })) {
+      await navigator.share({ files: [new File([blob], fname, { type:'application/pdf' })], title: fname });
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = fname; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+  } finally {
+    // Restore global state
+    sections     = _sections;
+    addons       = _addons;
+    planImageB64  = _planImageB64;
+    planImageType = _planImageType;
+    QUOTE_ID      = _QUOTE_ID;
+    sectionCounter = sections.length ? Math.max(...sections.map(s => s.id)) : 0;
+  }
 }
 
 function deleteHistoryItem(id) {
