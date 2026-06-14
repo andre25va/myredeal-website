@@ -34,6 +34,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .pin-modal { background: white; border-radius: 20px; padding: 32px 28px 24px; max-width: 320px; width: 90%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,0.25); transition: transform 0.08s; }
 .pin-modal h3 { font-size: 20px; font-weight: 700; color: #1e3a5f; margin-bottom: 6px; }
 .pin-modal p { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+
+/* PDF Preview Modal */
+.pdf-preview-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.72); z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; }
+.pdf-preview-box { background:#fff; border-radius:16px; display:flex; flex-direction:column; width:100%; max-width:860px; height:90vh; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,0.4); }
+.pdf-preview-header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #e5e7eb; flex-shrink:0; }
+.pdf-preview-header h3 { font-size:16px; font-weight:700; color:#1e3a5f; margin:0; }
+.pdf-preview-iframe { flex:1; border:none; width:100%; background:#f3f4f6; }
+.pdf-preview-footer { display:flex; gap:10px; padding:12px 18px; border-top:1px solid #e5e7eb; flex-shrink:0; justify-content:flex-end; }
+
 .pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 24px; }
 .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #d1d5db; background: white; transition: all 0.15s; }
 .pin-dot.filled { background: #1e3a5f; border-color: #1e3a5f; transform: scale(1.15); }
@@ -1013,7 +1022,7 @@ function renderHistory() {
         <button class="btn btn-primary" style="flex:2;font-size:13px;padding:9px 12px;"
           onclick="loadQuoteIntoForm('${q.quoteId}')">✏️ Load &amp; Edit</button>
         <button class="btn btn-outline" style="flex:1;font-size:13px;padding:9px 12px;background:#f0fdf4;border-color:#16a34a;color:#15803d;"
-          onclick="downloadHistoryPDF('${q.quoteId}')">📄 PDF</button>
+          onclick="previewHistoryPDF('${q.quoteId}')">👁️ Preview</button>
         <button class="btn btn-outline" style="font-size:13px;padding:9px 12px;"
           onclick="deleteHistoryItem('${q.quoteId}')">🗑️ Delete</button>
       </div>
@@ -1075,6 +1084,81 @@ function loadQuoteIntoForm(id) {
   renderSections(); renderAddons(); updateSummary();
   switchTab('form');
 }
+
+let _pdfPreviewBlobUrl = null;
+
+async function previewHistoryPDF(id) {
+  const hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+  const q = hist.find(x => x.quoteId === id);
+  if (!q) { alert('Quote not found in history.'); return; }
+
+  // Show overlay with loading state
+  const overlay = document.getElementById('pdfPreviewOverlay');
+  const iframe  = document.getElementById('pdfPreviewIframe');
+  const title   = document.getElementById('pdfPreviewTitle');
+  const dlBtn   = document.getElementById('pdfPreviewDownloadBtn');
+  title.textContent = `${q.quoteId} — ${q.projectName || 'Quote'}`;
+  iframe.src = '';
+  dlBtn.disabled = true;
+  dlBtn.textContent = '⏳ Generating…';
+  overlay.style.display = 'flex';
+
+  // Swap globals, generate PDF, restore
+  const _s = sections, _a = addons, _pi = planImageB64, _pt = planImageType, _qi = QUOTE_ID;
+  sectionCounter = 0;
+  sections = (q.sections || []).map(sec => {
+    const sid = ++sectionCounter;
+    const rawMeas = sec.measurements || sec.rows || [];
+    return { id: sid, name: sec.name || ('Section ' + sid),
+      measurements: rawMeas.map(m => ({ id: Date.now()+Math.random(), L: m.L||m.l||'', W: m.W||m.w||'' })) };
+  });
+  addons       = (q.addons || []).map((a,i) => ({ id:i+1, name:a.name||'', qty:a.qty||1, price:a.price||0 }));
+  planImageB64  = q.planImageB64  || null;
+  planImageType = q.planImageType || null;
+  QUOTE_ID      = q.quoteId;
+
+  const ppsf    = parseFloat(q.ppsf)  || 0;
+  const tot     = parseFloat(q.tot)   || 0;
+  const matCost = ppsf * tot;
+  const addOns  = addons.reduce((s,a) => s + (parseFloat(a.qty)||0)*(parseFloat(a.price)||0), 0);
+  const grand   = matCost + addOns;
+  const fullAddress = [q.addressLine, q.addressCity, q.addressState, q.addressZip].filter(Boolean).join(', ') || '—';
+
+  try {
+    const blob = await generatePDF({ projectName: q.projectName||'—', customerName: q.customerName||'—',
+      fullAddress, measurerName: q.measurerName||'—', measurerEmail: q.measurerEmail||'—',
+      date: q.date||new Date().toLocaleDateString(), ppsf, tot, matCost, addOns, grand });
+
+    if (_pdfPreviewBlobUrl) URL.revokeObjectURL(_pdfPreviewBlobUrl);
+    _pdfPreviewBlobUrl = URL.createObjectURL(blob);
+    iframe.src = _pdfPreviewBlobUrl;
+
+    const fname = `Quote-${q.quoteId}-${(q.projectName||'project').replace(/[^a-z0-9]/gi,'-')}.pdf`;
+    dlBtn.disabled = false;
+    dlBtn.textContent = '⬇️ Download';
+    dlBtn.onclick = async () => {
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fname, {type:'application/pdf'})] })) {
+        await navigator.share({ files: [new File([blob], fname, {type:'application/pdf'})], title: fname });
+      } else {
+        const a = document.createElement('a'); a.href = _pdfPreviewBlobUrl; a.download = fname; a.click();
+      }
+    };
+  } catch(e) {
+    alert('Could not generate PDF: ' + e.message);
+    overlay.style.display = 'none';
+  } finally {
+    sections = _s; addons = _a; planImageB64 = _pi; planImageType = _pt; QUOTE_ID = _qi;
+    sectionCounter = sections.length ? Math.max(...sections.map(s=>s.id)) : 0;
+  }
+}
+
+function closePDFPreview(e) {
+  if (e && e.target !== document.getElementById('pdfPreviewOverlay') && e.type !== 'click') return;
+  document.getElementById('pdfPreviewOverlay').style.display = 'none';
+  document.getElementById('pdfPreviewIframe').src = '';
+  if (_pdfPreviewBlobUrl) { URL.revokeObjectURL(_pdfPreviewBlobUrl); _pdfPreviewBlobUrl = null; }
+}
+
 
 async function downloadHistoryPDF(id) {
   const hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
@@ -1153,5 +1237,21 @@ function deleteHistoryItem(id) {
 // ─── Helper ───────────────────────────────────────────────────────────────────
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
+
+<!-- PDF Preview Modal -->
+<div id="pdfPreviewOverlay" class="pdf-preview-overlay" style="display:none;" onclick="closePDFPreview(event)">
+  <div class="pdf-preview-box" onclick="event.stopPropagation()">
+    <div class="pdf-preview-header">
+      <h3 id="pdfPreviewTitle">Quote Preview</h3>
+      <button onclick="closePDFPreview()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#6b7280;line-height:1;">✕</button>
+    </div>
+    <iframe id="pdfPreviewIframe" class="pdf-preview-iframe" title="PDF Preview"></iframe>
+    <div class="pdf-preview-footer">
+      <button class="btn btn-outline" onclick="closePDFPreview()" style="font-size:13px;padding:9px 18px;">Close</button>
+      <button class="btn btn-primary" id="pdfPreviewDownloadBtn" style="font-size:13px;padding:9px 18px;">⬇️ Download</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
