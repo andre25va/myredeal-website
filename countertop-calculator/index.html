@@ -383,6 +383,7 @@ const PRESET_PRICES = {
 document.getElementById('quoteDate').value = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 renderAddonPresets();
 addSection();
+initDefaultAddons();
 updateSummary();
 
 // ─── Sections ────────────────────────────────────────────────────────────────
@@ -496,6 +497,13 @@ function addAddon(name, price=null) {
 }
 
 function addCustomAddon() { addAddon('Custom Add-On', 0); }
+
+function initDefaultAddons() {
+  addAddon('Sink Cutout',    200);
+  addAddon('Seam',            40);
+  addAddon('Faucet Hole',      0);
+  addAddon('Soap Dispenser',   0);
+}
 
 function removeAddon(id) {
   const addon = addons.find(a => a.id === id);
@@ -925,7 +933,7 @@ function resetForm() {
   if (badge) badge.textContent = QUOTE_ID;
   document.getElementById('planPreview').innerHTML = '';
   document.getElementById('addonList').innerHTML = '';
-  addSection(); updateSummary();
+  addSection(); initDefaultAddons(); updateSummary();
   switchTab('form');
 }
 
