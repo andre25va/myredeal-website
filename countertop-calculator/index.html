@@ -576,9 +576,19 @@ function handleImage(e) {
 }
 function showPreview(src) {
   document.querySelector('.upload-zone').style.display = 'none';
-  document.getElementById('planPreview').innerHTML = `
-    <img src="${src}" style="max-width:100%;border-radius:8px;margin-top:10px;display:block;" alt="Plan">
-    <button class="btn btn-danger btn-sm" style="margin-top:10px" onclick="clearImage()">Remove Image</button>`;
+  const preview = document.getElementById('planPreview');
+  preview.innerHTML = '';
+  const img = document.createElement('img');
+  img.style.cssText = 'max-width:100%;border-radius:8px;margin-top:10px;display:block;';
+  img.alt = 'Plan';
+  img.src = src;
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-danger btn-sm';
+  btn.style.marginTop = '10px';
+  btn.textContent = 'Remove Image';
+  btn.onclick = clearImage;
+  preview.appendChild(img);
+  preview.appendChild(btn);
 }
 function clearImage() {
   planImageB64 = null; planImageType = null;
