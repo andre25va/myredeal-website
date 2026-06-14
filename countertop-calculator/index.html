@@ -336,8 +336,13 @@ let sectionCounter = 0;
 const PRESETS = [
   'Sink Cutout','Faucet Hole','Soap Dispenser Hole',
   'Cooktop Cutout','Edge Profile','Backsplash',
-  'Seam','Miter','Corbel'
+  'Seam','Miter','Corbel','Providing Sink'
 ];
+
+const PRESET_PRICES = {
+  'Sink Cutout': 200,
+  'Seam': 40
+};
 
 // ─── Init ────────────────────────────────────────────────────────────────────
 document.getElementById('quoteDate').value = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
@@ -449,7 +454,8 @@ function renderAddonPresets() {
   ).join('');
 }
 
-function addAddon(name, price=0) {
+function addAddon(name, price=null) {
+  if (price === null) price = PRESET_PRICES[name] || 0;
   addons.push({ id: Date.now()+Math.random(), name, qty: 1, price });
   renderAddons(); updateSummary();
 }
