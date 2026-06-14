@@ -241,6 +241,33 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <button type="button" class="btn btn-outline btn-sm" onclick="addCustomAddon()">+ Custom Add-On</button>
     </div>
 
+    <!-- Job Details -->
+    <div class="card">
+      <div class="card-title"><span>📋 Job Details</span></div>
+      <div style="margin-bottom:16px">
+        <label style="font-weight:600;display:block;margin-bottom:8px">Who is providing the sink?</label>
+        <div style="display:flex;gap:24px">
+          <label style="display:flex;align-items:center;gap:7px;font-weight:400;cursor:pointer;font-size:15px">
+            <input type="radio" name="sinkProvider" value="Fabricator" checked> Fabricator
+          </label>
+          <label style="display:flex;align-items:center;gap:7px;font-weight:400;cursor:pointer;font-size:15px">
+            <input type="radio" name="sinkProvider" value="Client"> Client
+          </label>
+        </div>
+      </div>
+      <div>
+        <label style="font-weight:600;display:block;margin-bottom:8px">Who is doing the demo?</label>
+        <div style="display:flex;gap:24px">
+          <label style="display:flex;align-items:center;gap:7px;font-weight:400;cursor:pointer;font-size:15px">
+            <input type="radio" name="demoProvider" value="Fabricator" checked> Fabricator
+          </label>
+          <label style="display:flex;align-items:center;gap:7px;font-weight:400;cursor:pointer;font-size:15px">
+            <input type="radio" name="demoProvider" value="Client"> Client
+          </label>
+        </div>
+      </div>
+    </div>
+
     <!-- Plan Image -->
     <div class="card">
       <div class="card-title"><span>📷 Plan / Layout Photo</span></div>
@@ -260,6 +287,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
 
     <!-- Submit -->
+    <!-- Disclaimer -->
+    <div class="card" style="background:#fef9ec;border:1.5px solid #f59e0b">
+      <div style="font-weight:700;margin-bottom:5px;font-size:15px">⚠️ Disclaimer</div>
+      <div style="font-size:13px;color:#78350f;line-height:1.6">
+        We do <strong>not</strong> perform electrical or plumbing work. All electrical and plumbing connections must be arranged by a licensed contractor. This quote covers countertop fabrication and installation only.
+      </div>
+    </div>
+
     <button class="btn-submit" onclick="submitQuote()">
       📄 Generate PDF &amp; Submit Quote
     </button>
@@ -582,6 +617,8 @@ async function submitQuote() {
   const fullAddress  = [addressLine, addressCity, addressState, addressZip].filter(Boolean).join(', ') || '—';
   const measurerName = document.getElementById('measurerName').value.trim() || '—';
   const measurerEmail= document.getElementById('measurerEmail').value.trim();
+  const sinkProvider = (document.querySelector('input[name="sinkProvider"]:checked') || {value:'—'}).value;
+  const demoProvider = (document.querySelector('input[name="demoProvider"]:checked') || {value:'—'}).value;
   const date         = document.getElementById('quoteDate').value;
   const ppsf         = parseFloat(document.getElementById('pricePerSqFt').value) || 0;
   const tot          = totalSqft();
@@ -592,7 +629,7 @@ async function submitQuote() {
   if (!measurerEmail) { alert('Please enter the measurer email address.'); return; }
 
   // 1. Generate PDF blob
-  const pdfBlob = await generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand });
+  const pdfBlob = await generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand, sinkProvider, demoProvider });
   const pdfFileName = `quote-${projectName.replace(/\s+/g,'-')}.pdf`;
 
   // Save PDF — use native share sheet on iOS, download link on desktop
@@ -628,7 +665,8 @@ async function submitQuote() {
     measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand,
     sections: JSON.parse(JSON.stringify(sections)),
     addons:   JSON.parse(JSON.stringify(addons)),
-    planImageB64, planImageType
+    planImageB64, planImageType,
+    sinkProvider, demoProvider
   });
 
   // 2. Submit to FormSubmit (→ info@andrevargasteam.com)
@@ -735,7 +773,7 @@ async function submitQuote() {
 }
 
 // ─── PDF Generation ───────────────────────────────────────────────────────────
-async function generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand }) {
+async function generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand, sinkProvider='—', demoProvider='—' }) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const W = doc.internal.pageSize.getWidth();
@@ -767,7 +805,8 @@ async function generatePDF({ projectName, customerName, fullAddress, measurerNam
   doc.text(`Project:    ${projectName}`, L, y); y += 6;
   doc.text(`Customer:   ${customerName}`, L, y); y += 6;
   doc.text(`Address:    ${fullAddress}`, L, y); y += 6;
-  doc.text(`Measurer:   ${measurerName}   |   ${measurerEmail}`, L, y); y += 14;
+  doc.text(`Measurer:   ${measurerName}   |   ${measurerEmail}`, L, y); y += 6;
+  doc.text(`Sink Provider: ${sinkProvider}   |   Demo: ${demoProvider}`, L, y); y += 14;
 
   // ── Sections ──
   doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
@@ -855,6 +894,21 @@ async function generatePDF({ projectName, customerName, fullAddress, measurerNam
   // ── Footer ──
   doc.setFontSize(8); doc.setTextColor(160,160,160); doc.setFont('helvetica','normal');
   doc.text('Generated by Countertop Quote Calculator', W/2, H-10, { align:'center' });
+
+  // ── Disclaimer ──
+  checkPage(24);
+  y += 4;
+  doc.setFillColor(254, 249, 236);
+  doc.setDrawColor(245, 158, 11);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(L, y, R - L, 18, 2, 2, 'FD');
+  doc.setTextColor(120, 53, 15);
+  doc.setFontSize(8); doc.setFont('helvetica','bold');
+  doc.text('DISCLAIMER:', L + 4, y + 6);
+  doc.setFont('helvetica','normal');
+  doc.text('We do not perform electrical or plumbing work. All connections must be arranged by a licensed contractor.', L + 4, y + 12);
+  doc.setTextColor(50,50,50);
+  y += 24;
 
   return doc.output('blob');
 }
@@ -1098,6 +1152,13 @@ function loadQuoteIntoForm(id) {
   document.getElementById('addressState').value  = q.addressState || '';
   document.getElementById('addressZip').value    = q.addressZip   || '';
   document.getElementById('measurerName').value  = q.measurerName || '';
+  // Restore radio buttons
+  const sp = q.sinkProvider || 'Fabricator';
+  const dp = q.demoProvider || 'Fabricator';
+  const spR = document.querySelector(`input[name="sinkProvider"][value="${sp}"]`);
+  const dpR = document.querySelector(`input[name="demoProvider"][value="${dp}"]`);
+  if (spR) spR.checked = true;
+  if (dpR) dpR.checked = true;
   document.getElementById('measurerEmail').value = q.measurerEmail|| '';
   document.getElementById('quoteDate').value     = q.date         || '';
   document.getElementById('pricePerSqFt').value  = q.ppsf         || '';
@@ -1166,6 +1227,7 @@ async function previewHistoryPDF(id) {
   try {
     const blob = await generatePDF({ projectName: q.projectName||'—', customerName: q.customerName||'—',
       fullAddress, measurerName: q.measurerName||'—', measurerEmail: q.measurerEmail||'—',
+      sinkProvider: q.sinkProvider||'—', demoProvider: q.demoProvider||'—',
       date: q.date||new Date().toLocaleDateString(), ppsf, tot, matCost, addOns, grand });
 
     if (_pdfInlineBlobUrls[id]) URL.revokeObjectURL(_pdfInlineBlobUrls[id]);
