@@ -1028,7 +1028,7 @@ function resetForm() {
 
 // ─── History & PIN ────────────────────────────────────────────────────────────
 const HISTORY_PIN = '1396';
-const REGISTRY_SHEET_ID = '1i8WScrEfJUO2_p9R_DO7H6-hM47R4TD2o5BlRHa6n74';
+const QUOTES_JSON_URL = 'https://raw.githubusercontent.com/andre25va/myredeal-website/main/countertop-calculator/quotes.json';
 let pinBuffer = '';
 
 function switchTab(tab) {
@@ -1141,23 +1141,26 @@ function parseSheetCSV(text) {
 }
 
 function renderCloudCard(q) {
-  const grand = parseFloat(q['Grand Total']) || 0;
-  const sqft  = parseFloat(q['Sq Ft']) || 0;
-  const docLink = q['Doc Link'] || '';
-  const qid = q['Quote ID'] || '—';
+  const grand = parseFloat(q.totalCost || q['Grand Total']) || 0;
+  const sqft  = parseFloat(q.totalSqFt || q['Sq Ft']) || 0;
+  const docLink = q.docLink || q['Doc Link'] || '';
+  const qid = q.quoteId || q['Quote ID'] || '—';
+  const project = q.projectName || q['Project Name'] || 'Untitled';
+  const date = q.date || q['Date'] || q.submittedAt || '';
+  const address = q.address || q['Address'] || '—';
   return `
     <div class="history-quote-card" style="border-left:4px solid #2563eb;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div>
-          <div class="hqc-project">${esc(q['Project Name']||'Untitled')}
+          <div class="hqc-project">${esc(project)}
             <span style="background:#dbeafe;color:#1d4ed8;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px;">☁️ Cloud</span>
           </div>
           <div class="hqc-id">${esc(qid)}</div>
         </div>
-        <div style="text-align:right;font-size:12px;color:#9ca3af;">${esc(q['Date']||'')}</div>
+        <div style="text-align:right;font-size:12px;color:#9ca3af;">${esc(date)}</div>
       </div>
       <div style="font-size:12px;color:#6b7280;margin:8px 0 4px;">
-        👤 ${esc(q['Customer']||'—')} &nbsp;·&nbsp; 📍 ${esc(q['Address']||'—')}
+        📍 ${esc(address)}
       </div>
       <div class="hqc-total">$${grand.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
       <div style="font-size:12px;color:#6b7280;margin-bottom:10px;">${sqft} sq ft</div>
@@ -1215,10 +1218,11 @@ async function renderHistory() {
   let cloudQuotes = [];
   let cloudError  = false;
   try {
-    const csvUrl = `https://docs.google.com/spreadsheets/d/${REGISTRY_SHEET_ID}/export?format=csv&gid=0`;
-    const resp = await fetch(csvUrl, {cache: 'no-store'});
-    if (resp.ok) cloudQuotes = parseSheetCSV(await resp.text());
-    else cloudError = true;
+    const resp = await fetch(QUOTES_JSON_URL + '?t=' + Date.now());
+    if (resp.ok) {
+      const arr = await resp.json();
+      cloudQuotes = arr.reverse();
+    } else cloudError = true;
   } catch(e) { cloudError = true; }
 
   // ── Local quotes ──────────────────────────────────────────────────────────
@@ -1242,7 +1246,7 @@ async function renderHistory() {
   } else if (cloudError) {
     html += `<div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;">
       <strong>☁️ Cloud sync not active yet.</strong><br>
-      <a href="https://docs.google.com/spreadsheets/d/${REGISTRY_SHEET_ID}/edit" target="_blank" style="color:#1d4ed8;">Open the Quotes Registry Sheet</a>, click <strong>Share → Anyone with the link → Viewer</strong>, then tap Refresh.
+      ⚠️ Could not load cloud quotes. Check your internet connection and tap Refresh.
     </div>`;
   }
 
