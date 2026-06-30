@@ -1028,6 +1028,7 @@ function resetForm() {
 
 // ─── History & PIN ────────────────────────────────────────────────────────────
 const HISTORY_PIN = '1396';
+const REGISTRY_SHEET_ID = '1i8WScrEfJUO2_p9R_DO7H6-hM47R4TD2o5BlRHa6n74';
 let pinBuffer = '';
 
 function switchTab(tab) {
@@ -1110,18 +1111,64 @@ function saveQuoteToHistory(snap) {
   } catch(e) { console.warn('History save failed:', e); }
 }
 
-function renderHistory() {
-  const hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
-  const el = document.getElementById('historyList');
-  if (!hist.length) {
-    el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#9ca3af;">
-      <div style="font-size:52px;margin-bottom:14px;">📋</div>
-      <p style="font-size:16px;font-weight:600;color:#6b7280;">No quotes saved yet</p>
-      <p style="font-size:13px;margin-top:6px;">Quotes are saved automatically when you submit.</p>
-    </div>`;
-    return;
+// ─── CSV helpers ─────────────────────────────────────────────────────────────
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQuotes && line[i+1] === '"') { current += '"'; i++; }
+      else inQuotes = !inQuotes;
+    } else if (c === ',' && !inQuotes) { result.push(current); current = ''; }
+    else current += c;
   }
-  el.innerHTML = hist.map(q => `
+  result.push(current);
+  return result;
+}
+
+function parseSheetCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = parseCSVLine(lines[0]);
+  return lines.slice(1).filter(l => l.trim()).map(line => {
+    const cols = parseCSVLine(line);
+    const obj = {};
+    headers.forEach((h, i) => obj[h.trim()] = (cols[i] || '').trim());
+    return obj;
+  }).reverse();
+}
+
+function renderCloudCard(q) {
+  const grand = parseFloat(q['Grand Total']) || 0;
+  const sqft  = parseFloat(q['Sq Ft']) || 0;
+  const docLink = q['Doc Link'] || '';
+  const qid = q['Quote ID'] || '—';
+  return `
+    <div class="history-quote-card" style="border-left:4px solid #2563eb;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="hqc-project">${esc(q['Project Name']||'Untitled')}
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px;">☁️ Cloud</span>
+          </div>
+          <div class="hqc-id">${esc(qid)}</div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:#9ca3af;">${esc(q['Date']||'')}</div>
+      </div>
+      <div style="font-size:12px;color:#6b7280;margin:8px 0 4px;">
+        👤 ${esc(q['Customer']||'—')} &nbsp;·&nbsp; 📍 ${esc(q['Address']||'—')}
+      </div>
+      <div class="hqc-total">$${grand.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:10px;">${sqft} sq ft</div>
+      <div class="hqc-actions">
+        ${docLink ? `<a href="${docLink}" target="_blank" class="btn btn-primary" style="flex:2;font-size:13px;padding:9px 12px;text-decoration:none;text-align:center;">📄 Open Doc</a>` : ''}
+      </div>
+    </div>`;
+}
+
+function renderLocalCard(q) {
+  return `
     <div class="history-quote-card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div>
@@ -1157,8 +1204,55 @@ function renderHistory() {
         </div>
         <iframe id="pdf-iframe-${q.quoteId}" class="pdf-inline-iframe" title="PDF Preview"></iframe>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+}
+
+async function renderHistory() {
+  const el = document.getElementById('historyList');
+  el.innerHTML = '<div style="text-align:center;padding:30px;color:#9ca3af;font-size:14px;">⏳ Loading quotes…</div>';
+
+  // ── Cloud quotes ──────────────────────────────────────────────────────────
+  let cloudQuotes = [];
+  let cloudError  = false;
+  try {
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${REGISTRY_SHEET_ID}/export?format=csv&gid=0`;
+    const resp = await fetch(csvUrl, {cache: 'no-store'});
+    if (resp.ok) cloudQuotes = parseSheetCSV(await resp.text());
+    else cloudError = true;
+  } catch(e) { cloudError = true; }
+
+  // ── Local quotes ──────────────────────────────────────────────────────────
+  const localHist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+
+  if (!cloudQuotes.length && !localHist.length) {
+    el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#9ca3af;">
+      <div style="font-size:52px;margin-bottom:14px;">📋</div>
+      <p style="font-size:16px;font-weight:600;color:#6b7280;">No quotes saved yet</p>
+      <p style="font-size:13px;margin-top:6px;">Quotes are saved automatically when you submit.</p>
+    </div>`;
+    return;
+  }
+
+  let html = '';
+
+  // Cloud section
+  if (cloudQuotes.length) {
+    html += `<div style="font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">☁️ All Quotes — Cloud Sync</div>`;
+    html += cloudQuotes.map(q => renderCloudCard(q)).join('');
+  } else if (cloudError) {
+    html += `<div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;">
+      <strong>☁️ Cloud sync not active yet.</strong><br>
+      <a href="https://docs.google.com/spreadsheets/d/${REGISTRY_SHEET_ID}/edit" target="_blank" style="color:#1d4ed8;">Open the Quotes Registry Sheet</a>, click <strong>Share → Anyone with the link → Viewer</strong>, then tap Refresh.
+    </div>`;
+  }
+
+  // Local section
+  if (localHist.length) {
+    html += `<div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin:${cloudQuotes.length?'18px':0} 0 10px;">📱 This Device — Load &amp; Edit</div>`;
+    html += localHist.map(q => renderLocalCard(q)).join('');
+  }
+
+  el.innerHTML = html;
 }
 
 function loadQuoteIntoForm(id) {
