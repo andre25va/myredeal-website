@@ -1145,6 +1145,7 @@ function renderCloudCard(q) {
   const sqft  = parseFloat(q.totalSqFt || q['Sq Ft']) || 0;
   const ppsf  = parseFloat(q.pricePerSqFt || q.ppsf || 0);
   const docLink = q.docLink || q['Doc Link'] || '';
+  const pdfUrl  = q.pdfUrl || '';
   const qid = q.quoteId || q['Quote ID'] || '—';
   const project = q.projectName || q['Project Name'] || 'Untitled';
   const date = q.date || q['Date'] || q.submittedAt || '';
@@ -1170,7 +1171,7 @@ function renderCloudCard(q) {
       <div class="hqc-actions">
         <button class="btn btn-primary" style="flex:2;font-size:13px;padding:9px 12px;"
           onclick="loadCloudQuoteIntoForm(${JSON.stringify(JSON.stringify(q))})">✏️ Load &amp; Edit</button>
-        ${docLink ? `<a href="${docLink}" target="_blank" class="btn btn-outline" style="flex:1;font-size:13px;padding:9px 12px;background:#f0fdf4;border-color:#16a34a;color:#15803d;text-decoration:none;text-align:center;">📄 Doc</a>` : ''}
+        ${pdfUrl ? `<a href="${pdfUrl}" target="_blank" class="btn btn-outline" style="flex:1;font-size:13px;padding:9px 12px;background:#fef2f2;border-color:#dc2626;color:#dc2626;text-decoration:none;text-align:center;">📄 PDF</a>` : (docLink ? `<a href="${docLink}" target="_blank" class="btn btn-outline" style="flex:1;font-size:13px;padding:9px 12px;background:#f0fdf4;border-color:#16a34a;color:#15803d;text-decoration:none;text-align:center;">📄 Doc</a>` : '')}
         <button class="btn btn-outline" style="font-size:13px;padding:9px 12px;"
           onclick="deleteCloudCard('${qid}')">🗑️ Delete</button>
       </div>
