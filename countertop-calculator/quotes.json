@@ -81,8 +81,18 @@
     "projectName": "Lawerance",
     "address": "3201 Huntington Rd Lawrence KS, 66049",
     "totalSqFt": 60,
-    "totalCost": 3340.00,
+    "totalCost": 3340.0,
     "docLink": "https://docs.google.com/document/d/1eaax3E6n4MdWI3K7vWBM4wDR9KGUmibbV0_POxqdUw0/edit",
     "submittedAt": "2026-07-15T22:30:39.820Z"
+  },
+  {
+    "quoteId": "QT-20260716-AVSE",
+    "date": "July 16, 2026",
+    "projectName": "Este louisburg",
+    "address": "",
+    "totalSqFt": 52,
+    "totalCost": 3230.0,
+    "docLink": "https://docs.google.com/document/d/1LxT8aWXJkFDYfuuL4YbHSK62dXjodr5V5AsAoQVnYi4/edit",
+    "submittedAt": "2026-07-16T18:10:30.000Z"
   }
 ]
