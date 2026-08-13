@@ -1,6 +1,7 @@
 // POST /api/send-otp  { email }
-// Checks if email is a registered VA, generates a 6-digit OTP, stores it in
+// Checks if email is a registered VA, generates a OTP, stores it in
 // Supabase, and sends it via Resend to the VA's inbox.
+// TEMP: OTP is hardcoded to 1234 for testing.
 
 const SUPA_URL = process.env.SUPABASE_URL;
 const SUPA_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -34,9 +35,9 @@ export default async function handler(req, res) {
   }
   const va = vaRows[0];
 
-  // Generate 6-digit OTP
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 min
+  // TEMP: Hardcoded OTP for testing
+  const code = '1234';
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hrs
 
   // Invalidate any previous unused OTPs for this email
   await supaFetch(`/roa_va_otps?email=eq.${encodeURIComponent(email)}&used=eq.false`, {
@@ -67,9 +68,9 @@ export default async function handler(req, res) {
           <p style="color:#374151;">Hi ${va.name},</p>
           <p style="color:#374151;">Your login code is:</p>
           <div style="font-size:2.5rem;font-weight:800;letter-spacing:.25em;color:#012F65;background:#f1f5f9;padding:1rem 1.5rem;border-radius:10px;display:inline-block;margin:1rem 0;">${code}</div>
-          <p style="color:#6b7280;font-size:.85rem;">This code expires in 10 minutes. Do not share it with anyone.</p>
+          <p style="color:#6b7280;font-size:.85rem;">This code is valid for 24 hours.</p>
           <hr style="border:none;border-top:1px solid #e5e7eb;margin:1.5rem 0;">
-          <p style="color:#9ca3af;font-size:.8rem;">Realty of America · Kansas City Team</p>
+          <p style="color:#9ca3af;font-size:.8rem;">Realty of America &middot; Kansas City Team</p>
         </div>
       `,
     }),
