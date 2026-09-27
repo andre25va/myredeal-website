@@ -635,13 +635,20 @@ function showPreview(src) {
   img.style.cssText = 'max-width:100%;border-radius:8px;margin-top:10px;display:block;';
   img.alt = 'Plan';
   img.src = src;
-  const btn = document.createElement('button');
-  btn.className = 'btn btn-danger btn-sm';
-  btn.style.marginTop = '10px';
-  btn.textContent = 'Remove Image';
-  btn.onclick = clearImage;
+  const actions = document.createElement('div');
+  actions.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;';
+  const changeBtn = document.createElement('button');
+  changeBtn.className = 'btn btn-primary btn-sm';
+  changeBtn.textContent = 'Change Image';
+  changeBtn.onclick = () => document.getElementById('planInput').click();
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'btn btn-danger btn-sm';
+  removeBtn.textContent = 'Remove Image';
+  removeBtn.onclick = clearImage;
+  actions.appendChild(changeBtn);
+  actions.appendChild(removeBtn);
   preview.appendChild(img);
-  preview.appendChild(btn);
+  preview.appendChild(actions);
 }
 function clearImage() {
   planImageB64 = null; planImageType = null;
@@ -1181,11 +1188,23 @@ function checkPin() {
   }
 }
 
+function quoteTimestamp(q) {
+  const direct = Number(q.savedAt || q.updatedAt || q.createdAt || 0);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+  const submitted = Date.parse(q.submittedAt || q.date || '');
+  if (Number.isFinite(submitted)) return submitted;
+  const match = String(q.quoteId || q['Quote ID'] || '').match(/QT-(\d{4})(\d{2})(\d{2})/);
+  if (match) return new Date(+match[1], +match[2] - 1, +match[3]).getTime();
+  return 0;
+}
+
 function saveQuoteToHistory(snap) {
   try {
     const hist = JSON.parse(localStorage.getItem('ctq_history') || '[]');
+    snap.savedAt = Date.now();
     const idx = hist.findIndex(q => q.quoteId === snap.quoteId);
     if (idx >= 0) hist[idx] = snap; else hist.unshift(snap);
+    hist.sort((a, b) => quoteTimestamp(b) - quoteTimestamp(a));
     localStorage.setItem('ctq_history', JSON.stringify(hist));
   } catch(e) { console.warn('History save failed:', e); }
 }
@@ -1386,8 +1405,8 @@ async function renderHistory() {
   // Filter hidden cloud cards
   const hiddenCloud = JSON.parse(localStorage.getItem('ctq_hidden_cloud') || '[]');
 
-  // Add cloud quotes first (newest first), substituting local data if available
-  const cloudSorted = [...cloudQuotes].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  // Add cloud quotes first, substituting local data if available
+  const cloudSorted = [...cloudQuotes].sort((a,b) => quoteTimestamp(b) - quoteTimestamp(a));
   cloudSorted.forEach(cq => {
     const id = cq.quoteId || cq['Quote ID'];
     if (!id) return;
@@ -1400,12 +1419,16 @@ async function renderHistory() {
     }
   });
 
-  // Add local-only quotes (not in cloud) sorted newest first
-  localHist.slice().reverse().forEach(q => {
+  // Add local-only quotes (not in cloud)
+  localHist.forEach(q => {
     if (!seen.has(q.quoteId)) {
       merged.push({ ...q, _hasLocal: true, _hasCloud: false });
     }
   });
+
+  // Keep the newest quote at the top, regardless of whether it came from
+  // this device or the cloud history.
+  merged.sort((a, b) => quoteTimestamp(b) - quoteTimestamp(a));
 
   if (!merged.length) {
     el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#9ca3af;">
@@ -1494,10 +1517,9 @@ function loadQuoteIntoForm(id) {
   if (badge) badge.textContent = QUOTE_ID;
 
   if (planImageB64) {
-    document.getElementById('planPreview').innerHTML =
-      `<img src="data:${planImageType};base64,${planImageB64}" style="max-width:100%;border-radius:8px;margin-top:8px;">`;
+    showPreview(planImageB64);
   } else {
-    document.getElementById('planPreview').innerHTML = '';
+    clearImage();
   }
 
   renderSections(); renderAddons(); updateSummary();
