@@ -57,8 +57,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 .form-row.full { grid-template-columns: 1fr; }
 .field label { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 5px; }
-.field input { width: 100%; padding: 10px 13px; border: 1.5px solid #e5e7eb; border-radius: 9px; font-size: 14px; color: #111; transition: border-color 0.2s, box-shadow 0.2s; background: #fafafa; }
-.field input:focus { outline: none; border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.08); background: white; }
+.field input, .field select { width: 100%; padding: 10px 13px; border: 1.5px solid #e5e7eb; border-radius: 9px; font-size: 14px; color: #111; transition: border-color 0.2s, box-shadow 0.2s; background: #fafafa; }
+.field input:focus, .field select:focus { outline: none; border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.08); background: white; }
 
 /* Sections */
 .section-card { border: 1.5px solid #e5e7eb; border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
@@ -242,6 +242,32 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <button type="button" class="btn btn-outline btn-sm" onclick="addCustomAddon()">+ Custom Add-On</button>
     </div>
 
+    <!-- Internal Pricing Adjustments -->
+    <div class="card" style="background:#fff7ed;border:1.5px solid #fb923c">
+      <div class="card-title"><span>🔒 Internal Pricing Adjustments</span></div>
+      <div style="font-size:12px;color:#9a3412;margin-bottom:14px">Profit details are for internal use and will not appear on the customer PDF.</div>
+      <div class="form-row">
+        <div class="field">
+          <label>Profit Add-On Type</label>
+          <select id="profitType" onchange="updateSummary()">
+            <option value="percentage">Percentage (%)</option>
+            <option value="dollar">Fixed Dollar Amount ($)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Profit Add-On</label>
+          <input type="number" id="profitValue" value="0" min="0" step="0.01" oninput="updateSummary()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Sales Tax Rate (%)</label>
+          <input type="number" id="taxRate" value="0" min="0" step="0.001" oninput="updateSummary()">
+        </div>
+        <div class="field"></div>
+      </div>
+    </div>
+
     <!-- Job Details -->
     <div class="card">
       <div class="card-title"><span>📋 Job Details</span></div>
@@ -364,6 +390,9 @@ function generateQuoteId() {
 }
 let QUOTE_ID = generateQuoteId();
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('profitType').value = 'percentage';
+  document.getElementById('profitValue').value = '0';
+  document.getElementById('taxRate').value = '0';
   const badge = document.getElementById('quoteIdDisplay');
   if (badge) badge.textContent = QUOTE_ID;
 });
@@ -618,7 +647,14 @@ function updateSummary() {
   const ppsf = parseFloat(document.getElementById('pricePerSqFt').value) || 0;
   const matCost = tot * ppsf;
   const addOns = addonTotal();
-  const grand = matCost + addOns;
+  const baseSubtotal = matCost + addOns;
+  const profitType = document.getElementById('profitType').value;
+  const profitValue = parseFloat(document.getElementById('profitValue').value) || 0;
+  const profitAmount = profitType === 'percentage' ? baseSubtotal * profitValue / 100 : profitValue;
+  const customerSubtotal = baseSubtotal + profitAmount;
+  const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+  const taxAmount = customerSubtotal * taxRate / 100;
+  const grand = customerSubtotal + taxAmount;
 
   let html = '';
   if (sections.length) {
@@ -644,8 +680,12 @@ function updateSummary() {
     <div class="summary-line"><span class="lbl">Price Per Sq Ft</span><span class="val">$${ppsf.toFixed(2)}</span></div>
     <div class="summary-line"><span class="lbl">Material Cost</span><span class="val">$${matCost.toFixed(2)}</span></div>
     ${addOns > 0 ? `<div class="summary-line"><span class="lbl">Add-Ons</span><span class="val">$${addOns.toFixed(2)}</span></div>` : ''}
+    <div class="summary-line" style="background:#fff7ed;padding:8px;border-radius:7px"><span class="lbl">🔒 Base Subtotal (Internal)</span><span class="val">$${baseSubtotal.toFixed(2)}</span></div>
+    <div class="summary-line" style="background:#fff7ed;padding:8px;border-radius:7px"><span class="lbl">🔒 Profit Add-On ${profitType === 'percentage' ? `(${profitValue.toFixed(2)}%)` : '(Fixed)'}</span><span class="val">$${profitAmount.toFixed(2)}</span></div>
+    <div class="summary-line" style="border-top:2px solid #cbd5e1;margin-top:8px;padding-top:10px"><span class="lbl" style="font-weight:800">Customer Subtotal</span><span class="val">$${customerSubtotal.toFixed(2)}</span></div>
+    <div class="summary-line"><span class="lbl">Sales Tax (${taxRate.toFixed(3).replace(/\.?0+$/,'')}%)</span><span class="val">$${taxAmount.toFixed(2)}</span></div>
     <div class="summary-line" style="border-top:2px solid #1e3a5f;margin-top:8px;padding-top:12px">
-      <span style="font-weight:900;font-size:16px">Grand Total</span>
+      <span style="font-weight:900;font-size:16px">Final Total</span>
       <span class="summary-grand">$${grand.toFixed(2)}</span>
     </div>
   `;
@@ -670,12 +710,19 @@ async function submitQuote() {
   const tot          = totalSqft();
   const matCost      = tot * ppsf;
   const addOns       = addonTotal();
-  const grand        = matCost + addOns;
+  const baseSubtotal = matCost + addOns;
+  const profitType   = document.getElementById('profitType').value;
+  const profitValue  = parseFloat(document.getElementById('profitValue').value) || 0;
+  const profitAmount = profitType === 'percentage' ? baseSubtotal * profitValue / 100 : profitValue;
+  const customerSubtotal = baseSubtotal + profitAmount;
+  const taxRate      = parseFloat(document.getElementById('taxRate').value) || 0;
+  const taxAmount    = customerSubtotal * taxRate / 100;
+  const grand        = customerSubtotal + taxAmount;
 
   if (!measurerEmail) { alert('Please enter the measurer email address.'); return; }
 
   // 1. Generate PDF blob
-  const pdfBlob = await generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand, sinkProvider, demoProvider });
+  const pdfBlob = await generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, tot, addOns, customerSubtotal, taxRate, taxAmount, grand, sinkProvider, demoProvider });
   const pdfFileName = `quote-${projectName.replace(/\s+/g,'-')}.pdf`;
 
   // Save PDF — use native share sheet on iOS, download link on desktop
@@ -708,7 +755,8 @@ async function submitQuote() {
     addressCity:  document.getElementById('addressCity').value.trim(),
     addressState: document.getElementById('addressState').value.trim(),
     addressZip:   document.getElementById('addressZip').value.trim(),
-    measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand,
+    measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, baseSubtotal,
+    profitType, profitValue, profitAmount, customerSubtotal, taxRate, taxAmount, grand,
     sections: JSON.parse(JSON.stringify(sections)),
     addons:   JSON.parse(JSON.stringify(addons)),
     planImageB64, planImageType,
@@ -739,6 +787,13 @@ async function submitQuote() {
   body.append('Price_Per_Sq_Ft', '$' + ppsf.toFixed(2));
   body.append('Material_Cost',   '$' + matCost.toFixed(2));
   body.append('Addon_Total',     '$' + addOns.toFixed(2));
+  body.append('Base_Subtotal',   '$' + baseSubtotal.toFixed(2));
+  body.append('Profit_Type',     profitType);
+  body.append('Profit_Value',    profitType === 'percentage' ? profitValue.toFixed(2) + '%' : '$' + profitValue.toFixed(2));
+  body.append('Profit_Amount',   '$' + profitAmount.toFixed(2));
+  body.append('Customer_Subtotal', '$' + customerSubtotal.toFixed(2));
+  body.append('Tax_Rate',        taxRate.toFixed(3) + '%');
+  body.append('Sales_Tax',       '$' + taxAmount.toFixed(2));
   body.append('Grand_Total',     '$' + grand.toFixed(2));
   body.append('Sections_Detail', sectionsSummary);
   if (addons.length) body.append('Addons_Detail', addonsSummary);
@@ -759,6 +814,13 @@ async function submitQuote() {
     'Price_Per_Sq_Ft': '$' + ppsf.toFixed(2),
     'Material_Cost':   '$' + matCost.toFixed(2),
     'Addon_Total':     '$' + addOns.toFixed(2),
+    'Base_Subtotal':   '$' + baseSubtotal.toFixed(2),
+    'Profit_Type':     profitType,
+    'Profit_Value':    profitType === 'percentage' ? profitValue.toFixed(2) + '%' : '$' + profitValue.toFixed(2),
+    'Profit_Amount':   '$' + profitAmount.toFixed(2),
+    'Customer_Subtotal': '$' + customerSubtotal.toFixed(2),
+    'Tax_Rate':        taxRate.toFixed(3) + '%',
+    'Sales_Tax':       '$' + taxAmount.toFixed(2),
     'Grand_Total':     '$' + grand.toFixed(2),
     'Sections_Detail': sectionsSummary,
   };
@@ -801,9 +863,9 @@ async function submitQuote() {
         `${sec.name}: ${sectionSqft(sec)} sq ft\n` +
         sec.measurements.map(m => `  ${m.label ? m.label+': ' : ''}${m.L||0}" × ${m.W||0}" = ${sqftOf(m)} sq ft`).join('\n')
       ).join('\n') +
-      `\n\n--- SUMMARY ---\nTotal Sq Ft: ${tot} sq ft\nPrice/Sq Ft: $${ppsf.toFixed(2)}\nMaterial Cost: $${matCost.toFixed(2)}` +
+      `\n\n--- INTERNAL PRICING ---\nTotal Sq Ft: ${tot} sq ft\nPrice/Sq Ft: $${ppsf.toFixed(2)}\nMaterial Cost: $${matCost.toFixed(2)}` +
       (addOns > 0 ? `\nAdd-Ons: $${addOns.toFixed(2)}` : '') +
-      `\nGrand Total: $${grand.toFixed(2)}\n\nSee attached PDF for full details.\n\nThank you!`
+      `\nBase Subtotal: $${baseSubtotal.toFixed(2)}\nProfit Add-On: $${profitAmount.toFixed(2)}\nCustomer Subtotal: $${customerSubtotal.toFixed(2)}\nSales Tax (${taxRate}%): $${taxAmount.toFixed(2)}\nFinal Total: $${grand.toFixed(2)}\n\nSee attached PDF for customer-facing details.\n\nThank you!`
     );
     window.open(`mailto:${measurerEmail}?subject=Countertop Quote — ${encodeURIComponent(projectName)}&body=${mailBody}`, '_blank');
   }, 1000);
@@ -819,7 +881,7 @@ async function submitQuote() {
 }
 
 // ─── PDF Generation ───────────────────────────────────────────────────────────
-async function generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, ppsf, tot, matCost, addOns, grand, sinkProvider='—', demoProvider='—' }) {
+async function generatePDF({ projectName, customerName, fullAddress, measurerName, measurerEmail, date, tot, addOns, customerSubtotal, taxRate, taxAmount, grand, sinkProvider='—', demoProvider='—' }) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const W = doc.internal.pageSize.getWidth();
@@ -897,7 +959,7 @@ async function generatePDF({ projectName, customerName, fullAddress, measurerNam
 
   // ── Summary Box ──
   checkPage(50);
-  const boxH = addons.length > 0 ? 52 : 44;
+  const boxH = 52;
   doc.setFillColor(240, 247, 255);
   doc.roundedRect(L, y, R-L, boxH, 5, 5, 'F');
   doc.setDrawColor(30,58,95); doc.setLineWidth(0.8);
@@ -906,12 +968,11 @@ async function generatePDF({ projectName, customerName, fullAddress, measurerNam
   doc.setTextColor(30,58,95); doc.setFontSize(12); doc.setFont('helvetica','bold');
   doc.text('QUOTE SUMMARY', L+8, y); y += 9;
   doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(60,60,60);
-  doc.text(`Total Sq Ft: ${tot} sq ft`, L+8, y);
-  doc.text(`Price/Sq Ft: $${ppsf.toFixed(2)}`, L+80, y); y += 6;
-  doc.text(`Material Cost: $${matCost.toFixed(2)}`, L+8, y);
-  if (addons.length > 0) { doc.text(`Add-Ons: $${addOns.toFixed(2)}`, L+80, y); y += 6; } else y += 6;
+  doc.text(`Total Sq Ft: ${tot} sq ft`, L+8, y); y += 6;
+  doc.text(`Subtotal Before Tax: $${customerSubtotal.toFixed(2)}`, L+8, y); y += 6;
+  doc.text(`Sales Tax (${taxRate.toFixed(3).replace(/\.?0+$/,'')}%): $${taxAmount.toFixed(2)}`, L+8, y); y += 7;
   doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(30,58,95);
-  doc.text(`GRAND TOTAL:  $${grand.toFixed(2)}`, L+8, y);
+  doc.text(`FINAL TOTAL:  $${grand.toFixed(2)}`, L+8, y);
   y += 20;
 
   // ── Plan Image ──
@@ -967,6 +1028,9 @@ function resetForm() {
    'addressLine','addressCity','addressState','addressZip'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
+  document.getElementById('profitType').value = 'percentage';
+  document.getElementById('profitValue').value = '0';
+  document.getElementById('taxRate').value = '0';
   const badge = document.getElementById('quoteIdDisplay');
   if (badge) badge.textContent = QUOTE_ID;
   document.getElementById('planPreview').innerHTML = '';
@@ -1406,6 +1470,9 @@ function loadQuoteIntoForm(id) {
   document.getElementById('measurerEmail').value = q.measurerEmail|| '';
   document.getElementById('quoteDate').value     = q.date         || '';
   document.getElementById('pricePerSqFt').value  = q.ppsf         || '';
+  document.getElementById('profitType').value   = q.profitType   || 'percentage';
+  document.getElementById('profitValue').value  = q.profitValue  || 0;
+  document.getElementById('taxRate').value      = q.taxRate      || 0;
 
   const badge = document.getElementById('quoteIdDisplay');
   if (badge) badge.textContent = QUOTE_ID;
@@ -1465,14 +1532,21 @@ async function previewHistoryPDF(id) {
   const tot     = parseFloat(q.tot)   || 0;
   const matCost = ppsf * tot;
   const addOns  = addons.reduce((s,a) => s + (parseFloat(a.qty)||0)*(parseFloat(a.price)||0), 0);
-  const grand   = matCost + addOns;
+  const baseSubtotal = matCost + addOns;
+  const profitType = q.profitType || 'percentage';
+  const profitValue = parseFloat(q.profitValue) || 0;
+  const profitAmount = profitType === 'percentage' ? baseSubtotal * profitValue / 100 : profitValue;
+  const customerSubtotal = baseSubtotal + profitAmount;
+  const taxRate = parseFloat(q.taxRate) || 0;
+  const taxAmount = customerSubtotal * taxRate / 100;
+  const grand = customerSubtotal + taxAmount;
   const fullAddress = [q.addressLine, q.addressCity, q.addressState, q.addressZip].filter(Boolean).join(', ') || q.fullAddress || '—';
 
   try {
     const blob = await generatePDF({ projectName: q.projectName||'—', customerName: q.customerName||'—',
       fullAddress, measurerName: q.measurerName||'—', measurerEmail: q.measurerEmail||'—',
       sinkProvider: q.sinkProvider||'—', demoProvider: q.demoProvider||'—',
-      date: q.date||new Date().toLocaleDateString(), ppsf, tot, matCost, addOns, grand });
+      date: q.date||new Date().toLocaleDateString(), tot, addOns, customerSubtotal, taxRate, taxAmount, grand });
 
     if (_pdfInlineBlobUrls[id]) URL.revokeObjectURL(_pdfInlineBlobUrls[id]);
     _pdfInlineBlobUrls[id] = URL.createObjectURL(blob);
@@ -1547,7 +1621,14 @@ async function downloadHistoryPDF(id) {
   const tot     = parseFloat(q.tot)   || 0;
   const matCost = ppsf * tot;
   const addOns  = addons.reduce((s,a) => s + (parseFloat(a.qty)||0)*(parseFloat(a.price)||0), 0);
-  const grand   = matCost + addOns;
+  const baseSubtotal = matCost + addOns;
+  const profitType = q.profitType || 'percentage';
+  const profitValue = parseFloat(q.profitValue) || 0;
+  const profitAmount = profitType === 'percentage' ? baseSubtotal * profitValue / 100 : profitValue;
+  const customerSubtotal = baseSubtotal + profitAmount;
+  const taxRate = parseFloat(q.taxRate) || 0;
+  const taxAmount = customerSubtotal * taxRate / 100;
+  const grand = customerSubtotal + taxAmount;
   const fullAddress = [q.addressLine, q.addressCity, q.addressState, q.addressZip].filter(Boolean).join(', ') || '—';
 
   try {
@@ -1558,7 +1639,7 @@ async function downloadHistoryPDF(id) {
       measurerName:  q.measurerName  || '—',
       measurerEmail: q.measurerEmail || '—',
       date:   q.date   || new Date().toLocaleDateString(),
-      ppsf, tot, matCost, addOns, grand
+      tot, addOns, customerSubtotal, taxRate, taxAmount, grand
     });
 
     const fname = `Quote-${QUOTE_ID}-${(q.projectName||'project').replace(/[^a-z0-9]/gi,'-')}.pdf`;
