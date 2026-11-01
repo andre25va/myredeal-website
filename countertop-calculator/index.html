@@ -2,33 +2,61 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Countertop Quote Calculator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+button, input, select, textarea { font-family: inherit; }
+img { max-width: 100%; height: auto; }
 
-.header { background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); color: white; padding: 20px 24px; display: flex; align-items: center; gap: 14px; }
-.header-icon { font-size: 32px; }
-.header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
-.header p { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+.header { background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); color: white; padding: calc(14px + env(safe-area-inset-top)) 16px 14px; display: flex; align-items: center; gap: 12px; }
+.header-icon { font-size: 28px; line-height: 1; flex: 0 0 auto; }
+.header-text { min-width: 0; }
+.header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; line-height: 1.15; }
+.header p { font-size: 13px; opacity: 0.8; margin-top: 3px; }
 
-.container { max-width: 820px; margin: 0 auto; padding: 16px 16px 60px; }
+.running-total { position: sticky; top: 0; z-index: 50; width: 100%; min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; background: #fff; color: #1e3a5f; border: none; border-bottom: 1px solid #e5e7eb; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08); cursor: pointer; text-align: left; }
+.running-total:hover { background: #f8fafc; }
+.running-total:focus-visible { outline: 3px solid #1e3a5f; outline-offset: -3px; }
+.rt-kicker { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #6b7280; }
+.rt-sqft { display: block; margin-top: 2px; font-size: 14px; font-weight: 700; color: #1e3a5f; }
+.rt-side { text-align: right; flex: 0 0 auto; }
+.rt-amount { display: block; font-size: 22px; font-weight: 800; color: #166534; letter-spacing: -0.3px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.rt-link { display: block; margin-top: 2px; font-size: 12px; font-weight: 700; color: #2c5282; }
+body[data-view="history"] .running-total,
+body[data-view="success"] .running-total { display: none; }
+
+.container { width: 100%; max-width: 820px; margin: 0 auto; padding: 12px 12px 48px; }
+.flow-hint { font-size: 15px; line-height: 1.45; color: #4b5563; margin: 0 2px 14px; }
 
 /* ── Tab Nav ── */
-.tab-nav { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid #eaecf0; gap: 4px; }
-.tab-btn { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 9px; font-size: 14px; font-weight: 600; color: #6b7280; cursor: pointer; transition: all 0.15s; }
+.tab-nav { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid #eaecf0; gap: 4px; }
+.tab-btn { flex: 1; min-height: 44px; padding: 10px 8px; border: none; background: transparent; border-radius: 9px; font-size: 15px; font-weight: 700; color: #6b7280; cursor: pointer; transition: all 0.15s; }
 .tab-btn.active { background: #1e3a5f; color: white; }
 .tab-btn:hover:not(.active) { background: #f3f4f6; }
+.tab-btn:focus-visible { outline: 3px solid #1e3a5f; outline-offset: 1px; }
 
 /* ── History Cards ── */
 .history-quote-card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid #eaecf0; }
 .hqc-project { font-size: 16px; font-weight: 700; color: #1e3a5f; }
 .hqc-id { font-size: 11px; color: #9ca3af; font-family: monospace; margin-top: 2px; }
 .hqc-total { font-size: 22px; font-weight: 800; color: #16a34a; margin: 8px 0 4px; }
-.hqc-actions { display: flex; gap: 8px; margin-top: 12px; }
+.hqc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.hqc-top > div:first-child { min-width: 0; }
+.hqc-date { text-align: right; font-size: 13px; color: #9ca3af; flex: 0 0 auto; }
+.hqc-meta { font-size: 14px; color: #6b7280; margin: 8px 0 4px; overflow-wrap: anywhere; }
+.hqc-sub { font-size: 14px; color: #6b7280; margin-bottom: 10px; overflow-wrap: anywhere; }
+.hqc-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.hqc-actions > .btn, .hqc-actions > a.btn { min-height: 44px; flex: 1 1 9rem; justify-content: center; text-align: center; text-decoration: none; }
+.hqc-btn-pdf { background: #fef2f2; border-color: #dc2626; color: #dc2626; }
+.hqc-btn-doc { background: #f0fdf4; border-color: #16a34a; color: #15803d; }
+.history-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.history-head h2 { font-size: 18px; font-weight: 700; color: #1e3a5f; }
+.history-quote-card, .hqc-project { overflow-wrap: anywhere; }
 
 /* ── PIN Modal ── */
 .pin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; display: flex; align-items: center; justify-content: center; }
@@ -39,116 +67,179 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 /* PDF Inline Preview */
 .pdf-inline-wrap { display:none; flex-direction:column; margin-top:12px; border:1px solid #d1d5db; border-radius:10px; overflow:hidden; }
 .pdf-inline-wrap.open { display:flex; }
-.pdf-inline-toolbar { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#f9fafb; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:600; color:#1e3a5f; }
-.pdf-inline-iframe { border:none; width:100%; height:480px; background:#f3f4f6; }
+.pdf-inline-toolbar { display:flex; align-items:center; justify-content:space-between; gap: 8px; flex-wrap: wrap; padding:8px 12px; background:#f9fafb; border-bottom:1px solid #e5e7eb; font-size:14px; font-weight:600; color:#1e3a5f; }
+.pdf-inline-toolbar > span { min-width: 0; overflow-wrap: anywhere; }
+.pdf-inline-iframe { border:none; width:100%; height: 60vh; min-height: 280px; background:#f3f4f6; }
 
 .pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 24px; }
 .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #d1d5db; background: white; transition: all 0.15s; }
 .pin-dot.filled { background: #1e3a5f; border-color: #1e3a5f; transform: scale(1.15); }
 .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-.pin-key { padding: 15px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 18px; font-weight: 700; background: white; color: #1e3a5f; cursor: pointer; transition: all 0.1s; user-select: none; }
+.pin-key { min-height: 48px; padding: 14px 8px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 18px; font-weight: 700; background: white; color: #1e3a5f; cursor: pointer; transition: all 0.1s; user-select: none; }
 .pin-key:active { background: #eef2ff; border-color: #1e3a5f; transform: scale(0.95); }
 .pin-error { color: #ef4444; font-size: 13px; font-weight: 600; min-height: 20px; }
 
-.card { background: white; border-radius: 14px; padding: 22px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid #eaecf0; }
-.card-title { font-size: 14px; font-weight: 700; color: #1e3a5f; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; letter-spacing: 0.2px; }
-.card-title span { display: flex; align-items: center; gap: 6px; }
+.card { background: white; border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid #eaecf0; }
+.card-title { font-size: 16px; font-weight: 700; color: #1e3a5f; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; letter-spacing: 0.2px; }
+.card-title > span:first-child { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.step { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #1e3a5f; color: white; font-size: 12px; font-weight: 800; flex: 0 0 auto; }
+#summaryCard { scroll-margin-top: 76px; }
 
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px; }
 .form-row.full { grid-template-columns: 1fr; }
-.field label { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 5px; }
-.field input, .field select { width: 100%; padding: 10px 13px; border: 1.5px solid #e5e7eb; border-radius: 9px; font-size: 14px; color: #111; transition: border-color 0.2s, box-shadow 0.2s; background: #fafafa; }
+.field label { font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+.field input, .field select, .dim-input, .addon-row-name, .addon-num-input, .section-name-input { scroll-margin-top: 76px; }
+.field input, .field select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1.5px solid #e5e7eb; border-radius: 9px; font-size: 16px; color: #111; transition: border-color 0.2s, box-shadow 0.2s; background: #fafafa; }
 .field input:focus, .field select:focus { outline: none; border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.08); background: white; }
 
 /* Sections */
 .section-card { border: 1.5px solid #e5e7eb; border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
-.section-header { background: linear-gradient(to right, #eef2ff, #f5f7ff); padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #e5e7eb; }
-.section-name-input { font-size: 14px; font-weight: 700; color: #1e3a5f; border: none; background: transparent; flex: 1; min-width: 0; }
-.section-name-input:focus { outline: none; }
-.section-sqft-badge { background: #dcfce7; color: #166534; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
-.section-total-bar { margin-top: 8px; padding: 6px 10px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 6px; font-size: 13px; font-weight: 700; color: #166534; text-align: right; }
-.section-body { padding: 10px 12px; }
+.section-header { background: linear-gradient(to right, #eef2ff, #f5f7ff); padding: 10px 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #e5e7eb; }
+.section-name-input { font-size: 16px; font-weight: 700; color: #1e3a5f; border: none; background: transparent; flex: 1 1 8rem; min-width: 0; min-height: 44px; padding: 6px 4px; }
+.section-tools { display: flex; align-items: center; gap: 8px; margin-left: auto; flex: 0 0 auto; }
+.section-name-input:focus { outline: none; background: white; border-radius: 8px; box-shadow: 0 0 0 2px rgba(30,58,95,0.18); }
+.section-sqft-badge { background: #dcfce7; color: #166534; padding: 6px 10px; border-radius: 20px; font-size: 13px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.section-total-bar { margin-top: 10px; padding: 10px 12px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 8px; font-size: 15px; font-weight: 700; color: #166534; text-align: right; }
+.section-body { padding: 12px; }
 
 .meas-card { background: transparent; border: none; padding: 4px 0; margin-bottom: 4px; }
-.meas-label-input { width: 100%; padding: 7px 10px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 12px; margin-bottom: 10px; background: white; color: #111; }
+.meas-label-input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 16px; margin-bottom: 10px; background: white; color: #111; }
 .meas-label-input:focus { outline: none; border-color: #1e3a5f; }
-.meas-dims { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
-.dim-group { display: flex; flex-direction: column; flex: 1; min-width: 100px; }
-.dim-group label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-.dim-input { width: 100%; padding: 10px 14px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 15px; background: white; color: #111; -moz-appearance: textfield; }
+.meas-dims { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: end; margin-bottom: 8px; }
+.dim-group { display: flex; flex-direction: column; min-width: 0; }
+.dim-group label { font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+.dim-input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 16px; background: white; color: #111; -moz-appearance: textfield; }
 .dim-input::-webkit-outer-spin-button, .dim-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.dim-input:focus { outline: none; border-color: #1e3a5f; }
-.x-sym { color: #9ca3af; font-size: 18px; font-weight: 600; flex-shrink: 0; }
-.sqft-result { background: #dcfce7; color: #166534; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.dim-input:focus { outline: none; border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.08); }
+.x-sym { color: #9ca3af; font-size: 20px; font-weight: 600; padding-bottom: 10px; line-height: 1; }
+.sqft-result { grid-column: 1 / 3; justify-self: start; align-self: center; background: #dcfce7; color: #166534; padding: 8px 12px; border-radius: 8px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.meas-dims .icon-btn { grid-column: 3; grid-row: 2; justify-self: end; }
 
 /* Buttons */
-.btn { display: inline-flex; align-items: center; gap: 5px; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 15px; font-weight: 700; transition: all 0.15s; }
+.btn:focus-visible { outline: 3px solid #1e3a5f; outline-offset: 2px; }
 .btn-primary { background: #1e3a5f; color: white; }
 .btn-primary:hover { background: #162d4a; }
 .btn-outline { background: white; color: #1e3a5f; border: 1.5px solid #c7d2e8; }
 .btn-outline:hover { background: #eef2ff; }
 .btn-danger { background: #fff1f2; color: #be123c; border: 1.5px solid #fecdd3; }
 .btn-danger:hover { background: #ffe4e6; }
-.btn-sm { padding: 4px 10px; font-size: 12px; }
-.btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; background: linear-gradient(135deg, #166534, #15803d); color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.2px; }
+.btn-sm { padding: 8px 12px; font-size: 14px; }
+.icon-btn { width: 44px; height: 44px; min-height: 44px; padding: 0; flex: 0 0 44px; font-size: 18px; line-height: 1; }
+.btn-submit { width: 100%; min-height: 52px; padding: 14px 16px; font-size: 17px; font-weight: 800; background: linear-gradient(135deg, #166534, #15803d); color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.2px; }
+.btn-submit:focus-visible { outline: 3px solid #14532d; outline-offset: 2px; }
 .btn-submit:hover { background: linear-gradient(135deg, #14532d, #166534); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(21,128,61,0.3); }
 
 /* Add-ons */
-.addon-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
-.addon-chip { border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 9px 10px; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; color: #374151; transition: all 0.15s; background: white; }
+.addon-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.addon-chip { min-height: 44px; border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 8px 8px; cursor: pointer; text-align: center; font-size: 14px; font-weight: 700; line-height: 1.25; color: #374151; transition: all 0.15s; background: white; }
 .addon-chip:hover { border-color: #1e3a5f; color: #1e3a5f; background: #eef2ff; }
-.addon-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f8faff; border: 1px solid #e8edf8; border-radius: 9px; margin-bottom: 8px; }
-.addon-row-name { flex: 1; padding: 7px 10px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; font-weight: 600; background: white; color: #111; }
-.addon-num-input { width: 72px; padding: 7px 8px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; text-align: center; background: white; color: #111; }
-.addon-price-input { width: 70px; padding: 6px 4px; border: none; outline: none; font-size: 14px; text-align: left; background: transparent; }
-.quote-id-badge { display:inline-block; font-size:12px; color:#6b7280; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:3px 10px; font-family:monospace; letter-spacing:0.5px; }
-.addon-row-label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px; }
+.addon-chip:focus-visible { outline: 3px solid #1e3a5f; outline-offset: 2px; }
+.addon-row { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr) 44px; gap: 8px; align-items: end; padding: 12px; background: #f8faff; border: 1px solid #e8edf8; border-radius: 9px; margin-bottom: 8px; }
+.addon-row-name { grid-column: 1 / -1; width: 100%; min-height: 44px; padding: 10px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 16px; font-weight: 600; background: white; color: #111; }
+.addon-field { min-width: 0; }
+.addon-num-input { width: 100%; min-height: 44px; padding: 10px 8px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 16px; text-align: center; background: white; color: #111; }
+.addon-price-wrap { display: flex; align-items: center; gap: 2px; min-height: 44px; min-width: 0; padding: 0 10px; background: #fff; border: 1.5px solid #d1d5db; border-radius: 8px; }
+.addon-currency { color: #6b7280; font-size: 16px; font-weight: 700; flex: 0 0 auto; }
+.addon-price-input { width: auto; flex: 1; min-width: 0; padding: 8px 0; border: none; outline: none; font-size: 16px; text-align: left; background: transparent; box-shadow: none; }
+.addon-price-input:focus { outline: none; }
+.quote-id-badge { display:inline-block; max-width: 100%; font-size: 12px; color:#6b7280; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-family:monospace; letter-spacing:0.3px; overflow-wrap: anywhere; margin-left: auto; }
+.addon-row-label { font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 6px; }
 
 /* Plan image */
-.upload-zone { border: 2px dashed #d1d5db; border-radius: 12px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.upload-zone { border: 2px dashed #d1d5db; border-radius: 12px; padding: 28px 16px; min-height: 120px; text-align: center; cursor: pointer; transition: all 0.2s; }
 .upload-zone:hover { border-color: #1e3a5f; background: #eef2ff; }
 .upload-zone .icon { font-size: 36px; margin-bottom: 8px; }
-.upload-zone .title { font-size: 14px; font-weight: 700; color: #1e3a5f; margin-bottom: 4px; }
-.upload-zone .sub { font-size: 12px; color: #9ca3af; }
+.upload-zone .title { font-size: 16px; font-weight: 700; color: #1e3a5f; margin-bottom: 4px; }
+.upload-zone .sub { font-size: 14px; color: #6b7280; }
 .plan-preview { max-width: 100%; border-radius: 10px; margin-top: 14px; border: 1px solid #e5e7eb; }
 
 /* Summary */
-.summary-line { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
+.summary-line { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f3f4f6; font-size: 15px; }
 .summary-line:last-child { border-bottom: none; }
+.summary-line > span:first-child { flex: 1; min-width: 0; }
+.summary-line > span:last-child { flex: 0 0 auto; text-align: right; }
 .summary-line .lbl { color: #6b7280; }
-.summary-line .val { font-weight: 600; color: #111; }
+.summary-line .val { font-weight: 700; color: #111; }
 .summary-grand { font-size: 22px; font-weight: 900; color: #1e3a5f; }
-.summary-section-block { background: #f8faff; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; }
-.summary-section-name { font-size: 13px; font-weight: 700; color: #1e3a5f; margin-bottom: 4px; }
-.summary-section-sub { font-size: 12px; color: #6b7280; }
+.summary-section-block { background: #f8faff; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+.summary-section-name { font-size: 15px; font-weight: 700; color: #1e3a5f; margin-bottom: 4px; overflow-wrap: anywhere; }
+.summary-section-sub { font-size: 14px; color: #4b5563; }
+.summary-meas { padding: 2px 0; overflow-wrap: anywhere; }
+.summary-section-total { font-size: 14px; font-weight: 700; color: #166534; margin-top: 4px; }
 
 /* Success */
-#successView { display: none; text-align: center; padding: 60px 20px; }
+#successView { display: none; text-align: center; padding: 48px 12px; }
 #successView .icon { font-size: 64px; margin-bottom: 16px; }
 #successView h2 { font-size: 26px; font-weight: 800; color: #1e3a5f; margin-bottom: 8px; }
-#successView p { color: #6b7280; font-size: 15px; margin-bottom: 24px; }
+#successView p { color: #6b7280; font-size: 16px; margin-bottom: 24px; line-height: 1.45; }
+#successView .btn { min-height: 48px; padding: 12px 22px; font-size: 16px; }
+
+.choice-group + .choice-group { margin-top: 16px; }
+.choice-legend { font-weight: 700; font-size: 15px; display: block; margin-bottom: 8px; color: #111827; }
+.choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.choice { min-height: 48px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1.5px solid #e5e7eb; border-radius: 10px; background: #fafafa; font-size: 16px; font-weight: 600; cursor: pointer; }
+.choice input { width: 20px; height: 20px; min-height: 0; margin: 0; flex: 0 0 20px; accent-color: #1e3a5f; }
+.note { font-size: 14px; line-height: 1.5; }
+.note-warn { color: #9a3412; margin-bottom: 14px; }
+.disclaimer-copy { font-size: 15px; color: #78350f; line-height: 1.55; }
+.submit-note { text-align: center; font-size: 13px; color: #6b7280; margin-top: 10px; line-height: 1.4; }
+.plan-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 
 /* Divider */
 .divider { height: 1px; background: #f0f0f0; margin: 4px 0 14px; }
 
-@media (max-width: 580px) {
-  .form-row { grid-template-columns: 1fr; }
-  .addon-presets { grid-template-columns: repeat(2, 1fr); }
-  .meas-dims { gap: 7px; }
+@media (min-width: 760px) {
+  .header { padding: 20px 24px; }
+  .running-total { padding-left: max(24px, calc((100% - 820px) / 2 + 16px)); padding-right: max(24px, calc((100% - 820px) / 2 + 16px)); }
+  .header-icon { font-size: 32px; }
+  .header h1 { font-size: 22px; }
+  .header p { font-size: 13px; }
+  .container { padding: 16px 16px 60px; }
+  .card { padding: 22px; margin-bottom: 16px; }
+  .form-row { grid-template-columns: 1fr 1fr; }
+  .form-row.full { grid-template-columns: 1fr; }
+  .form-row.address-row { grid-template-columns: 2fr 1fr 1fr; }
+  .addon-presets { grid-template-columns: repeat(3, 1fr); }
+  .addon-row { grid-template-columns: minmax(0, 1fr) 96px minmax(120px, 160px) 44px; }
+  .addon-row-name { grid-column: auto; }
+  .meas-dims { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
+  .dim-group { flex: 1 1 140px; max-width: 200px; }
+  .sqft-result { grid-column: auto; margin-bottom: 2px; }
+  .meas-dims .icon-btn { grid-column: auto; grid-row: auto; }
+  .pdf-inline-iframe { height: 480px; }
+  .card-title .btn { flex: 0 0 auto; }
+  .btn-sm:not(.icon-btn) { min-height: 36px; font-size: 13px; padding: 6px 12px; }
+}
+
+@media (max-width: 759px) {
+  .card-title .btn { flex: 1 1 100%; }
+  .section-body > .btn { width: 100%; }
+  #addonList + .btn, .card > .btn.btn-outline { width: 100%; }
 }
 </style>
 </head>
-<body>
+<body data-view="form">
 <!-- Hidden iframe: absorbs FormSubmit redirect so page doesn't navigate away -->
 <iframe name="formsubmit_iframe" style="display:none" title="form-target"></iframe>
 
 <div class="header">
   <div class="header-icon">🪨</div>
-  <div>
+  <div class="header-text">
     <h1>Countertop Quote Calculator</h1>
     <p>Professional Measurement & Pricing Tool</p>
   </div>
 </div>
+<button type="button" class="running-total" id="runningTotal" aria-label="Running total. Jump to the quote breakdown." onclick="document.getElementById('summaryCard').scrollIntoView({behavior:'smooth', block:'start'})">
+  <span class="rt-meta">
+    <span class="rt-kicker">Running total</span>
+    <span class="rt-sqft" id="rtSqft">0 sq ft</span>
+  </span>
+  <span class="rt-side">
+    <span class="rt-amount" id="rtAmount">$0.00</span>
+    <span class="rt-link">View breakdown</span>
+  </span>
+</button>
 
 <div class="container">
 
@@ -168,10 +259,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
   <!-- MAIN FORM -->
   <div id="formView">
+    <p class="flow-hint">Fill in each step from top to bottom. The total at the top updates as you measure.</p>
 
     <!-- Project Details -->
     <div class="card">
-      <div class="card-title"><span>📋 Project Details</span><span class="quote-id-badge" id="quoteIdDisplay"></span></div>
+      <div class="card-title"><span><span class="step">1</span> 📋 Project Details</span><span class="quote-id-badge" id="quoteIdDisplay"></span></div>
       <div class="form-row full">
         <div class="field">
           <label>Company Name</label>
@@ -197,7 +289,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <input type="text" id="addressLine" placeholder="123 Main St">
         </div>
       </div>
-      <div class="form-row" style="grid-template-columns: 2fr 1fr 1fr;">
+      <div class="form-row address-row">
         <div class="field">
           <label>City</label>
           <input type="text" id="addressCity" placeholder="City">
@@ -208,7 +300,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         </div>
         <div class="field">
           <label>Zip</label>
-          <input type="text" id="addressZip" placeholder="00000" maxlength="10">
+          <input type="text" id="addressZip" placeholder="00000" maxlength="10" inputmode="numeric" autocomplete="postal-code">
         </div>
       </div>
       <div class="form-row">
@@ -228,7 +320,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         </div>
         <div class="field">
           <label>Price Per Sq Ft ($)</label>
-          <input type="number" id="pricePerSqFt" placeholder="0.00" min="0" step="0.01" oninput="updateSummary()">
+          <input type="number" id="pricePerSqFt" placeholder="0.00" min="0" step="0.01" inputmode="decimal" oninput="updateSummary()">
         </div>
       </div>
     </div>
@@ -236,7 +328,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <!-- Sections & Measurements -->
     <div class="card">
       <div class="card-title">
-        <span>📐 Sections &amp; Measurements</span>
+        <span><span class="step">2</span> 📐 Sections &amp; Measurements</span>
         <button type="button" class="btn btn-outline btn-sm" onclick="addSection()">+ Add Section</button>
       </div>
       <div id="sectionsContainer"></div>
@@ -244,7 +336,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <!-- Add-Ons -->
     <div class="card">
-      <div class="card-title"><span>🔧 Add-Ons &amp; Cutouts</span></div>
+      <div class="card-title"><span><span class="step">3</span> 🔧 Add-Ons &amp; Cutouts</span></div>
       <div class="addon-presets" id="addonPresets"></div>
       <div class="divider"></div>
       <div id="addonList"></div>
@@ -253,8 +345,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <!-- Internal Pricing Adjustments -->
     <div class="card" style="background:#fff7ed;border:1.5px solid #fb923c">
-      <div class="card-title"><span>🔒 Internal Pricing Adjustments</span></div>
-      <div style="font-size:12px;color:#9a3412;margin-bottom:14px">Profit details are for internal use and will not appear on the customer PDF.</div>
+      <div class="card-title"><span><span class="step">4</span> 🔒 Internal Pricing Adjustments</span></div>
+      <div class="note note-warn">Profit details are for internal use and will not appear on the customer PDF.</div>
       <div class="form-row">
         <div class="field">
           <label>Profit Add-On Type</label>
@@ -265,13 +357,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         </div>
         <div class="field">
           <label>Profit Add-On</label>
-          <input type="number" id="profitValue" value="0" min="0" step="0.01" oninput="updateSummary()">
+          <input type="number" id="profitValue" value="0" min="0" step="0.01" inputmode="decimal" oninput="updateSummary()">
         </div>
       </div>
       <div class="form-row">
         <div class="field">
           <label>Sales Tax Rate (%)</label>
-          <input type="number" id="taxRate" value="9.5" min="0" step="0.001" oninput="updateSummary()">
+          <input type="number" id="taxRate" value="9.5" min="0" step="0.001" inputmode="decimal" oninput="updateSummary()">
         </div>
         <div class="field"></div>
       </div>
@@ -279,25 +371,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <!-- Job Details -->
     <div class="card">
-      <div class="card-title"><span>📋 Job Details</span></div>
-      <div style="margin-bottom:16px">
-        <label style="font-weight:600;display:block;margin-bottom:8px">Who is providing the sink?</label>
-        <div style="display:flex;gap:24px">
-          <label style="display:flex;align-items:center;gap:7px;font-weight:400;cursor:pointer;font-size:15px">
+      <div class="card-title"><span><span class="step">5</span> 📋 Job Details</span></div>
+      <div class="choice-group">
+        <span class="choice-legend">Who is providing the sink?</span>
+        <div class="choice-row">
+          <label class="choice">
             <input type="radio" name="sinkProvider" value="Fabricator" checked> Fabricator
           </label>
-          <label style="display:flex;align-items:center;gap:7px;font-weight:400;cursor:pointer;font-size:15px">
+          <label class="choice">
             <input type="radio" name="sinkProvider" value="Client"> Client
           </label>
         </div>
       </div>
-      <div>
-        <label style="font-weight:600;display:block;margin-bottom:8px">Who is doing the demo?</label>
-        <div style="display:flex;gap:24px">
-          <label style="display:flex;align-items:center;gap:7px;font-weight:400;cursor:pointer;font-size:15px">
+      <div class="choice-group">
+        <span class="choice-legend">Who is doing the demo?</span>
+        <div class="choice-row">
+          <label class="choice">
             <input type="radio" name="demoProvider" value="Fabricator" checked> Fabricator
           </label>
-          <label style="display:flex;align-items:center;gap:7px;font-weight:400;cursor:pointer;font-size:15px">
+          <label class="choice">
             <input type="radio" name="demoProvider" value="Client"> Client
           </label>
         </div>
@@ -306,7 +398,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <!-- Plan Image -->
     <div class="card">
-      <div class="card-title"><span>📷 Plan / Layout Photo</span></div>
+      <div class="card-title"><span><span class="step">6</span> 📷 Plan / Layout Photo</span></div>
       <div class="upload-zone" onclick="document.getElementById('planInput').click()">
         <div class="icon">📁</div>
         <div class="title">Click to upload plan image</div>
@@ -317,16 +409,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
 
     <!-- Summary -->
-    <div class="card">
-      <div class="card-title"><span>💰 Quote Summary</span></div>
+    <div class="card" id="summaryCard">
+      <div class="card-title"><span><span class="step">7</span> 💰 Quote Summary</span></div>
       <div id="summaryBody"></div>
     </div>
 
     <!-- Submit -->
     <!-- Disclaimer -->
     <div class="card" style="background:#fef9ec;border:1.5px solid #f59e0b">
-      <div style="font-weight:700;margin-bottom:5px;font-size:15px">⚠️ Disclaimer</div>
-      <div style="font-size:13px;color:#78350f;line-height:1.6">
+      <div style="font-weight:700;margin-bottom:6px;font-size:16px">⚠️ Disclaimer</div>
+      <div class="disclaimer-copy">
         We do <strong>not</strong> perform electrical or plumbing work. All electrical and plumbing connections must be arranged by a licensed contractor. This quote covers countertop fabrication and installation only.
       </div>
     </div>
@@ -334,7 +426,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <button class="btn-submit" onclick="submitQuote()">
       📄 Generate PDF &amp; Submit Quote
     </button>
-    <p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:10px">
+    <p class="submit-note">
       PDF downloads automatically · Copy emailed to measurer · Quote saved to system
     </p>
 
@@ -342,9 +434,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
   <!-- HISTORY VIEW -->
   <div id="historyView" style="display:none;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h2 style="font-size:18px;font-weight:700;color:#1e3a5f;">📋 Quote History</h2>
-      <button class="btn btn-outline btn-sm" onclick="renderHistory()" style="font-size:13px;">↻ Refresh</button>
+    <div class="history-head">
+      <h2>📋 Quote History</h2>
+      <button class="btn btn-outline btn-sm" onclick="renderHistory()">↻ Refresh</button>
     </div>
     <div id="historyList"></div>
   </div>
@@ -474,14 +566,16 @@ function renderSections() {
         <input class="section-name-input" type="text" value="${esc(sec.name)}"
           placeholder="Section name (e.g. Kitchen Island)"
           oninput="sections.find(s=>s.id===${sec.id}).name=this.value; document.getElementById('stot-${sec.id}').textContent=sectionSqft(sections.find(s=>s.id===${sec.id}))+' sq ft'; updateSummary();">
-        <span class="section-sqft-badge" id="stot-${sec.id}">${sectionSqft(sec)} sq ft</span>
-        <button class="btn btn-danger btn-sm" onclick="removeSection(${sec.id})">✕</button>
+        <div class="section-tools">
+          <span class="section-sqft-badge" id="stot-${sec.id}">${sectionSqft(sec)} sq ft</span>
+          <button type="button" class="btn btn-danger btn-sm icon-btn" aria-label="Delete section" onclick="removeSection(${sec.id})">✕</button>
+        </div>
       </div>
       <div class="section-body">
         <div id="mcon-${sec.id}">
           ${sec.measurements.map(m => measHTML(sec.id, m)).join('')}
         </div>
-        <button class="btn btn-outline btn-sm" onclick="addMeasurement(${sec.id})">+ Add Measurement</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="addMeasurement(${sec.id})">+ Add Measurement</button>
         <div class="section-total-bar">
           Section Total: <span id="stot-bot-${sec.id}">${sectionSqft(sec)} sq ft</span>
         </div>
@@ -495,16 +589,18 @@ function measHTML(sid, m) {
     <div class="meas-card">
       <div class="meas-dims">
         <div class="dim-group">
-          <input type="number" class="dim-input" placeholder="Length" value="${m.L}" min="0"
+          <label for="len-${m.id}">Length (in)</label>
+          <input id="len-${m.id}" type="number" inputmode="decimal" class="dim-input" placeholder="0" value="${m.L}" min="0"
             oninput="updateMeasField(${sid},${m.id},'L',this.value)">
         </div>
-        <span class="x-sym">×</span>
+        <span class="x-sym" aria-hidden="true">×</span>
         <div class="dim-group">
-          <input type="number" class="dim-input" placeholder="Width" value="${m.W}" min="0"
+          <label for="wid-${m.id}">Width (in)</label>
+          <input id="wid-${m.id}" type="number" inputmode="decimal" class="dim-input" placeholder="0" value="${m.W}" min="0"
             oninput="updateMeasField(${sid},${m.id},'W',this.value)">
         </div>
         <span class="sqft-result" id="sqr-${m.id}">${sqftOf(m)} sq ft</span>
-        <button class="btn btn-danger btn-sm" onclick="removeMeasurement(${sid},${m.id})">✕</button>
+        <button type="button" class="btn btn-danger btn-sm icon-btn" aria-label="Remove measurement" onclick="removeMeasurement(${sid},${m.id})">✕</button>
       </div>
     </div>`;
 }
@@ -559,22 +655,22 @@ function renderAddons() {
     <div class="addon-row">
       <input class="addon-row-name" type="text" value="${esc(a.name)}" placeholder="Add-on name"
         oninput="addons.find(x=>x.id===${a.id}).name=this.value">
-      <div>
+      <div class="addon-field">
         <span class="addon-row-label">Qty</span>
-        <input type="number" class="addon-num-input" value="${a.qty}" min="1"
+        <input type="number" inputmode="decimal" class="addon-num-input" value="${a.qty}" min="1"
           oninput="addons.find(x=>x.id===${a.id}).qty=this.value; updateSummary()">
       </div>
-      <div>
+      <div class="addon-field">
         <span class="addon-row-label">Price</span>
-        <div style="display:flex;align-items:center;background:#fff;border:1.5px solid #d1d5db;border-radius:8px;overflow:hidden;padding:0 8px;gap:2px;">
-          <span style="color:#6b7280;font-size:14px;font-weight:600;">$</span>
-          <input type="text" class="addon-num-input addon-price-input" value="${a.price ? parseFloat(a.price).toFixed(2) : ''}" placeholder="0.00"
+        <div class="addon-price-wrap">
+          <span class="addon-currency">$</span>
+          <input type="text" inputmode="decimal" class="addon-num-input addon-price-input" value="${a.price ? parseFloat(a.price).toFixed(2) : ''}" placeholder="0.00"
             onfocus="this.select()"
             oninput="this.value=this.value.replace(/[^0-9.]/g,''); addons.find(x=>x.id===${a.id}).price=this.value||0; updateSummary()"
             onblur="const v=parseFloat(this.value)||0; addons.find(x=>x.id===${a.id}).price=v; this.value=v?v.toFixed(2):''; updateSummary()">
         </div>
       </div>
-      <button class="btn btn-danger btn-sm" onclick="removeAddon(${a.id})">✕</button>
+      <button type="button" class="btn btn-danger btn-sm icon-btn" aria-label="Remove add-on" onclick="removeAddon(${a.id})">✕</button>
     </div>
   `).join('');
 }
@@ -636,7 +732,7 @@ function showPreview(src) {
   img.alt = 'Plan';
   img.src = src;
   const actions = document.createElement('div');
-  actions.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;';
+  actions.className = 'plan-actions';
   const changeBtn = document.createElement('button');
   changeBtn.className = 'btn btn-primary btn-sm';
   changeBtn.textContent = 'Change Image';
@@ -680,10 +776,10 @@ function updateSummary() {
         <div class="summary-section-sub">
           ${sec.measurements.map(m => {
             const lbl = m.label ? m.label + ': ' : '';
-            return `${lbl}${m.L||0}" × ${m.W||0}" = ${sqftOf(m)} sq ft`;
-          }).join(' &nbsp;|&nbsp; ')}
+            return `<div class="summary-meas">${lbl}${m.L||0}" × ${m.W||0}" = ${sqftOf(m)} sq ft</div>`;
+          }).join('')}
         </div>
-        <div style="font-size:13px;font-weight:700;color:#166534;margin-top:4px">Subtotal: ${sectionSqft(sec)} sq ft</div>
+        <div class="summary-section-total">Subtotal: ${sectionSqft(sec)} sq ft</div>
       </div>
     `).join('');
   }
@@ -706,6 +802,10 @@ function updateSummary() {
     </div>
   `;
   document.getElementById('summaryBody').innerHTML = html;
+  const rtAmt = document.getElementById('rtAmount');
+  const rtSqft = document.getElementById('rtSqft');
+  if (rtAmt) rtAmt.textContent = '$' + grand.toFixed(2);
+  if (rtSqft) rtSqft.textContent = tot + ' sq ft';
 }
 
 // ─── Submit ───────────────────────────────────────────────────────────────────
@@ -894,6 +994,7 @@ async function submitQuote() {
   document.getElementById('formView').style.display = 'none';
   document.getElementById('historyView').style.display = 'none';
   document.getElementById('successView').style.display = 'block';
+  document.body.dataset.view = 'success';
   document.getElementById('tabNewQuote').classList.remove('active');
   document.getElementById('tabHistory').classList.remove('active');
   window.scrollTo(0,0);
@@ -1129,12 +1230,14 @@ function switchTab(tab) {
     hv.style.display = 'none';
     btnF.classList.add('active');
     btnH.classList.remove('active');
+    document.body.dataset.view = 'form';
   } else {
     sv.style.display = 'none';
     fv.style.display = 'none';
     hv.style.display = 'block';
     btnF.classList.remove('active');
     btnH.classList.add('active');
+    document.body.dataset.view = 'history';
   }
   window.scrollTo(0, 0);
 }
@@ -1252,33 +1355,31 @@ function renderCloudCard(q) {
   const hasFullData = !!(q.sections && q.sections.length);
   return `
     <div class="history-quote-card" style="border-left:4px solid #2563eb;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div class="hqc-top">
         <div>
           <div class="hqc-project">${esc(project)}
             <span style="background:#dbeafe;color:#1d4ed8;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px;">☁️ Cloud</span>
           </div>
           <div class="hqc-id">${esc(qid)}</div>
         </div>
-        <div style="text-align:right;font-size:12px;color:#9ca3af;">${esc(date)}</div>
+        <div class="hqc-date">${esc(date)}</div>
       </div>
-      <div style="font-size:12px;color:#6b7280;margin:8px 0 4px;">
+      <div class="hqc-meta">
         📍 ${esc(address || '—')}
       </div>
       <div class="hqc-total">$${grand.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-      <div style="font-size:12px;color:#6b7280;margin-bottom:10px;">${sqft} sq ft${ppsf ? ' @ $' + ppsf.toFixed(2) + '/sq ft' : ''}</div>
+      <div class="hqc-sub">${sqft} sq ft${ppsf ? ' @ $' + ppsf.toFixed(2) + '/sq ft' : ''}</div>
       <div class="hqc-actions">
-        <button class="btn btn-primary" style="flex:2;font-size:13px;padding:9px 12px;"
-          onclick="loadCloudQuoteIntoForm(${JSON.stringify(JSON.stringify(q))})">✏️ Load &amp; Edit</button>
-        ${pdfUrl ? `<a href="${pdfUrl}" target="_blank" class="btn btn-outline" style="flex:1;font-size:13px;padding:9px 12px;background:#fef2f2;border-color:#dc2626;color:#dc2626;text-decoration:none;text-align:center;">📄 PDF</a>` : (docLink ? `<a href="${docLink}" target="_blank" class="btn btn-outline" style="flex:1;font-size:13px;padding:9px 12px;background:#f0fdf4;border-color:#16a34a;color:#15803d;text-decoration:none;text-align:center;">📄 Doc</a>` : '')}
-        <button class="btn btn-outline" style="font-size:13px;padding:9px 12px;"
-          onclick="deleteCloudCard('${qid}')">🗑️ Delete</button>
+        <button class="btn btn-primary" onclick="loadCloudQuoteIntoForm(${JSON.stringify(JSON.stringify(q))})">✏️ Load &amp; Edit</button>
+        ${pdfUrl ? `<a href="${pdfUrl}" target="_blank" class="btn btn-outline hqc-btn-pdf">📄 PDF</a>` : (docLink ? `<a href="${docLink}" target="_blank" class="btn btn-outline hqc-btn-doc">📄 Doc</a>` : '')}
+        <button class="btn btn-outline" onclick="deleteCloudCard('${qid}')">🗑️ Delete</button>
       </div>
       <div class="pdf-inline-wrap" id="pdf-wrap-${qid}">
         <div class="pdf-inline-toolbar">
           <span id="pdf-inline-title-${qid}">📄 ${qid}</span>
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary" id="pdf-dl-btn-${qid}" style="font-size:12px;padding:6px 14px;">⬇️ Download</button>
-            <button onclick="closePDFInline('${qid}')" style="background:none;border:none;font-size:18px;cursor:pointer;color:#6b7280;padding:0 4px;">✕</button>
+            <button class="btn btn-primary" id="pdf-dl-btn-${qid}">⬇️ Download</button>
+            <button type="button" class="btn btn-outline icon-btn" aria-label="Close preview" onclick="closePDFInline('${qid}')">✕</button>
           </div>
         </div>
         <iframe id="pdf-iframe-${qid}" class="pdf-inline-iframe" title="PDF Preview"></iframe>
@@ -1343,36 +1444,33 @@ function deleteCloudCard(qid) {
 function renderLocalCard(q, hasCloud=false) {
   return `
     <div class="history-quote-card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div class="hqc-top">
         <div>
           <div class="hqc-project">${esc(q.projectName||'Untitled Project')}${hasCloud ? '<span style="background:#dbeafe;color:#1d4ed8;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px;">☁️ Cloud</span>' : ''}</div>
           <div class="hqc-id">${esc(q.quoteId)}</div>
         </div>
-        <div style="text-align:right;font-size:12px;color:#9ca3af;">${esc(q.date||'')}</div>
+        <div class="hqc-date">${esc(q.date||'')}</div>
       </div>
-      <div style="font-size:12px;color:#6b7280;margin:8px 0 4px;">
-        👤 ${esc(q.customerName||'—')} &nbsp;·&nbsp; 📍 ${esc(q.fullAddress||'—')}
+      <div class="hqc-meta">
+        👤 ${esc(q.customerName||'—')} · 📍 ${esc(q.fullAddress||'—')}
       </div>
       <div class="hqc-total">$${Number(q.grand||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-      <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">
+      <div class="hqc-sub">
         ${q.tot||0} sq ft @ $${Number(q.ppsf||0).toFixed(2)}/sq ft
-        ${q.sections ? ' &nbsp;·&nbsp; ' + q.sections.length + ' section(s)' : ''}
-        ${q.addons && q.addons.length ? ' &nbsp;·&nbsp; ' + q.addons.length + ' add-on(s)' : ''}
+        ${q.sections ? ' · ' + q.sections.length + ' section(s)' : ''}
+        ${q.addons && q.addons.length ? ' · ' + q.addons.length + ' add-on(s)' : ''}
       </div>
       <div class="hqc-actions">
-        <button class="btn btn-primary" style="flex:2;font-size:13px;padding:9px 12px;"
-          onclick="loadQuoteIntoForm('${q.quoteId}')">✏️ Load &amp; Edit</button>
-        <button class="btn btn-outline" id="pdfbtn-${q.quoteId}" style="flex:1;font-size:13px;padding:9px 12px;background:#f0fdf4;border-color:#16a34a;color:#15803d;"
-          onclick="previewHistoryPDF('${q.quoteId}')">📄 PDF</button>
-        <button class="btn btn-outline" style="font-size:13px;padding:9px 12px;"
-          onclick="deleteHistoryItem('${q.quoteId}')">🗑️ Delete</button>
+        <button class="btn btn-primary" onclick="loadQuoteIntoForm('${q.quoteId}')">✏️ Load &amp; Edit</button>
+        <button class="btn btn-outline hqc-btn-doc" id="pdfbtn-${q.quoteId}" onclick="previewHistoryPDF('${q.quoteId}')">📄 PDF</button>
+        <button class="btn btn-outline" onclick="deleteHistoryItem('${q.quoteId}')">🗑️ Delete</button>
       </div>
       <div class="pdf-inline-wrap" id="pdf-wrap-${q.quoteId}">
         <div class="pdf-inline-toolbar">
           <span id="pdf-inline-title-${q.quoteId}">📄 ${q.quoteId}</span>
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary" id="pdf-dl-btn-${q.quoteId}" style="font-size:12px;padding:6px 14px;">⬇️ Download</button>
-            <button onclick="closePDFInline('${q.quoteId}')" style="background:none;border:none;font-size:18px;cursor:pointer;color:#6b7280;padding:0 4px;">✕</button>
+            <button class="btn btn-primary" id="pdf-dl-btn-${q.quoteId}">⬇️ Download</button>
+            <button type="button" class="btn btn-outline icon-btn" aria-label="Close preview" onclick="closePDFInline('${q.quoteId}')">✕</button>
           </div>
         </div>
         <iframe id="pdf-iframe-${q.quoteId}" class="pdf-inline-iframe" title="PDF Preview"></iframe>
